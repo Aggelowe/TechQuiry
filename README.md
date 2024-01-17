@@ -1,9 +1,11 @@
 # TechQuiry
 
+![TechQuiry Icon-Text Logo](logo.png)
+
 *More information on the project will be released soon!*
 
 ### Info
-- TechQuiry is a free and open source platform focused on providing a fun way to anonymously ask and respond to inquiries
+- TechQuiry is a free and open source platform focused on providing a fun way to anonymously ask and respond to inquiries.
 - This project is licenced under the GPL-3.0 Licence. For more information look [here](LICENSE.md).
 
 ### Issues
