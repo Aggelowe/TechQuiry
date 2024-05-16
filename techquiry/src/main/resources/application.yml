@@ -1,9 +1,5 @@
-logging:
- level:
-  root: info
-  com.aggelowe: debug
- pattern:
-  console: "[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%clr(%level) / %thread] [%clr(%logger){cyan}]: %msg%n"
 spring:
  banner:
   location: classpath:/banner.txt
+server:
+ port: 8080
