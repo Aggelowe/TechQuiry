@@ -1,12 +1,17 @@
 package com.aggelowe.techquiry;
 
+import static com.aggelowe.techquiry.ApplicationReference.EXECUTION_DIRECTORY;
 import static com.aggelowe.techquiry.ApplicationReference.LOGGER;
 import static com.aggelowe.techquiry.ApplicationReference.NAME;
 import static com.aggelowe.techquiry.ApplicationReference.VERSION;
-import static com.aggelowe.techquiry.ApplicationReference.EXECUTION_DIRECTORY;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
 
 import com.aggelowe.techquiry.config.Configuration;
 
@@ -39,6 +44,20 @@ public class TechQuiry {
 	 */
 	private static void setup(SpringApplication application) {
 		LOGGER.debug("Setting up Spring application properties");
+		Map<String, Object> applicationProperties = new HashMap<>();
+		applicationProperties.put("server.port", Configuration.getPort());
+		application.setDefaultProperties(applicationProperties);
+	}
+
+	/**
+	 * This method is invoked when the application's context has been initialized
+	 * and is responsible for initializing the core application components.
+	 * 
+	 * @param event The object representing the event
+	 */
+	@EventListener(ContextRefreshedEvent.class)
+	public void start() {
+		LOGGER.info("Starting core application components");
 	}
 
 }

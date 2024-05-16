@@ -23,7 +23,7 @@ public final class Configuration {
 	/**
 	 * The {@link Properties} object containing the configuration entries.
 	 */
-	public static final Properties CONFIGURATION_ENTRIES = new Properties();
+	private static final Properties CONFIGURATION_ENTRIES = new Properties();
 
 	/**
 	 * This constructor will throw an {@link ConfigurationException} whenever
@@ -94,6 +94,17 @@ public final class Configuration {
 	 */
 	private static void applyDefaults() {
 		LOGGER.debug("Applying default values to missing entries");
+		CONFIGURATION_ENTRIES.putIfAbsent("port", "8080");
+	}
+
+	/**
+	 * This method returns the port assigned to the Spring application by the
+	 * application's configuration.
+	 * 
+	 * @return The application's network port
+	 */
+	public static String getPort() {
+		return CONFIGURATION_ENTRIES.getProperty("port");
 	}
 
 }
