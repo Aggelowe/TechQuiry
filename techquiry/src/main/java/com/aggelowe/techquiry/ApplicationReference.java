@@ -1,5 +1,7 @@
 package com.aggelowe.techquiry;
 
+import java.io.File;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -38,8 +40,20 @@ public final class ApplicationReference {
 	 */
 	public static final Logger LOGGER;
 	
+	/**
+	 * The {@link File} object representing the execution directory
+	 */
+	public static final File EXECUTION_DIRECTORY;
+	
+	/**
+	 * The filename of the application configuration file
+	 */
+	public static final String CONFIGURATION_FILENAME = "techquiry.properties";
+	
 	static {
 		LOGGER = LogManager.getLogger(TechQuiry.class);
+		String executionPath = System.getProperty("user.dir");
+		EXECUTION_DIRECTORY = new File(executionPath);
 	}
 
 	
