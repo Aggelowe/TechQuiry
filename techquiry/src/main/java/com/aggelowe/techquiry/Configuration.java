@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import com.aggelowe.techquiry.exception.InvalidConstructionException;;
+import com.aggelowe.techquiry.exception.InvalidConstructionException;
 
 /**
  * The {@link Configuration} class is the one responsible for initializing and

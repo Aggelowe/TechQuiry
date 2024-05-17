@@ -52,6 +52,11 @@ public final class Reference {
 	 */
 	public static final String CONFIGURATION_FILENAME = "techquiry.properties";
 	
+	/**
+	 * The filename of the application database file
+	 */
+	public static final String DATABASE_FILENAME = "techquiry.db";
+	
 	static {
 		LOGGER = LogManager.getLogger(TechQuiry.class);
 		String executionPath = System.getProperty("user.dir");
