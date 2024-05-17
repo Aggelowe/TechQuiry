@@ -1,11 +1,11 @@
-package com.aggelowe.techquiry;
+package com.aggelowe.techquiry.exception;
 
 /**
  * {@link ApplicationException} is the superclass of all exceptions implemented
  * in the TechQuiry application. It extends the {@link RuntimeException} class,
  * and thus does not necessarily need to be caught.
  * 
- * @author Angelos Margaritis (Aggelowe)
+ * @author Aggelowe
  * @since 0.0.1
  */
 public class ApplicationException extends RuntimeException {

@@ -1,9 +1,9 @@
 package com.aggelowe.techquiry;
 
-import static com.aggelowe.techquiry.ApplicationReference.EXECUTION_DIRECTORY;
-import static com.aggelowe.techquiry.ApplicationReference.LOGGER;
-import static com.aggelowe.techquiry.ApplicationReference.NAME;
-import static com.aggelowe.techquiry.ApplicationReference.VERSION;
+import static com.aggelowe.techquiry.Reference.EXECUTION_DIRECTORY;
+import static com.aggelowe.techquiry.Reference.LOGGER;
+import static com.aggelowe.techquiry.Reference.NAME;
+import static com.aggelowe.techquiry.Reference.VERSION;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,14 +13,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 
-import com.aggelowe.techquiry.config.Configuration;
-
 /**
  * This is the main class of the TechQuiry application, it is responsible for
  * starting the spring boot application by invoking the necessary methods when
  * the execution occurs.
  * 
- * @author Angelos Margaritis (Aggelowe)
+ * @author Aggelowe
  * @since 0.0.1
  */
 @SpringBootApplication
