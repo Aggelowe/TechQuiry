@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.Properties;
 
 import com.aggelowe.techquiry.exception.InvalidConstructionException;
@@ -46,7 +47,7 @@ public final class Configuration {
 	 */
 	public static void initialize() {
 		LOGGER.info("Peforming application configuration setup");
-		loadConfiguration();
+		loadFile();
 		applyDefaults();
 	}
 
@@ -56,10 +57,10 @@ public final class Configuration {
 	 * application. If an error occurs while loading, the operation will not
 	 * complete.
 	 */
-	private static void loadConfiguration() {
+	private static void loadFile() {
 		LOGGER.debug("Loading application configuration from " + CONFIGURATION_FILENAME);
-		String configurationPath = EXECUTION_DIRECTORY + "/" + CONFIGURATION_FILENAME;
-		File configurationFile = new File(configurationPath);
+		Path configurationPath = EXECUTION_DIRECTORY.toPath().resolve(CONFIGURATION_FILENAME);
+		File configurationFile = configurationPath.toFile();
 		LOGGER.debug("Configuration file path: " + configurationFile);
 		if (!configurationFile.exists()) {
 			LOGGER.warn("Configuration file " + configurationFile + " not found");

@@ -4,6 +4,7 @@ import static com.aggelowe.techquiry.Reference.DATABASE_FILENAME;
 import static com.aggelowe.techquiry.Reference.EXECUTION_DIRECTORY;
 import static com.aggelowe.techquiry.Reference.LOGGER;
 
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -11,13 +12,13 @@ import java.sql.SQLException;
 import com.aggelowe.techquiry.exception.InvalidConstructionException;
 
 /**
- * The {@link Database} class is the one responsible for initializing and
+ * The {@link DatabaseController} class is the one responsible for initializing and
  * handling the database used by the TechQuiry application.
  * 
  * @author Aggelowe
  * @since 0.0.1
  */
-public final class Database {
+public final class DatabaseController {
 
 	/**
 	 * This objects represents the connection with the SQLite database.
@@ -26,12 +27,12 @@ public final class Database {
 
 	/**
 	 * This constructor will throw an {@link InvalidConstructionException} whenever
-	 * invoked. {@link Database} objects should <b>not</b> be constructible.
+	 * invoked. {@link DatabaseController} objects should <b>not</b> be constructible.
 	 * 
 	 * @throws InvalidConstructionException Will always be thrown when the
 	 *                                      constructor is invoked.
 	 */
-	private Database() {
+	private DatabaseController() {
 		throw new InvalidConstructionException(getClass().getName() + " objects should not be constructed!");
 	}
 
@@ -42,16 +43,17 @@ public final class Database {
 	 */
 	public static void initialize() {
 		LOGGER.info("Initializing application database");
-		connectDatabase();
+		connect();
+		makeTables();
 	}
 
 	/**
 	 * This method establishes the connection between the database file and the
 	 * application. If an error occurs while connecting, the application will exit.
 	 */
-	private static void connectDatabase() {
+	private static void connect() {
 		LOGGER.debug("Establishing database connection");
-		String databasePath = EXECUTION_DIRECTORY.toPath().resolve(DATABASE_FILENAME).toString();
+		Path databasePath = EXECUTION_DIRECTORY.toPath().resolve(DATABASE_FILENAME);
 		String databaseUrl = "jdbc:sqlite:" + databasePath;
 		LOGGER.debug("Database URL: " + databaseUrl);
 		try {
@@ -60,6 +62,16 @@ public final class Database {
 			LOGGER.error("An error occured while connecting to " + databaseUrl, exception);
 			System.exit(1);
 		}
+	}
+
+	/**
+	 * This method creates the database tables that contain the data used by the
+	 * application if they do not already exist within the database. If an error
+	 * occurs during this process, the application will exit.
+	 */
+	private static void makeTables() {
+		LOGGER.debug("Creating missing database tables");
+		
 	}
 
 	/**
