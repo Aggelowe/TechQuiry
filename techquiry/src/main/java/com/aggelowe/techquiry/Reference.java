@@ -57,6 +57,11 @@ public final class Reference {
 	 */
 	public static final String DATABASE_FILENAME = "techquiry.db";
 	
+	/**
+	 * The resource path of the directory containing the SQL scripts
+	 */
+	public static final String SQL_DIRECTORY = "/database/";
+	
 	static {
 		LOGGER = LogManager.getLogger(TechQuiry.class);
 		String executionPath = System.getProperty("user.dir");

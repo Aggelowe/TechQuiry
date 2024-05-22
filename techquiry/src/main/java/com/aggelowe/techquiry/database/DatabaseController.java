@@ -71,7 +71,7 @@ public final class DatabaseController {
 	 */
 	private static void makeTables() {
 		LOGGER.debug("Creating missing database tables");
-		
+		DatabaseAccessor.createUsersTable();
 	}
 
 	/**

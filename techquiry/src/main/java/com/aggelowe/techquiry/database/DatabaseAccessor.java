@@ -1,19 +1,21 @@
 package com.aggelowe.techquiry.database;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import static com.aggelowe.techquiry.Reference.LOGGER;
+import static com.aggelowe.techquiry.Reference.SQL_DIRECTORY;
+
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import com.aggelowe.techquiry.exception.InvalidConstructionException;
-import com.aggelowe.techquiry.exception.NonLoadableStatementException;
+import com.aggelowe.techquiry.exception.SQLScriptException;
 
 /**
  * The {@link DatabaseAccessor} class is responsible for making the necessary
@@ -38,32 +40,24 @@ public final class DatabaseAccessor {
 
 	/**
 	 * The {@link #loadStatement(String)} method parses the SQL statements from the
-	 * given file and generates the {@link List} containing the {@link Statement}
-	 * objects, ready to be executed.
+	 * provided {@link InputStream} pointing to the SQL script file and generates
+	 * the {@link List} containing the {@link Statement} objects, ready to be
+	 * executed.
 	 * 
-	 * @param file The file containing the SQL statements
+	 * @param stream The stream reading the file containing the SQL statements
 	 * @return The list of {@link PreparedStatement} objects
 	 */
-	private static List<PreparedStatement> loadStatements(File file) {
+	private static List<PreparedStatement> loadStatements(InputStream stream) {
 		List<PreparedStatement> statements = new LinkedList<PreparedStatement>();
-		FileReader fileReader;
-		try {
-			fileReader = new FileReader(file);
-		} catch (FileNotFoundException exception) {
-			throw new NonLoadableStatementException("The " + file + " statement file is not accessible!", exception);
-		}
-		BufferedReader reader = new BufferedReader(fileReader);
+		BufferedInputStream buffer = new BufferedInputStream(stream);
 		Connection connection = DatabaseController.getConnection();
 		StringBuilder commandBuilder = null;
 		int mode = 0;
 		char previous = (char) -1;
 		int code;
 		try {
-			while ((code = reader.read()) != -1) {
+			while ((code = buffer.read()) != -1) {
 				char character = (char) code;
-				if (commandBuilder == null) {
-					commandBuilder = new StringBuilder();
-				}
 				switch (mode) {
 					case 0: {
 						if (character == '"') {
@@ -82,8 +76,8 @@ public final class DatabaseAccessor {
 							commandBuilder.deleteCharAt(commandBuilder.length() - 1);
 							continue;
 						}
-						if (character == '\n') {
-							if (previous != ' ' && previous != '\n') {
+						if (character == '\n' || character == '\t') {
+							if (previous != ' ' && previous != '\n' && previous != '\t') {
 								commandBuilder.append(' ');
 							}
 						} else {
@@ -92,12 +86,12 @@ public final class DatabaseAccessor {
 						if (character == ';') {
 							String command = commandBuilder.toString();
 							command = command.trim();
-							commandBuilder = null;
+							commandBuilder = new StringBuilder();
 							PreparedStatement statement;
 							try {
 								statement = connection.prepareStatement(command);
 							} catch (SQLException exception) {
-								throw new NonLoadableStatementException("The statement could not be constructed!", exception);
+								throw new SQLScriptException("The SQL statement could not be constructed!", exception);
 							}
 							statements.add(statement);
 						}
@@ -121,6 +115,7 @@ public final class DatabaseAccessor {
 						if (character == '/' && previous == '*') {
 							mode = 0;
 						}
+						break;
 					}
 					case 4: {
 						if (character == '\n') {
@@ -132,15 +127,38 @@ public final class DatabaseAccessor {
 				previous = character;
 			}
 		} catch (IOException exception) {
-			throw new NonLoadableStatementException("An exception occured while reading the statement file!", exception);
+			throw new SQLScriptException("An exception occured while reading the SQL script!", exception);
 		} finally {
 			try {
-				reader.close();
+				buffer.close();
 			} catch (IOException exception) {
-				throw new NonLoadableStatementException("The statement file reader could not be closed!", exception);
+				throw new SQLScriptException("The SQL script input stream could not be closed!", exception);
 			}
 		}
 		return statements;
+	}
+
+	/**
+	 * This method is responsible for creating the <i>users</i> table in the
+	 * application database by executing the first statement in the respective SQL
+	 * script file.
+	 */
+	public static void createUsersTable() {
+		LOGGER.debug("Creating user database table if missing");
+		String name = "create_users_table.sql";
+		InputStream stream = DatabaseAccessor.class.getResourceAsStream(SQL_DIRECTORY + name);
+		List<PreparedStatement> statements = loadStatements(stream);
+		PreparedStatement statement;
+		try {
+			statement = statements.getFirst();
+		} catch (NoSuchElementException exception) {
+			throw new SQLScriptException("The first statement in " + name + " is not found!");
+		}
+		try {
+			statement.execute();
+		} catch (SQLException exception) {
+			throw new SQLScriptException("A database error occured on the SQL statement's execution!", exception);
+		}
 	}
 
 }
