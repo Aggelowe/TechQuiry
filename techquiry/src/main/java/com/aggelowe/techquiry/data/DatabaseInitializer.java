@@ -1,4 +1,4 @@
-package com.aggelowe.techquiry.database;
+package com.aggelowe.techquiry.data;
 
 import static com.aggelowe.techquiry.Reference.DATABASE_FILENAME;
 import static com.aggelowe.techquiry.Reference.EXECUTION_DIRECTORY;
@@ -9,16 +9,17 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import com.aggelowe.techquiry.data.users.UserAccessor;
 import com.aggelowe.techquiry.exception.InvalidConstructionException;
 
 /**
- * The {@link DatabaseController} class is the one responsible for initializing and
- * handling the database used by the TechQuiry application.
+ * The {@link DatabaseInitializer} class is the one responsible for initializing
+ * the database used by the TechQuiry application.
  * 
  * @author Aggelowe
  * @since 0.0.1
  */
-public final class DatabaseController {
+public final class DatabaseInitializer {
 
 	/**
 	 * This objects represents the connection with the SQLite database.
@@ -27,12 +28,13 @@ public final class DatabaseController {
 
 	/**
 	 * This constructor will throw an {@link InvalidConstructionException} whenever
-	 * invoked. {@link DatabaseController} objects should <b>not</b> be constructible.
+	 * invoked. {@link DatabaseInitializer} objects should <b>not</b> be
+	 * constructible.
 	 * 
 	 * @throws InvalidConstructionException Will always be thrown when the
 	 *                                      constructor is invoked.
 	 */
-	private DatabaseController() {
+	private DatabaseInitializer() {
 		throw new InvalidConstructionException(getClass().getName() + " objects should not be constructed!");
 	}
 
@@ -71,7 +73,7 @@ public final class DatabaseController {
 	 */
 	private static void makeTables() {
 		LOGGER.debug("Creating missing database tables");
-		DatabaseAccessor.createUsersTable();
+		UserAccessor.createUsersTable();
 	}
 
 	/**

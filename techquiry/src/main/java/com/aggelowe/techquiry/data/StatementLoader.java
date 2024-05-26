@@ -1,6 +1,5 @@
-package com.aggelowe.techquiry.database;
+package com.aggelowe.techquiry.data;
 
-import static com.aggelowe.techquiry.Reference.LOGGER;
 import static com.aggelowe.techquiry.Reference.SQL_DIRECTORY;
 
 import java.io.BufferedInputStream;
@@ -12,46 +11,46 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
+import com.aggelowe.techquiry.Reference;
 import com.aggelowe.techquiry.exception.InvalidConstructionException;
 import com.aggelowe.techquiry.exception.SQLScriptException;
 
 /**
- * The {@link DatabaseAccessor} class is responsible for making the necessary
- * statements to TechQuiry's database for the retrieval or modification of the
- * application's data.
+ * The {@link StatementLoader} class is responsible for loading the SQL
+ * statements from the respective SQL script files and preparing them for
+ * execution by the application.
  * 
  * @author Aggelowe
  * @since 0.0.1
  */
-public final class DatabaseAccessor {
+public final class StatementLoader {
 
 	/**
 	 * This constructor will throw an {@link InvalidConstructionException} whenever
-	 * invoked. {@link DatabaseAccessor} objects should <b>not</b> be constructible.
+	 * invoked. {@link StatementLoader} objects should <b>not</b> be constructible.
 	 * 
 	 * @throws InvalidConstructionException Will always be thrown when the
 	 *                                      constructor is invoked.
 	 */
-	private DatabaseAccessor() {
+	private StatementLoader() {
 		throw new InvalidConstructionException(getClass().getName() + " objects should not be constructed!");
 	}
 
 	/**
-	 * The {@link #loadStatement(String)} method parses the SQL statements from the
-	 * provided {@link InputStream} pointing to the SQL script file and generates
-	 * the {@link List} containing the {@link Statement} objects, ready to be
-	 * executed.
+	 * The {@link #loadStatement(InputStream)} method parses the SQL statements from
+	 * the provided {@link InputStream} pointing to the SQL script file and
+	 * generates the {@link List} containing the {@link Statement} objects, ready to
+	 * be executed.
 	 * 
 	 * @param stream The stream reading the file containing the SQL statements
 	 * @return The list of {@link PreparedStatement} objects
 	 */
-	private static List<PreparedStatement> loadStatements(InputStream stream) {
+	public static List<PreparedStatement> loadStatements(InputStream stream) {
 		List<PreparedStatement> statements = new LinkedList<PreparedStatement>();
 		BufferedInputStream buffer = new BufferedInputStream(stream);
-		Connection connection = DatabaseController.getConnection();
-		StringBuilder commandBuilder = null;
+		Connection connection = DatabaseInitializer.getConnection();
+		StringBuilder commandBuilder = new StringBuilder();
 		int mode = 0;
 		char previous = (char) -1;
 		int code;
@@ -139,26 +138,19 @@ public final class DatabaseAccessor {
 	}
 
 	/**
-	 * This method is responsible for creating the <i>users</i> table in the
-	 * application database by executing the first statement in the respective SQL
-	 * script file.
+	 * The {@link #loadStatement(String)} method parses the SQL statements from the
+	 * SQL script file with the given name (in the resource path defined in
+	 * {@link Reference#SQL_DIRECTORY}) and generates the {@link List} containing
+	 * the {@link Statement} objects, ready to be executed.
+	 * 
+	 * @param name The name of the file containing the SQL statements
+	 * @return The list of {@link PreparedStatement} objects
 	 */
-	public static void createUsersTable() {
-		LOGGER.debug("Creating user database table if missing");
-		String name = "create_users_table.sql";
-		InputStream stream = DatabaseAccessor.class.getResourceAsStream(SQL_DIRECTORY + name);
+	public static List<PreparedStatement> loadStatements(String name) {
+		String resource = SQL_DIRECTORY + name;
+		InputStream stream = StatementLoader.class.getResourceAsStream(resource);
 		List<PreparedStatement> statements = loadStatements(stream);
-		PreparedStatement statement;
-		try {
-			statement = statements.getFirst();
-		} catch (NoSuchElementException exception) {
-			throw new SQLScriptException("The first statement in " + name + " is not found!");
-		}
-		try {
-			statement.execute();
-		} catch (SQLException exception) {
-			throw new SQLScriptException("A database error occured on the SQL statement's execution!", exception);
-		}
+		return statements;
 	}
 
 }
