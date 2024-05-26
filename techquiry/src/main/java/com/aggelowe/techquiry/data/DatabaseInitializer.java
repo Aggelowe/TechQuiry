@@ -73,7 +73,7 @@ public final class DatabaseInitializer {
 	 */
 	private static void makeTables() {
 		LOGGER.debug("Creating missing database tables");
-		UserAccessor.createUsersTable();
+		UserAccessor.createUserTable();
 	}
 
 	/**
