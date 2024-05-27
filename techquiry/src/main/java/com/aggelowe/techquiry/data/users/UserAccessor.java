@@ -53,7 +53,7 @@ public final class UserAccessor {
 	 * 
 	 * @return The {@link ResultSet} with the user count
 	 */
-	private static ResultSet selectUserCount() {
+	static ResultSet selectUserCount() {
 		String name = "users/select_count.sql";
 		List<PreparedStatement> statements = StatementLoader.loadStatements(name);
 		if (statements.size() < 1) {
@@ -75,7 +75,7 @@ public final class UserAccessor {
 	 * @param id The user id of the user entry
 	 * @return The {@link ResultSet} with the user entry
 	 */
-	private static ResultSet selectUserById(int id) {
+	static ResultSet selectUserById(int id) {
 		String name = "users/select_by_id.sql";
 		List<PreparedStatement> statements = StatementLoader.loadStatements(name);
 		if (statements.size() < 1) {
@@ -97,7 +97,7 @@ public final class UserAccessor {
 	 * @param username The username of the user entry
 	 * @return The {@link ResultSet} with the user entry
 	 */
-	private static ResultSet selectUserByUsername(String username) {
+	static ResultSet selectUserByUsername(String username) {
 		String name = "users/select_by_username.sql";
 		List<PreparedStatement> statements = StatementLoader.loadStatements(name);
 		if (statements.size() < 1) {
@@ -122,7 +122,7 @@ public final class UserAccessor {
 	 * @param passwordHash The hash of the password of the user
 	 * @param passwordSalt The salt of the password hash of the user
 	 */
-	private static void insertUser(int id, String username, String displayName, String passwordHash, String passwordSalt) {
+	static void insertUser(int id, String username, String displayName, String passwordHash, String passwordSalt) {
 		String name = "users/insert.sql";
 		List<PreparedStatement> statements = StatementLoader.loadStatements(name);
 		if (statements.size() < 1) {
@@ -144,7 +144,7 @@ public final class UserAccessor {
 	 * @param passwordHash The hash of the password of the user
 	 * @param passwordSalt The salt of the password hash of the user
 	 */
-	private static void updateUser(int id, String username, String displayName, String passwordHash, String passwordSalt) {
+	static void updateUserById(int id, String username, String displayName, String passwordHash, String passwordSalt) {
 		String name = "users/update_by_id.sql";
 		List<PreparedStatement> statements = StatementLoader.loadStatements(name);
 		if (statements.size() < 1) {

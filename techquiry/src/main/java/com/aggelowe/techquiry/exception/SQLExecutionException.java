@@ -1,14 +1,14 @@
 package com.aggelowe.techquiry.exception;
 
 /**
- * {@link SQLExecutionException} is an {@link ApplicationException} subclass that
+ * {@link SQLExecutionException} is an {@link DatabaseException} subclass that
  * is thrown when a SQL statement is attempted to be executed but the operation
  * fails.
  * 
  * @author Aggelowe
  * @since 0.0.1
  */
-public class SQLExecutionException extends ApplicationException {
+public class SQLExecutionException extends DatabaseException {
 
 	/**
 	 * Constructs a new {@link SQLExecutionException} with the given message.
