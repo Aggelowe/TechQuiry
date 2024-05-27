@@ -41,7 +41,7 @@ public final class UserAccessor {
 	 */
 	public static void createUserTable() {
 		LOGGER.debug("Creating user database table if missing");
-		String name = "users_create_table.sql";
+		String name = "users/create_table.sql";
 		List<PreparedStatement> statements = StatementLoader.loadStatements(name);
 		StatementExecutor.executeStatements(statements);
 	}
@@ -53,8 +53,8 @@ public final class UserAccessor {
 	 * 
 	 * @return The {@link ResultSet} with the user count
 	 */
-	private static ResultSet getUserCount() {
-		String name = "users_select_count.sql";
+	private static ResultSet selectUserCount() {
+		String name = "users/select_count.sql";
 		List<PreparedStatement> statements = StatementLoader.loadStatements(name);
 		if (statements.size() < 1) {
 			throw new SQLScriptException("Invalid number of statements in " + name + "!");
@@ -69,14 +69,14 @@ public final class UserAccessor {
 
 	/**
 	 * This method returns the {@link ResultSet} containing the user entry in the
-	 * application database that has the provided user id. This method executes only the first
-	 * statement in the respective SQL script file.
+	 * application database that has the provided user id. This method executes only
+	 * the first statement in the respective SQL script file.
 	 * 
 	 * @param id The user id of the user entry
 	 * @return The {@link ResultSet} with the user entry
 	 */
-	private static ResultSet getUserById(int id) {
-		String name = "users_select_by_id.sql";
+	private static ResultSet selectUserById(int id) {
+		String name = "users/select_by_id.sql";
 		List<PreparedStatement> statements = StatementLoader.loadStatements(name);
 		if (statements.size() < 1) {
 			throw new SQLScriptException("Invalid number of statements in " + name + "!");
@@ -91,14 +91,14 @@ public final class UserAccessor {
 
 	/**
 	 * This method returns the {@link ResultSet} containing the user entry in the
-	 * application database that has the provided username. This method executes only the first
-	 * statement in the respective SQL script file.
+	 * application database that has the provided username. This method executes
+	 * only the first statement in the respective SQL script file.
 	 * 
 	 * @param username The username of the user entry
 	 * @return The {@link ResultSet} with the user entry
 	 */
-	private static ResultSet getUserByUsername(String username) {
-		String name = "users_select_by_username.sql";
+	private static ResultSet selectUserByUsername(String username) {
+		String name = "users/select_by_username.sql";
 		List<PreparedStatement> statements = StatementLoader.loadStatements(name);
 		if (statements.size() < 1) {
 			throw new SQLScriptException("Invalid number of statements in " + name + "!");
@@ -110,5 +110,48 @@ public final class UserAccessor {
 		}
 		return result.get();
 	}
-	
+
+	/**
+	 * This method inserts a new user entry into the application database with the
+	 * given user id, username, display name, password hash and password salt. This
+	 * method executes only the first statement in the respective SQL script file.
+	 * 
+	 * @param id           The id of the user
+	 * @param username     The username of the user
+	 * @param displayName  The display name of the user
+	 * @param passwordHash The hash of the password of the user
+	 * @param passwordSalt The salt of the password hash of the user
+	 */
+	private static void insertUser(int id, String username, String displayName, String passwordHash, String passwordSalt) {
+		String name = "users/insert.sql";
+		List<PreparedStatement> statements = StatementLoader.loadStatements(name);
+		if (statements.size() < 1) {
+			throw new SQLScriptException("Invalid number of statements in " + name + "!");
+		}
+		PreparedStatement statement = statements.getFirst();
+		StatementExecutor.executeStatement(statement, id, username, displayName, passwordHash, passwordSalt);
+	}
+
+	/**
+	 * This method updates the information of the user with the given id to the ones
+	 * provided as parameters, including the username, display name, password hash
+	 * and password salt. This method executes only the first statement in the
+	 * respective SQL script file.
+	 * 
+	 * @param id           The id of the user
+	 * @param username     The username of the user
+	 * @param displayName  The display name of the user
+	 * @param passwordHash The hash of the password of the user
+	 * @param passwordSalt The salt of the password hash of the user
+	 */
+	private static void updateUser(int id, String username, String displayName, String passwordHash, String passwordSalt) {
+		String name = "users/update_by_id.sql";
+		List<PreparedStatement> statements = StatementLoader.loadStatements(name);
+		if (statements.size() < 1) {
+			throw new SQLScriptException("Invalid number of statements in " + name + "!");
+		}
+		PreparedStatement statement = statements.getFirst();
+		StatementExecutor.executeStatement(statement, username, displayName, passwordHash, passwordSalt, id);
+	}
+
 }
