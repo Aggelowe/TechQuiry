@@ -106,6 +106,9 @@ public class User {
 	 * @param username The user's username
 	 */
 	public void setUsername(String username) {
+		if (username == null) {
+			throw new InvalidConstructionException("The provided username should not be NULL!");
+		}
 		this.username = username;
 	}
 
@@ -115,6 +118,9 @@ public class User {
 	 * @param passwordHash The user's password hash
 	 */
 	public void setPasswordHash(byte[] passwordHash) {
+		if (passwordHash == null) {
+			throw new InvalidConstructionException("The provided password hash should not be NULL!");
+		}
 		this.passwordHash = passwordHash;
 	}
 
@@ -124,6 +130,9 @@ public class User {
 	 * @param passwordSalt The user password's salt
 	 */
 	public void setPasswordSalt(byte[] passwordSalt) {
+		if (passwordSalt == null) {
+			throw new InvalidConstructionException("The provided password salt should not be NULL!");
+		}
 		this.passwordSalt = passwordSalt;
 	}
 
