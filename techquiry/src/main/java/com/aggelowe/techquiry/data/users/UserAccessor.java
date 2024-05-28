@@ -1,7 +1,5 @@
 package com.aggelowe.techquiry.data.users;
 
-import static com.aggelowe.techquiry.Reference.LOGGER;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.List;
@@ -39,8 +37,7 @@ public final class UserAccessor {
 	 * application database. This method executes every statement in the respective
 	 * SQL script file.
 	 */
-	public static void createUserTable() {
-		LOGGER.debug("Creating user database table if missing");
+	static void createUserTable() {
 		String name = "users/create_table.sql";
 		List<PreparedStatement> statements = StatementLoader.loadStatements(name);
 		StatementExecutor.executeStatements(statements);
@@ -152,6 +149,23 @@ public final class UserAccessor {
 		}
 		PreparedStatement statement = statements.getFirst();
 		StatementExecutor.executeStatement(statement, username, displayName, passwordHash, passwordSalt, id);
+	}
+
+	/**
+	 * This method deletes the information of the user entry in the application
+	 * database that has the provided user id. This method executes only the first
+	 * statement in the respective SQL script file.
+	 * 
+	 * @param id The id of the user
+	 */
+	static void deleteUserById(int id) {
+		String name = "users/delete_by_id.sql";
+		List<PreparedStatement> statements = StatementLoader.loadStatements(name);
+		if (statements.size() < 1) {
+			throw new SQLScriptException("Invalid number of statements in " + name + "!");
+		}
+		PreparedStatement statement = statements.getFirst();
+		StatementExecutor.executeStatement(statement, id);
 	}
 
 }

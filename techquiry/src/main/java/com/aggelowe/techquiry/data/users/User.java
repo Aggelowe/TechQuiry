@@ -45,7 +45,7 @@ public class User {
 	 * @param passwordHash The hash of the user's password
 	 * @param passwordSalt The salt used in the password hash
 	 */
-	User(int id, String username, byte[] passwordHash, byte[] passwordSalt) {
+	public User(int id, String username, byte[] passwordHash, byte[] passwordSalt) {
 		if (username == null || passwordHash == null || passwordSalt == null) {
 			throw new InvalidConstructionException("The provided user information should not be NULL!");
 		}
@@ -134,6 +134,15 @@ public class User {
 	 */
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
+	}
+
+	/**
+	 * This method returns the object as a string containing the user id, the
+	 * username and the display name.
+	 */
+	@Override
+	public String toString() {
+		return "[User ID: " + id + ", Username: " + username + ", Display Name: " + displayName + "]";
 	}
 
 }

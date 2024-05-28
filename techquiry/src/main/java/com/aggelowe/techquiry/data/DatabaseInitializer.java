@@ -9,7 +9,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import com.aggelowe.techquiry.data.users.UserAccessor;
+import com.aggelowe.techquiry.data.users.UserAdapter;
 import com.aggelowe.techquiry.exception.InvalidConstructionException;
 
 /**
@@ -73,7 +73,7 @@ public final class DatabaseInitializer {
 	 */
 	private static void makeTables() {
 		LOGGER.debug("Creating missing database tables");
-		UserAccessor.createUserTable();
+		UserAdapter.createUserTable();
 	}
 
 	/**
