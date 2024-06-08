@@ -29,7 +29,6 @@ public class TechQuiry {
 	public static void main(String[] args) {
 		LOGGER.info("Starting the " + NAME + " application on version " + VERSION);
 		LOGGER.debug("Application execution directory: " + EXECUTION_DIRECTORY);
-		Configuration.initialize();
 		SpringApplication application = new SpringApplication(TechQuiry.class);
 		setup(application);
 		LOGGER.info("Invoking Spring application startup");
@@ -45,7 +44,7 @@ public class TechQuiry {
 	private static void setup(SpringApplication application) {
 		LOGGER.debug("Setting up Spring application properties");
 		Map<String, Object> applicationProperties = new HashMap<>();
-		applicationProperties.put("server.port", Configuration.getPort());
+		applicationProperties.put("server.port", Environment.getPort());
 		application.setDefaultProperties(applicationProperties);
 	}
 

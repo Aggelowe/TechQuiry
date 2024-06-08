@@ -48,11 +48,6 @@ public final class Constants {
 	public static final File EXECUTION_DIRECTORY;
 	
 	/**
-	 * The filename of the application configuration file
-	 */
-	public static final String CONFIGURATION_FILENAME = "techquiry.properties";
-	
-	/**
 	 * The filename of the application database file
 	 */
 	public static final String DATABASE_FILENAME = "techquiry.db";
