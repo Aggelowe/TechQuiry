@@ -1,6 +1,6 @@
-package com.aggelowe.techquiry.data.users;
+package com.aggelowe.techquiry.database.users;
 
-import com.aggelowe.techquiry.exception.InvalidConstructionException;
+import com.aggelowe.techquiry.common.exceptions.ConstructorException;
 
 /**
  * The {@link User} class represents a user of the TechQuiry application along
@@ -47,7 +47,7 @@ public class User {
 	 */
 	public User(int id, String username, byte[] passwordHash, byte[] passwordSalt) {
 		if (username == null || passwordHash == null || passwordSalt == null) {
-			throw new InvalidConstructionException("The provided user information should not be NULL!");
+			throw new ConstructorException("The provided user information should not be NULL!");
 		}
 		this.id = id;
 		this.username = username;
@@ -107,7 +107,7 @@ public class User {
 	 */
 	public void setUsername(String username) {
 		if (username == null) {
-			throw new InvalidConstructionException("The provided username should not be NULL!");
+			throw new ConstructorException("The provided username should not be NULL!");
 		}
 		this.username = username;
 	}
@@ -119,7 +119,7 @@ public class User {
 	 */
 	public void setPasswordHash(byte[] passwordHash) {
 		if (passwordHash == null) {
-			throw new InvalidConstructionException("The provided password hash should not be NULL!");
+			throw new ConstructorException("The provided password hash should not be NULL!");
 		}
 		this.passwordHash = passwordHash;
 	}
@@ -131,7 +131,7 @@ public class User {
 	 */
 	public void setPasswordSalt(byte[] passwordSalt) {
 		if (passwordSalt == null) {
-			throw new InvalidConstructionException("The provided password salt should not be NULL!");
+			throw new ConstructorException("The provided password salt should not be NULL!");
 		}
 		this.passwordSalt = passwordSalt;
 	}

@@ -1,4 +1,6 @@
-package com.aggelowe.techquiry.data.users;
+package com.aggelowe.techquiry.database.users;
+
+import static com.aggelowe.techquiry.common.Constants.LOGGER;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -7,11 +9,9 @@ import java.util.Optional;
 import org.sqlite.SQLiteErrorCode;
 import org.sqlite.SQLiteException;
 
-import com.aggelowe.techquiry.Utilities;
-import com.aggelowe.techquiry.exception.InvalidConstructionException;
-import com.aggelowe.techquiry.exception.SQLExecutionException;
-
-import static com.aggelowe.techquiry.Reference.LOGGER;
+import com.aggelowe.techquiry.common.Utilities;
+import com.aggelowe.techquiry.common.exceptions.ConstructorException;
+import com.aggelowe.techquiry.database.exceptions.SQLExecutionException;
 
 /**
  * The {@link UserAdapter} class is responsible for handling the connection of
@@ -23,14 +23,14 @@ import static com.aggelowe.techquiry.Reference.LOGGER;
 public final class UserAdapter {
 
 	/**
-	 * This constructor will throw an {@link InvalidConstructionException} whenever
+	 * This constructor will throw an {@link ConstructorException} whenever
 	 * invoked. {@link UserAdapter} objects should <b>not</b> be constructible.
 	 * 
-	 * @throws InvalidConstructionException Will always be thrown when the
+	 * @throws ConstructorException Will always be thrown when the
 	 *                                      constructor is invoked.
 	 */
 	private UserAdapter() {
-		throw new InvalidConstructionException(getClass().getName() + " objects should not be constructed!");
+		throw new ConstructorException(getClass().getName() + " objects should not be constructed!");
 	}
 
 	/**

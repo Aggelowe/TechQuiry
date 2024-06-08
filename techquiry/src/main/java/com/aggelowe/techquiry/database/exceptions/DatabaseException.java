@@ -1,4 +1,6 @@
-package com.aggelowe.techquiry.exception;
+package com.aggelowe.techquiry.database.exceptions;
+
+import com.aggelowe.techquiry.common.exceptions.ApplicationException;
 
 /**
  * {@link DatabaseException} is an {@link ApplicationException} subclass that is

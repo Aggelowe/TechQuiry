@@ -1,30 +1,30 @@
-package com.aggelowe.techquiry;
+package com.aggelowe.techquiry.common;
 
 import java.io.File;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.aggelowe.techquiry.exception.InvalidConstructionException;
+import com.aggelowe.techquiry.common.exceptions.ConstructorException;
 
 /**
- * {@link Reference} is a class that holds constants that are
+ * {@link Constants} is a class that holds constants that are
  * important for the functionality of the TechQuiry application.
  * 
  * @author Aggelowe
  * @since 0.0.1
  */
-public final class Reference {
+public final class Constants {
 
 	/**
-	 * This constructor will throw an {@link InvalidConstructionException} whenever invoked.
-	 * {@link Reference} objects should <b>not</b> be constructible.
+	 * This constructor will throw an {@link ConstructorException} whenever invoked.
+	 * {@link Constants} objects should <b>not</b> be constructible.
 	 * 
-	 * @throws InvalidConstructionException Will always be thrown when the constructor is
+	 * @throws ConstructorException Will always be thrown when the constructor is
 	 *                              invoked.
 	 */
-	private Reference() {
-		throw new InvalidConstructionException(getClass().getName() + " objects should not be constructed!");
+	private Constants() {
+		throw new ConstructorException(getClass().getName() + " objects should not be constructed!");
 	}
 	
 	/**

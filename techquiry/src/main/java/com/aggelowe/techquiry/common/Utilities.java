@@ -1,10 +1,10 @@
-package com.aggelowe.techquiry;
+package com.aggelowe.techquiry.common;
 
 import java.util.Base64;
 import java.util.Base64.Decoder;
 import java.util.Base64.Encoder;
 
-import com.aggelowe.techquiry.exception.InvalidConstructionException;
+import com.aggelowe.techquiry.common.exceptions.ConstructorException;
 
 /**
  * The {@link Utilities} contains several utility methods that are important for
@@ -16,14 +16,14 @@ import com.aggelowe.techquiry.exception.InvalidConstructionException;
 public final class Utilities {
 
 	/**
-	 * This constructor will throw an {@link InvalidConstructionException} whenever
+	 * This constructor will throw an {@link ConstructorException} whenever
 	 * invoked. {@link Utilities} objects should <b>not</b> be constructible.
 	 * 
-	 * @throws InvalidConstructionException Will always be thrown when the
+	 * @throws ConstructorException Will always be thrown when the
 	 *                                      constructor is invoked.
 	 */
 	private Utilities() {
-		throw new InvalidConstructionException(getClass().getName() + " objects should not be constructed!");
+		throw new ConstructorException(getClass().getName() + " objects should not be constructed!");
 	}
 
 	/**

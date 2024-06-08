@@ -1,6 +1,6 @@
-package com.aggelowe.techquiry.data;
+package com.aggelowe.techquiry.database;
 
-import static com.aggelowe.techquiry.Reference.SQL_DIRECTORY;
+import static com.aggelowe.techquiry.common.Constants.SQL_DIRECTORY;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -12,9 +12,9 @@ import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.aggelowe.techquiry.Reference;
-import com.aggelowe.techquiry.exception.InvalidConstructionException;
-import com.aggelowe.techquiry.exception.SQLScriptException;
+import com.aggelowe.techquiry.common.Constants;
+import com.aggelowe.techquiry.common.exceptions.ConstructorException;
+import com.aggelowe.techquiry.database.exceptions.SQLScriptException;
 
 /**
  * The {@link StatementLoader} class is responsible for loading the SQL
@@ -27,14 +27,14 @@ import com.aggelowe.techquiry.exception.SQLScriptException;
 public final class StatementLoader {
 
 	/**
-	 * This constructor will throw an {@link InvalidConstructionException} whenever
+	 * This constructor will throw an {@link ConstructorException} whenever
 	 * invoked. {@link StatementLoader} objects should <b>not</b> be constructible.
 	 * 
-	 * @throws InvalidConstructionException Will always be thrown when the
+	 * @throws ConstructorException Will always be thrown when the
 	 *                                      constructor is invoked.
 	 */
 	private StatementLoader() {
-		throw new InvalidConstructionException(getClass().getName() + " objects should not be constructed!");
+		throw new ConstructorException(getClass().getName() + " objects should not be constructed!");
 	}
 
 	/**
@@ -140,7 +140,7 @@ public final class StatementLoader {
 	/**
 	 * The {@link #loadStatement(String)} method parses the SQL statements from the
 	 * SQL script file with the given name (in the resource path defined in
-	 * {@link Reference#SQL_DIRECTORY}) and generates the {@link List} containing
+	 * {@link Constants#SQL_DIRECTORY}) and generates the {@link List} containing
 	 * the {@link Statement} objects, ready to be executed.
 	 * 
 	 * @param name The name of the file containing the SQL statements

@@ -1,16 +1,16 @@
-package com.aggelowe.techquiry.data;
+package com.aggelowe.techquiry.database;
 
-import static com.aggelowe.techquiry.Reference.DATABASE_FILENAME;
-import static com.aggelowe.techquiry.Reference.EXECUTION_DIRECTORY;
-import static com.aggelowe.techquiry.Reference.LOGGER;
+import static com.aggelowe.techquiry.common.Constants.DATABASE_FILENAME;
+import static com.aggelowe.techquiry.common.Constants.EXECUTION_DIRECTORY;
+import static com.aggelowe.techquiry.common.Constants.LOGGER;
 
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import com.aggelowe.techquiry.data.users.UserAdapter;
-import com.aggelowe.techquiry.exception.InvalidConstructionException;
+import com.aggelowe.techquiry.common.exceptions.ConstructorException;
+import com.aggelowe.techquiry.database.users.UserAdapter;
 
 /**
  * The {@link DatabaseInitializer} class is the one responsible for initializing
@@ -27,15 +27,15 @@ public final class DatabaseInitializer {
 	private static Connection connection = null;
 
 	/**
-	 * This constructor will throw an {@link InvalidConstructionException} whenever
+	 * This constructor will throw an {@link ConstructorException} whenever
 	 * invoked. {@link DatabaseInitializer} objects should <b>not</b> be
 	 * constructible.
 	 * 
-	 * @throws InvalidConstructionException Will always be thrown when the
+	 * @throws ConstructorException Will always be thrown when the
 	 *                                      constructor is invoked.
 	 */
 	private DatabaseInitializer() {
-		throw new InvalidConstructionException(getClass().getName() + " objects should not be constructed!");
+		throw new ConstructorException(getClass().getName() + " objects should not be constructed!");
 	}
 
 	/**

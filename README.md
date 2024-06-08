@@ -31,7 +31,7 @@ In order to build the project you should:
     - `cd techquiry`
 4. In the same session execute the following command:
     - `mvn clean compile test package`
-5. The executable jar can now be found withing the `target` directory
+5. The executable jar can now be found within the `target` directory
 
 ## Issues
 - Report any issues to the [github issues](../../issues) page.

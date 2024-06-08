@@ -1,8 +1,8 @@
-package com.aggelowe.techquiry;
+package com.aggelowe.techquiry.common;
 
-import static com.aggelowe.techquiry.Reference.CONFIGURATION_FILENAME;
-import static com.aggelowe.techquiry.Reference.EXECUTION_DIRECTORY;
-import static com.aggelowe.techquiry.Reference.LOGGER;
+import static com.aggelowe.techquiry.common.Constants.CONFIGURATION_FILENAME;
+import static com.aggelowe.techquiry.common.Constants.EXECUTION_DIRECTORY;
+import static com.aggelowe.techquiry.common.Constants.LOGGER;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,7 +12,7 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Properties;
 
-import com.aggelowe.techquiry.exception.InvalidConstructionException;
+import com.aggelowe.techquiry.common.exceptions.ConstructorException;
 
 /**
  * The {@link Configuration} class is the one responsible for initializing and
@@ -29,14 +29,14 @@ public final class Configuration {
 	private static final Properties CONFIGURATION_ENTRIES = new Properties();
 
 	/**
-	 * This constructor will throw an {@link InvalidConstructionException} whenever
+	 * This constructor will throw an {@link ConstructorException} whenever
 	 * invoked. {@link Configuration} objects should <b>not</b> be constructible.
 	 * 
-	 * @throws InvalidConstructionException Will always be thrown when the constructor is
+	 * @throws ConstructorException Will always be thrown when the constructor is
 	 *                                invoked.
 	 */
 	private Configuration() {
-		throw new InvalidConstructionException(getClass().getName() + " objects should not be constructed!");
+		throw new ConstructorException(getClass().getName() + " objects should not be constructed!");
 	}
 
 	/**

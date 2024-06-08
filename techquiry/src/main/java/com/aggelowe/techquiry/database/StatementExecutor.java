@@ -1,4 +1,4 @@
-package com.aggelowe.techquiry.data;
+package com.aggelowe.techquiry.database;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.aggelowe.techquiry.exception.InvalidConstructionException;
-import com.aggelowe.techquiry.exception.SQLExecutionException;
+import com.aggelowe.techquiry.common.exceptions.ConstructorException;
+import com.aggelowe.techquiry.database.exceptions.SQLExecutionException;
 
 /**
  * The {@link StatementExecutor} class is responsible for handling the execution
@@ -21,15 +21,15 @@ import com.aggelowe.techquiry.exception.SQLExecutionException;
 public class StatementExecutor {
 
 	/**
-	 * This constructor will throw an {@link InvalidConstructionException} whenever
+	 * This constructor will throw an {@link ConstructorException} whenever
 	 * invoked. {@link StatementExecutor} objects should <b>not</b> be
 	 * constructible.
 	 * 
-	 * @throws InvalidConstructionException Will always be thrown when the
+	 * @throws ConstructorException Will always be thrown when the
 	 *                                      constructor is invoked.
 	 */
 	private StatementExecutor() {
-		throw new InvalidConstructionException(getClass().getName() + " objects should not be constructed!");
+		throw new ConstructorException(getClass().getName() + " objects should not be constructed!");
 	}
 
 	/**

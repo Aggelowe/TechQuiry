@@ -1,9 +1,9 @@
-package com.aggelowe.techquiry;
+package com.aggelowe.techquiry.common;
 
-import static com.aggelowe.techquiry.Reference.EXECUTION_DIRECTORY;
-import static com.aggelowe.techquiry.Reference.LOGGER;
-import static com.aggelowe.techquiry.Reference.NAME;
-import static com.aggelowe.techquiry.Reference.VERSION;
+import static com.aggelowe.techquiry.common.Constants.EXECUTION_DIRECTORY;
+import static com.aggelowe.techquiry.common.Constants.LOGGER;
+import static com.aggelowe.techquiry.common.Constants.NAME;
+import static com.aggelowe.techquiry.common.Constants.VERSION;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +13,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 
-import com.aggelowe.techquiry.data.DatabaseInitializer;
+import com.aggelowe.techquiry.database.DatabaseInitializer;
 
 /**
  * This is the main class of the TechQuiry application, it is responsible for

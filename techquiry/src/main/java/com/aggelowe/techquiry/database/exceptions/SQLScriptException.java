@@ -1,4 +1,4 @@
-package com.aggelowe.techquiry.exception;
+package com.aggelowe.techquiry.database.exceptions;
 
 /**
  * {@link SQLScriptException} is an {@link DatabaseException} subclass that

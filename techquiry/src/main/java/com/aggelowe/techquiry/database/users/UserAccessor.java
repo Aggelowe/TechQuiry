@@ -1,15 +1,15 @@
-package com.aggelowe.techquiry.data.users;
+package com.aggelowe.techquiry.database.users;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.List;
 import java.util.Optional;
 
-import com.aggelowe.techquiry.data.StatementExecutor;
-import com.aggelowe.techquiry.data.StatementLoader;
-import com.aggelowe.techquiry.exception.InvalidConstructionException;
-import com.aggelowe.techquiry.exception.SQLExecutionException;
-import com.aggelowe.techquiry.exception.SQLScriptException;
+import com.aggelowe.techquiry.common.exceptions.ConstructorException;
+import com.aggelowe.techquiry.database.StatementExecutor;
+import com.aggelowe.techquiry.database.StatementLoader;
+import com.aggelowe.techquiry.database.exceptions.SQLExecutionException;
+import com.aggelowe.techquiry.database.exceptions.SQLScriptException;
 
 /**
  * The {@link UserAccessor} class is responsible for making the necessary
@@ -22,14 +22,14 @@ import com.aggelowe.techquiry.exception.SQLScriptException;
 public final class UserAccessor {
 
 	/**
-	 * This constructor will throw an {@link InvalidConstructionException} whenever
+	 * This constructor will throw an {@link ConstructorException} whenever
 	 * invoked. {@link UserAccessor} objects should <b>not</b> be constructible.
 	 * 
-	 * @throws InvalidConstructionException Will always be thrown when the
+	 * @throws ConstructorException Will always be thrown when the
 	 *                                      constructor is invoked.
 	 */
 	private UserAccessor() {
-		throw new InvalidConstructionException(getClass().getName() + " objects should not be constructed!");
+		throw new ConstructorException(getClass().getName() + " objects should not be constructed!");
 	}
 
 	/**
