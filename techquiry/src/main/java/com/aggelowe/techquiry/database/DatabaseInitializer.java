@@ -1,7 +1,6 @@
 package com.aggelowe.techquiry.database;
 
 import static com.aggelowe.techquiry.common.Constants.DATABASE_FILENAME;
-import static com.aggelowe.techquiry.common.Constants.EXECUTION_DIRECTORY;
 import static com.aggelowe.techquiry.common.Constants.LOGGER;
 
 import java.nio.file.Path;
@@ -9,6 +8,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import com.aggelowe.techquiry.common.Environment;
 import com.aggelowe.techquiry.common.exceptions.ConstructorException;
 import com.aggelowe.techquiry.database.users.UserAdapter;
 
@@ -55,7 +55,7 @@ public final class DatabaseInitializer {
 	 */
 	private static void connect() {
 		LOGGER.debug("Establishing database connection");
-		Path databasePath = EXECUTION_DIRECTORY.toPath().resolve(DATABASE_FILENAME);
+		Path databasePath = Environment.getWorkDirectory().toPath().resolve(DATABASE_FILENAME);
 		String databaseUrl = "jdbc:sqlite:" + databasePath;
 		LOGGER.debug("Database URL: " + databaseUrl);
 		try {

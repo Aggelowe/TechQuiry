@@ -1,7 +1,5 @@
 package com.aggelowe.techquiry.common;
 
-import java.io.File;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -43,9 +41,9 @@ public final class Constants {
 	public static final Logger LOGGER;
 	
 	/**
-	 * The {@link File} object representing the execution directory
+	 * The path of the execution directory
 	 */
-	public static final File EXECUTION_DIRECTORY;
+	public static final String EXECUTION_DIRECTORY;
 	
 	/**
 	 * The filename of the application database file
@@ -59,8 +57,7 @@ public final class Constants {
 	
 	static {
 		LOGGER = LogManager.getLogger(TechQuiry.class);
-		String executionPath = System.getProperty("user.dir");
-		EXECUTION_DIRECTORY = new File(executionPath);
+		EXECUTION_DIRECTORY = System.getProperty("user.dir");
 	}
 
 	

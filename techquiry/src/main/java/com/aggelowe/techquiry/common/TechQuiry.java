@@ -1,6 +1,5 @@
 package com.aggelowe.techquiry.common;
 
-import static com.aggelowe.techquiry.common.Constants.EXECUTION_DIRECTORY;
 import static com.aggelowe.techquiry.common.Constants.LOGGER;
 import static com.aggelowe.techquiry.common.Constants.NAME;
 import static com.aggelowe.techquiry.common.Constants.VERSION;
@@ -28,7 +27,7 @@ public class TechQuiry {
 
 	public static void main(String[] args) {
 		LOGGER.info("Starting the " + NAME + " application on version " + VERSION);
-		LOGGER.debug("Application execution directory: " + EXECUTION_DIRECTORY);
+		LOGGER.debug("Application work directory: " + Environment.getWorkDirectory());
 		SpringApplication application = new SpringApplication(TechQuiry.class);
 		setup(application);
 		LOGGER.info("Invoking Spring application startup");

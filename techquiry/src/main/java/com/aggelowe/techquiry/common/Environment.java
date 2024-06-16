@@ -1,8 +1,11 @@
 package com.aggelowe.techquiry.common;
 
-import java.util.Map;
-
 import com.aggelowe.techquiry.common.exceptions.ConstructorException;
+import com.aggelowe.techquiry.common.exceptions.EnvironmentException;
+
+import static com.aggelowe.techquiry.common.Constants.EXECUTION_DIRECTORY;
+
+import java.io.File;
 
 /**
  * The {@link Environment} class is the one responsible for providing the
@@ -15,19 +18,51 @@ import com.aggelowe.techquiry.common.exceptions.ConstructorException;
 public final class Environment {
 
 	/**
-	 * The {@link Map} object containing the system environment variables.
+	 * The {@link Entry} containing the application's port.
 	 */
-	private static final Map<String, String> ENVIRONMENT_VARIABLES;
+	private static final Entry PORT = new Entry("TQ_PORT", "9850");
 
 	/**
-	 * The variable key of the application's port
+	 * The {@link Entry} containing the work directory of the application.
 	 */
-	private static final String PORT_KEY = "TQ_PORT";
+	private static final Entry WORK_DIRECTORY = new Entry("TQ_PATH", EXECUTION_DIRECTORY);
 
 	/**
-	 * The default value of the application's port
+	 * The {@link Environment} class is responsible for loading, containing and
+	 * returning the environment variable with the given key.
+	 * 
+	 * @author Aggelowe
+	 * @since 0.0.1
 	 */
-	private static final String PORT_DEFAULT = "9850";
+	private static class Entry {
+
+		/**
+		 * The {@link String} value of the environment variable
+		 */
+		private final String value;
+
+		/**
+		 * This constructor constructs a new {@link Entry} object. The value is obtained
+		 * from the environment variables using the given key, and if it is not found,
+		 * the given fallback value is used instead.
+		 * 
+		 * @param key      The key of the environment variable
+		 * @param fallback The value to use if the key is not found in the environment
+		 */
+		public Entry(String key, String fallback) {
+			this.value = System.getenv().getOrDefault(key, fallback);
+		}
+
+		/**
+		 * This method returns the value stored in the object.
+		 * 
+		 * @return The value stored
+		 */
+		public String get() {
+			return value;
+		}
+
+	}
 
 	/**
 	 * This constructor will throw an {@link ConstructorException} whenever invoked.
@@ -46,12 +81,33 @@ public final class Environment {
 	 * 
 	 * @return The application's network port
 	 */
-	public static String getPort() {
-		return ENVIRONMENT_VARIABLES.getOrDefault(PORT_KEY, PORT_DEFAULT);
+	public static int getPort() {
+		String variable = PORT.get();
+		int value;
+		try {
+			value = Integer.valueOf(variable);
+		} catch (NumberFormatException exception) {
+			throw new EnvironmentException("The given port is not an integer.", exception);
+		}
+		if (value <= 0 || value >= 65535) {
+			throw new EnvironmentException("The given port is not within the valid port range.");
+		}
+		return value;
 	}
 
-	static {
-		ENVIRONMENT_VARIABLES = System.getenv();
+	/**
+	 * This method returns the work directory of the application as defined by the
+	 * environment.
+	 * 
+	 * @return The application's work directory
+	 */
+	public static File getWorkDirectory() {
+		String variable = WORK_DIRECTORY.get();
+		File file = new File(variable);
+		if (!file.isDirectory()) {
+			throw new EnvironmentException("The given path is not a directory.");
+		}
+		return file;
 	}
 
 }
