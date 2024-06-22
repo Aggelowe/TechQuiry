@@ -8,7 +8,7 @@ import com.aggelowe.techquiry.common.exceptions.ConstructorException;
 
 /**
  * The {@link Utilities} contains several utility methods that are important for
- * the functionality of the TechQUiry application.
+ * the functionality of the TechQuiry application.
  * 
  * @author Aggelowe
  * @since 0.0.1

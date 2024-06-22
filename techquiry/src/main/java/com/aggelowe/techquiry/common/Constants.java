@@ -6,8 +6,8 @@ import org.apache.logging.log4j.Logger;
 import com.aggelowe.techquiry.common.exceptions.ConstructorException;
 
 /**
- * {@link Constants} is a class that holds constants that are
- * important for the functionality of the TechQuiry application.
+ * {@link Constants} is a class that holds constants that are important for the
+ * functionality of the TechQuiry application.
  * 
  * @author Aggelowe
  * @since 0.0.1
@@ -24,41 +24,35 @@ public final class Constants {
 	private Constants() {
 		throw new ConstructorException(getClass().getName() + " objects should not be constructed!");
 	}
-	
+
 	/**
 	 * The string containing the name of the application
 	 */
 	public static final String NAME = "TechQuiry";
-	
+
 	/**
 	 * The string containing the application version
 	 */
 	public static final String VERSION = "0.0.1";
-	
+
 	/**
 	 * The logger object used by the application
 	 */
 	public static final Logger LOGGER;
-	
+
 	/**
 	 * The path of the execution directory
 	 */
 	public static final String EXECUTION_DIRECTORY;
-	
+
 	/**
 	 * The filename of the application database file
 	 */
 	public static final String DATABASE_FILENAME = "techquiry.db";
-	
-	/**
-	 * The resource path of the directory containing the SQL scripts
-	 */
-	public static final String SQL_DIRECTORY = "/database/";
-	
+
 	static {
 		LOGGER = LogManager.getLogger(TechQuiry.class);
 		EXECUTION_DIRECTORY = System.getProperty("user.dir");
 	}
 
-	
 }

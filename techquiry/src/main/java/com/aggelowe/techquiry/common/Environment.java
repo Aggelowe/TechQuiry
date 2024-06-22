@@ -28,6 +28,11 @@ public final class Environment {
 	private static final Entry WORK_DIRECTORY = new Entry("TQ_PATH", EXECUTION_DIRECTORY);
 
 	/**
+	 * The {@link Entry} containing whether to perform the initial setup.
+	 */
+	private static final Entry SETUP = new Entry("TQ_SETUP", "false");
+
+	/**
 	 * The {@link Environment} class is responsible for loading, containing and
 	 * returning the environment variable with the given key.
 	 * 
@@ -108,6 +113,18 @@ public final class Environment {
 			throw new EnvironmentException("The given path is not a directory.");
 		}
 		return file;
+	}
+
+	/**
+	 * This method returns whether to perform the initial setup as defined by the
+	 * environment.
+	 * 
+	 * @return Whether to perform the initial setup
+	 */
+	public static boolean getSetup() {
+		String variable = SETUP.get();
+		boolean value = Boolean.valueOf(variable);
+		return value;
 	}
 
 }

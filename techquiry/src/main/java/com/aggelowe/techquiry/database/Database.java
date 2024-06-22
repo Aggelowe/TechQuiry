@@ -3,23 +3,26 @@ package com.aggelowe.techquiry.database;
 import static com.aggelowe.techquiry.common.Constants.DATABASE_FILENAME;
 import static com.aggelowe.techquiry.common.Constants.LOGGER;
 
+import static com.aggelowe.techquiry.database.DatabaseConstants.CREATE_SCHEMA_SCRIPT;
+
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
 
 import com.aggelowe.techquiry.common.Environment;
 import com.aggelowe.techquiry.common.exceptions.ConstructorException;
-import com.aggelowe.techquiry.database.users.UserAdapter;
 
 /**
- * The {@link DatabaseInitializer} class is the one responsible for initializing
- * the database used by the TechQuiry application.
+ * The {@link Database} class is the one responsible for initializing the
+ * database used by the TechQuiry application.
  * 
  * @author Aggelowe
  * @since 0.0.1
  */
-public final class DatabaseInitializer {
+public final class Database {
 
 	/**
 	 * This objects represents the connection with the SQLite database.
@@ -27,14 +30,13 @@ public final class DatabaseInitializer {
 	private static Connection connection = null;
 
 	/**
-	 * This constructor will throw an {@link ConstructorException} whenever
-	 * invoked. {@link DatabaseInitializer} objects should <b>not</b> be
-	 * constructible.
+	 * This constructor will throw an {@link ConstructorException} whenever invoked.
+	 * {@link Database} objects should <b>not</b> be constructible.
 	 * 
-	 * @throws ConstructorException Will always be thrown when the
-	 *                                      constructor is invoked.
+	 * @throws ConstructorException Will always be thrown when the constructor is
+	 *                              invoked.
 	 */
-	private DatabaseInitializer() {
+	private Database() {
 		throw new ConstructorException(getClass().getName() + " objects should not be constructed!");
 	}
 
@@ -44,17 +46,7 @@ public final class DatabaseInitializer {
 	 * file and performs the necessary initialization operations.
 	 */
 	public static void initialize() {
-		LOGGER.info("Initializing application database");
-		connect();
-		makeTables();
-	}
-
-	/**
-	 * This method establishes the connection between the database file and the
-	 * application. If an error occurs while connecting, the application will exit.
-	 */
-	private static void connect() {
-		LOGGER.debug("Establishing database connection");
+		LOGGER.info("Establishing database connection");
 		Path databasePath = Environment.getWorkDirectory().toPath().resolve(DATABASE_FILENAME);
 		String databaseUrl = "jdbc:sqlite:" + databasePath;
 		LOGGER.debug("Database URL: " + databaseUrl);
@@ -64,16 +56,19 @@ public final class DatabaseInitializer {
 			LOGGER.error("An error occured while connecting to " + databaseUrl, exception);
 			System.exit(1);
 		}
+		if (Environment.getSetup()) {
+			applySchema();
+		}
 	}
 
 	/**
-	 * This method creates the database tables that contain the data used by the
-	 * application if they do not already exist within the database. If an error
-	 * occurs during this process, the application will exit.
+	 * This method applies the TechQuiry database schema to the application's
+	 * database. If an error occurs during this process, the application will exit.
 	 */
-	private static void makeTables() {
-		LOGGER.debug("Creating missing database tables");
-		UserAdapter.createUserTable();
+	private static void applySchema() {
+		LOGGER.debug("Applying database schema");
+		List<PreparedStatement> statements = DatabaseUtilities.loadStatements(connection, CREATE_SCHEMA_SCRIPT);
+		DatabaseUtilities.executeStatements(statements);
 	}
 
 	/**
@@ -82,7 +77,7 @@ public final class DatabaseInitializer {
 	 * 
 	 * @return The connection with the database file
 	 */
-	static Connection getConnection() {
+	public static Connection getConnection() {
 		return connection;
 	}
 

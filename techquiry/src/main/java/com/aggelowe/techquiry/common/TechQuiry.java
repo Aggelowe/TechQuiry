@@ -12,7 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 
-import com.aggelowe.techquiry.database.DatabaseInitializer;
+import com.aggelowe.techquiry.database.Database;
 
 /**
  * This is the main class of the TechQuiry application, it is responsible for
@@ -29,18 +29,18 @@ public class TechQuiry {
 		LOGGER.info("Starting the " + NAME + " application on version " + VERSION);
 		LOGGER.debug("Application work directory: " + Environment.getWorkDirectory());
 		SpringApplication application = new SpringApplication(TechQuiry.class);
-		setup(application);
+		properties(application);
 		LOGGER.info("Invoking Spring application startup");
 		application.run();
 	}
 
 	/**
-	 * This method is responsible for applying certain changes and options to the
-	 * given {@link SpringApplication} object before the execution.
+	 * This method is responsible for applying specific properties to the given
+	 * {@link SpringApplication} object before the execution.
 	 * 
 	 * @param application The object representing the spring application
 	 */
-	private static void setup(SpringApplication application) {
+	private static void properties(SpringApplication application) {
 		LOGGER.debug("Setting up Spring application properties");
 		Map<String, Object> applicationProperties = new HashMap<>();
 		applicationProperties.put("server.port", Environment.getPort());
@@ -56,7 +56,7 @@ public class TechQuiry {
 	@EventListener(ContextRefreshedEvent.class)
 	public void start() {
 		LOGGER.info("Starting core application components");
-		DatabaseInitializer.initialize();
+		Database.initialize();
 	}
 
 }
