@@ -11,7 +11,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 import com.aggelowe.techquiry.common.Constants;
 import com.aggelowe.techquiry.common.exceptions.ConstructorException;
@@ -163,9 +162,9 @@ public final class DatabaseUtilities {
 	 * 
 	 * @param statement  The {@link PreparedStatement} to execute
 	 * @param parameters The parameters for the statement
-	 * @return The results of the execution wrapped in an {@link Optional}
+	 * @return The results of the execution
 	 */
-	public static Optional<ResultSet> executeStatement(PreparedStatement statement, Object... parameters) {
+	public static ResultSet executeStatement(PreparedStatement statement, Object... parameters) {
 		int index = 1;
 		for (Object parameter : parameters) {
 			try {
@@ -186,7 +185,7 @@ public final class DatabaseUtilities {
 		} catch (SQLException exception) {
 			throw new SQLExecutionException("An error occured while obtaininh the statement's results!", exception);
 		}
-		return Optional.ofNullable(result);
+		return result;
 	}
 
 	/**
@@ -198,11 +197,11 @@ public final class DatabaseUtilities {
 	 * @param parameters The parameters for the statements
 	 * @return The list of the result of each executed statement
 	 */
-	public static List<Optional<ResultSet>> executeStatements(List<PreparedStatement> statements, Object... parameters) {
-		List<Optional<ResultSet>> results = new ArrayList<>(statements.size());
+	public static List<ResultSet> executeStatements(List<PreparedStatement> statements, Object... parameters) {
+		List<ResultSet> results = new ArrayList<>(statements.size());
 		statements.forEach(statement -> {
 			if (statement != null) {
-				Optional<ResultSet> result = executeStatement(statement, parameters);
+				ResultSet result = executeStatement(statement, parameters);
 				results.add(result);
 			}
 		});

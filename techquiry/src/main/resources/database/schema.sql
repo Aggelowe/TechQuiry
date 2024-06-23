@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS "response" (
 CREATE TABLE IF NOT EXISTS "observer" (
 	"inquiry_id" INTEGER NOT NULL,
 	"user_id" INTEGER NOT NULL,
-	PRIMARY KEY("inquiry_id"),
+	PRIMARY KEY("inquiry_id", "user_id"),
 	FOREIGN KEY ("inquiry_id") REFERENCES "inquiry"("inquiry_id")
 	ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY ("user_id") REFERENCES "user_login"("user_id")
@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS "observer" (
 CREATE TABLE IF NOT EXISTS "upvote" (
 	"response_id" INTEGER NOT NULL,
 	"user_id" INTEGER NOT NULL,
-	PRIMARY KEY("response_id"),
+	PRIMARY KEY("response_id", "user_id"),
 	FOREIGN KEY ("response_id") REFERENCES "response"("response_id")
 	ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY ("user_id") REFERENCES "user_login"("user_id")
