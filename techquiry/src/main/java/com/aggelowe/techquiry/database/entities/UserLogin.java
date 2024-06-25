@@ -52,7 +52,7 @@ public class UserLogin {
 	}
 
 	/**
-	 * This method returns the unique if of the user
+	 * This method returns the unique id of the user
 	 * 
 	 * @return The user's id
 	 */
@@ -125,7 +125,7 @@ public class UserLogin {
 
 	/**
 	 * This method returns the object as a string containing the user id, the
-	 * username and the display name.
+	 * username, the password hash and the password salt.
 	 */
 	@Override
 	public String toString() {

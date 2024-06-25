@@ -2,7 +2,6 @@ package com.aggelowe.techquiry.database;
 
 import static com.aggelowe.techquiry.common.Constants.DATABASE_FILENAME;
 import static com.aggelowe.techquiry.common.Constants.LOGGER;
-
 import static com.aggelowe.techquiry.database.DatabaseConstants.CREATE_SCHEMA_SCRIPT;
 
 import java.nio.file.Path;
@@ -11,6 +10,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
+
+import org.sqlite.SQLiteConfig;
 
 import com.aggelowe.techquiry.common.Environment;
 import com.aggelowe.techquiry.common.exceptions.ConstructorException;
@@ -50,8 +51,10 @@ public final class Database {
 		Path databasePath = Environment.getWorkDirectory().toPath().resolve(DATABASE_FILENAME);
 		String databaseUrl = "jdbc:sqlite:" + databasePath;
 		LOGGER.debug("Database URL: " + databaseUrl);
+		SQLiteConfig config = new SQLiteConfig();
+		config.enforceForeignKeys(true);
 		try {
-			connection = DriverManager.getConnection(databaseUrl);
+			connection = DriverManager.getConnection(databaseUrl, config.toProperties());
 		} catch (SQLException exception) {
 			LOGGER.error("An error occured while connecting to " + databaseUrl, exception);
 			System.exit(1);

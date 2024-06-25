@@ -44,7 +44,7 @@ public final class DatabaseConstants {
 	public static final String USER_LOGIN_INSERT_SCRIPT = "/database/user_login/insert.sql";
 	
 	/**
-	 * The name of the SQL script for selecting a user login entry with an id.
+	 * The name of the SQL script for selecting a user login entry range.
 	 */
 	public static final String USER_LOGIN_RANGE_SCRIPT = "/database/user_login/range.sql";
 	
@@ -62,5 +62,35 @@ public final class DatabaseConstants {
 	 * The name of the SQL script for updating a user login entry.
 	 */
 	public static final String USER_LOGIN_UPDATE_SCRIPT = "/database/user_login/update.sql";
+	
+	/**
+	 * The name of the SQL script for obtaining the count of user data entries.
+	 */
+	public static final String USER_DATA_COUNT_SCRIPT = "/database/user_data/count.sql";
+
+	/**
+	 * The name of the SQL script for deleting a user data entry.
+	 */
+	public static final String USER_DATA_DELETE_SCRIPT = "/database/user_data/delete.sql";
+	
+	/**
+	 * The name of the SQL script for inserting a user data entry.
+	 */
+	public static final String USER_DATA_INSERT_SCRIPT = "/database/user_data/insert.sql";
+	
+	/**
+	 * The name of the SQL script for selecting a user data entry range.
+	 */
+	public static final String USER_DATA_RANGE_SCRIPT = "/database/user_data/range.sql";
+	
+	/**
+	 * The name of the SQL script for selecting a user data entry.
+	 */
+	public static final String USER_DATA_SELECT_SCRIPT = "/database/user_data/select.sql";
+	
+	/**
+	 * The name of the SQL script for updating a user data entry.
+	 */
+	public static final String USER_DATA_UPDATE_SCRIPT = "/database/user_data/update.sql";
 	
 }

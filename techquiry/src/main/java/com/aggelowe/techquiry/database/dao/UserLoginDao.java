@@ -271,7 +271,7 @@ public final class UserLoginDao {
 	 * contained in the {@link UserLogin} object, using the user id from the object
 	 * to select the correct entry.
 	 * 
-	 * @param userLogin The user data to update
+	 * @param userLogin The user login to update
 	 * @return The {@link SQLiteErrorCode}, if it exists
 	 */
 	public static SQLiteErrorCode update(UserLogin userLogin) {
