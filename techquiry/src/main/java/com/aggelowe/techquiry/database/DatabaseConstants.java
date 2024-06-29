@@ -93,4 +93,34 @@ public final class DatabaseConstants {
 	 */
 	public static final String USER_DATA_UPDATE_SCRIPT = "/database/user_data/update.sql";
 	
+	/**
+	 * The name of the SQL script for obtaining the count of inquiry entries.
+	 */
+	public static final String INQUIRY_COUNT_SCRIPT = "/database/inquiry/count.sql";
+	
+	/**
+	 * The name of the SQL script for deleting an inquiry entry.
+	 */
+	public static final String INQUIRY_DELETE_SCRIPT = "/database/inquiry/delete.sql";
+	
+	/**
+	 * The name of the SQL script for inserting an inquiry entry.
+	 */
+	public static final String INQUIRY_INSERT_SCRIPT = "/database/inquiry/insert.sql";
+	
+	/**
+	 * The name of the SQL script for selecting an inquiry entry range.
+	 */
+	public static final String INQUIRY_RANGE_SCRIPT = "/database/inquiry/range.sql";
+	
+	/**
+	 * The name of the SQL script for selecting an inquiry entry.
+	 */
+	public static final String INQUIRY_SELECT_SCRIPT = "/database/inquiry/select.sql";
+	
+	/**
+	 * The name of the SQL script for updating an inquiry entry.
+	 */
+	public static final String INQUIRY_UPDATE_SCRIPT = "/database/inquiry/update.sql";
+	
 }

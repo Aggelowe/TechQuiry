@@ -1,5 +1,5 @@
 /*
- * This sql file updates the only user data entry that has the given username
+ * This sql file updates the only user data entry that has the given user id
  * with the given values.
  * 
  * Author: Aggelowe

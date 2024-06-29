@@ -1,5 +1,5 @@
 /*
- * This sql file selects the given range user login entries.
+ * This sql file selects the given range of user login entries.
  * 
  * Author: Aggelowe
  * Since: 0.0.1

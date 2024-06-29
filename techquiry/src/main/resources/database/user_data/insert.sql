@@ -1,5 +1,5 @@
 /*
- * This sql file selects the count of user data entries in the database.
+ * This sql file inserts a new user data entry to the database.
  * 
  * Author: Aggelowe 
  * Since: 0.0.1

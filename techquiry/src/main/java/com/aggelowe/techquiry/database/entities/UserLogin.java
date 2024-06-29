@@ -1,7 +1,7 @@
 package com.aggelowe.techquiry.database.entities;
 
 import com.aggelowe.techquiry.common.Utilities;
-import com.aggelowe.techquiry.common.exceptions.ConstructorException;
+import com.aggelowe.techquiry.database.exceptions.EntityException;
 
 /**
  * The {@link UserLogin} class represents a user login of the TechQuiry
@@ -43,7 +43,7 @@ public class UserLogin {
 	 */
 	public UserLogin(int id, String username, byte[] passwordHash, byte[] passwordSalt) {
 		if (username == null || passwordHash == null || passwordSalt == null) {
-			throw new ConstructorException("The provided user information should not be NULL!");
+			throw new EntityException("The provided user login information should not be NULL!");
 		}
 		this.id = id;
 		this.username = username;
@@ -94,7 +94,7 @@ public class UserLogin {
 	 */
 	public void setUsername(String username) {
 		if (username == null) {
-			throw new ConstructorException("The provided username should not be NULL!");
+			throw new EntityException("The provided username should not be NULL!");
 		}
 		this.username = username;
 	}
@@ -106,7 +106,7 @@ public class UserLogin {
 	 */
 	public void setPasswordHash(byte[] passwordHash) {
 		if (passwordHash == null) {
-			throw new ConstructorException("The provided password hash should not be NULL!");
+			throw new EntityException("The provided password hash should not be NULL!");
 		}
 		this.passwordHash = passwordHash;
 	}
@@ -118,7 +118,7 @@ public class UserLogin {
 	 */
 	public void setPasswordSalt(byte[] passwordSalt) {
 		if (passwordSalt == null) {
-			throw new ConstructorException("The provided password salt should not be NULL!");
+			throw new EntityException("The provided password salt should not be NULL!");
 		}
 		this.passwordSalt = passwordSalt;
 	}
