@@ -123,4 +123,24 @@ public final class DatabaseConstants {
 	 */
 	public static final String INQUIRY_UPDATE_SCRIPT = "/database/inquiry/update.sql";
 	
+	/**
+	 * The name of the SQL script for deleting an observer entry.
+	 */
+	public static final String OBSERVER_DELETE_SCRIPT = "/database/observer/delete.sql";
+	
+	/**
+	 * The name of the SQL script for inserting an observer entry.
+	 */
+	public static final String OBSERVER_INSERT_SCRIPT = "/database/observer/insert.sql";
+	
+	/**
+	 * The name of the SQL script for selecting an observer entry with an inquiry id.
+	 */
+	public static final String OBSERVER_SELECT_INQUIRY_SCRIPT = "/database/observer/select_inquiry.sql";
+	
+	/**
+	 * The name of the SQL script for selecting an observer entry with a user id.
+	 */
+	public static final String OBSERVER_SELECT_USER_SCRIPT = "/database/observer/select_user.sql";
+	
 }
