@@ -51,7 +51,7 @@ public final class DatabaseConstants {
 	/**
 	 * The name of the SQL script for selecting a user login entry with an id.
 	 */
-	public static final String USER_LOGIN_SELECT_ID_SCRIPT = "/database/user_login/select_id.sql";
+	public static final String USER_LOGIN_SELECT_SCRIPT = "/database/user_login/select.sql";
 	
 	/**
 	 * The name of the SQL script for selecting a user login entry with a username.
@@ -136,11 +136,36 @@ public final class DatabaseConstants {
 	/**
 	 * The name of the SQL script for selecting an observer entry with an inquiry id.
 	 */
-	public static final String OBSERVER_SELECT_INQUIRY_SCRIPT = "/database/observer/select_inquiry.sql";
+	public static final String OBSERVER_SELECT_INQUIRY_ID_SCRIPT = "/database/observer/select_inquiry_id.sql";
 	
 	/**
 	 * The name of the SQL script for selecting an observer entry with a user id.
 	 */
-	public static final String OBSERVER_SELECT_USER_SCRIPT = "/database/observer/select_user.sql";
+	public static final String OBSERVER_SELECT_USER_ID_SCRIPT = "/database/observer/select_user_id.sql";
+	
+	/**
+	 * The name of the SQL script for deleting a response entry.
+	 */
+	public static final String RESPONSE_DELETE_SCRIPT = "/database/response/delete.sql";
+	
+	/**
+	 * The name of the SQL script for inserting a response entry.
+	 */
+	public static final String RESPONSE_INSERT_SCRIPT = "/database/response/insert.sql";
+	
+	/**
+	 * The name of the SQL script for selecting a response entry with an inquiry id.
+	 */
+	public static final String RESPONSE_SELECT_INQUIRY_ID_SCRIPT = "/database/response/select_inquiry_id.sql";
+	
+	/**
+	 * The name of the SQL script for selecting a response entry.
+	 */
+	public static final String RESPONSE_SELECT_SCRIPT = "/database/response/select.sql";
+	
+	/**
+	 * The name of the SQL script for updating a response entry.
+	 */
+	public static final String RESPONSE_UPDATE_SCRIPT = "/database/response/update.sql";
 	
 }

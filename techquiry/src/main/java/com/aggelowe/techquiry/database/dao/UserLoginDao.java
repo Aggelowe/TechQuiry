@@ -5,7 +5,7 @@ import static com.aggelowe.techquiry.database.DatabaseConstants.USER_LOGIN_COUNT
 import static com.aggelowe.techquiry.database.DatabaseConstants.USER_LOGIN_DELETE_SCRIPT;
 import static com.aggelowe.techquiry.database.DatabaseConstants.USER_LOGIN_INSERT_SCRIPT;
 import static com.aggelowe.techquiry.database.DatabaseConstants.USER_LOGIN_RANGE_SCRIPT;
-import static com.aggelowe.techquiry.database.DatabaseConstants.USER_LOGIN_SELECT_ID_SCRIPT;
+import static com.aggelowe.techquiry.database.DatabaseConstants.USER_LOGIN_SELECT_SCRIPT;
 import static com.aggelowe.techquiry.database.DatabaseConstants.USER_LOGIN_SELECT_USERNAME_SCRIPT;
 import static com.aggelowe.techquiry.database.DatabaseConstants.USER_LOGIN_UPDATE_SCRIPT;
 
@@ -179,16 +179,16 @@ public final class UserLoginDao {
 	 * @param id The user id
 	 * @return The user login with the given id
 	 */
-	public static UserLogin selectFromId(int id) {
+	public static UserLogin select(int id) {
 		LOGGER.debug("Getting user login with user id " + id);
-		List<PreparedStatement> statements = DatabaseUtilities.loadStatements(Database.getConnection(), USER_LOGIN_SELECT_ID_SCRIPT);
+		List<PreparedStatement> statements = DatabaseUtilities.loadStatements(Database.getConnection(), USER_LOGIN_SELECT_SCRIPT);
 		if (statements.size() < 1) {
-			throw new DaoException("Invalid number of statements in " + USER_LOGIN_SELECT_ID_SCRIPT + "!");
+			throw new DaoException("Invalid number of statements in " + USER_LOGIN_SELECT_SCRIPT + "!");
 		}
 		PreparedStatement statement = statements.getFirst();
 		ResultSet result = DatabaseUtilities.executeStatement(statement, id);
 		if (result == null) {
-			throw new DaoException("The first statement in " + USER_LOGIN_SELECT_ID_SCRIPT + " did not yeild results!");
+			throw new DaoException("The first statement in " + USER_LOGIN_SELECT_SCRIPT + " did not yeild results!");
 		}
 		try {
 			if (!result.next()) {
