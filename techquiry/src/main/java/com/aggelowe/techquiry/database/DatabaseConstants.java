@@ -168,4 +168,24 @@ public final class DatabaseConstants {
 	 */
 	public static final String RESPONSE_UPDATE_SCRIPT = "/database/response/update.sql";
 	
+	/**
+	 * The name of the SQL script for deleting an upvote entry.
+	 */
+	public static final String UPVOTE_DELETE_SCRIPT = "/database/upvote/delete.sql";
+	
+	/**
+	 * The name of the SQL script for inserting an upvote entry.
+	 */
+	public static final String UPVOTE_INSERT_SCRIPT = "/database/upvote/insert.sql";
+	
+	/**
+	 * The name of the SQL script for selecting an upvote entry with a response id.
+	 */
+	public static final String UPVOTE_SELECT_RESPONSE_ID_SCRIPT = "/database/upvote/select_response_id.sql";
+	
+	/**
+	 * The name of the SQL script for selecting an upvote entry with a user id.
+	 */
+	public static final String UPVOTE_SELECT_USER_ID_SCRIPT = "/database/upvote/select_user_id.sql";
+	
 }
