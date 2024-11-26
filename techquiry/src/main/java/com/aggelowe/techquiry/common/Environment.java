@@ -1,11 +1,12 @@
 package com.aggelowe.techquiry.common;
 
-import com.aggelowe.techquiry.common.exceptions.ConstructorException;
-import com.aggelowe.techquiry.common.exceptions.EnvironmentException;
-
 import static com.aggelowe.techquiry.common.Constants.EXECUTION_DIRECTORY;
 
 import java.io.File;
+import java.util.function.Function;
+
+import com.aggelowe.techquiry.common.exceptions.ConstructorException;
+import com.aggelowe.techquiry.common.exceptions.EnvironmentException;
 
 /**
  * The {@link Environment} class is the one responsible for providing the
@@ -20,50 +21,97 @@ public final class Environment {
 	/**
 	 * The {@link Entry} containing the application's port.
 	 */
-	private static final Entry PORT = new Entry("TQ_PORT", "9850");
+	private static final Entry<Integer> PORT = new Entry<>("TQ_PORT", 9850, (orignal) -> {
+		int value;
+		try {
+			value = Integer.valueOf(orignal);
+		} catch (NumberFormatException exception) {
+			throw new EnvironmentException("The given port is not an integer.", exception);
+		}
+		if (value <= 0 || value >= 65535) {
+			throw new EnvironmentException("The given port is not within the valid port range.");
+		}
+		return value;
+	});
 
 	/**
 	 * The {@link Entry} containing the work directory of the application.
 	 */
-	private static final Entry WORK_DIRECTORY = new Entry("TQ_PATH", EXECUTION_DIRECTORY);
+	private static final Entry<File> WORK_DIRECTORY = new Entry<>("TQ_PATH", new File(EXECUTION_DIRECTORY), (original) -> {
+		File file = new File(original);
+		if (!file.exists()) {
+			throw new EnvironmentException("The given path does not exist.");
+		}
+		if (!file.isDirectory()) {
+			throw new EnvironmentException("The given path is not a directory.");
+		}
+		return file;
+	});
 
 	/**
 	 * The {@link Entry} containing whether to perform the initial setup.
 	 */
-	private static final Entry SETUP = new Entry("TQ_SETUP", "false");
+	private static final Entry<Boolean> SETUP = new Entry<>("TQ_SETUP", (original) -> Boolean.parseBoolean(original));
 
 	/**
-	 * The {@link Environment} class is responsible for loading, containing and
-	 * returning the environment variable with the given key.
+	 * The {@link Entry} class is responsible for loading, converting and storing
+	 * the environment variable with the given key.
 	 * 
+	 * @param <Output> The type of the entry's value
 	 * @author Aggelowe
 	 * @since 0.0.1
 	 */
-	private static class Entry {
+	private static class Entry<Output> {
 
 		/**
-		 * The {@link String} value of the environment variable
+		 * The converted value of the environment variable
 		 */
-		private final String value;
+		private final Output value;
 
 		/**
 		 * This constructor constructs a new {@link Entry} object. The value is obtained
-		 * from the environment variables using the given key, and if it is not found,
-		 * the given fallback value is used instead.
+		 * from the environment variables using the given key. If the variable found, it
+		 * is converted to the {@link Output} type using the given converter. If it is
+		 * not found or the conversion fails, the given fallback value is used instead.
 		 * 
-		 * @param key      The key of the environment variable
-		 * @param fallback The value to use if the key is not found in the environment
+		 * @param key       The key of the environment variable
+		 * @param fallback  The value to use if the key is not found in the environment
+		 * @param converter The {@link Function} that defines how to convert the value
+		 *                  from a {@link String}
 		 */
-		public Entry(String key, String fallback) {
-			this.value = System.getenv().getOrDefault(key, fallback);
+		public Entry(String key, Output fallback, Function<String, Output> converter) {
+			final String original = System.getenv(key);
+			Output value = fallback;
+			if (original != null) {
+				try {
+					value = converter.apply(original);
+				} catch (Exception exception) {
+					Constants.LOGGER.error(exception);
+				}
+			}
+			this.value = value;
 		}
 
 		/**
-		 * This method returns the value stored in the object.
+		 * This constructor constructs a new {@link Entry} object. The value is obtained
+		 * from the environment variables using the given key. If the variable found, it
+		 * is converted to the {@link Output} type using the given converter. If it is
+		 * not found or the conversion fails, NULL is used instead.
 		 * 
-		 * @return The value stored
+		 * @param key       The key of the environment variable
+		 * @param converter The {@link Function} that defines how to convert the value
+		 *                  from a {@link String}
 		 */
-		public String get() {
+		public Entry(String key, Function<String, Output> converter) {
+			this(key, null, converter);
+		}
+
+		/**
+		 * This method returns the converted value of the environment variable.
+		 * 
+		 * @return The converted value
+		 */
+		public Output get() {
 			return value;
 		}
 
@@ -87,17 +135,7 @@ public final class Environment {
 	 * @return The application's network port
 	 */
 	public static int getPort() {
-		String variable = PORT.get();
-		int value;
-		try {
-			value = Integer.valueOf(variable);
-		} catch (NumberFormatException exception) {
-			throw new EnvironmentException("The given port is not an integer.", exception);
-		}
-		if (value <= 0 || value >= 65535) {
-			throw new EnvironmentException("The given port is not within the valid port range.");
-		}
-		return value;
+		return PORT.get();
 	}
 
 	/**
@@ -107,12 +145,7 @@ public final class Environment {
 	 * @return The application's work directory
 	 */
 	public static File getWorkDirectory() {
-		String variable = WORK_DIRECTORY.get();
-		File file = new File(variable);
-		if (!file.isDirectory()) {
-			throw new EnvironmentException("The given path is not a directory.");
-		}
-		return file;
+		return WORK_DIRECTORY.get();
 	}
 
 	/**
@@ -122,9 +155,8 @@ public final class Environment {
 	 * @return Whether to perform the initial setup
 	 */
 	public static boolean getSetup() {
-		String variable = SETUP.get();
-		boolean value = Boolean.valueOf(variable);
-		return value;
+		Boolean value = SETUP.get();
+		return value == null ? false : value;
 	}
 
 }
