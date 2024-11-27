@@ -13,7 +13,6 @@ import org.sqlite.SQLiteConfig;
 
 import com.aggelowe.techquiry.common.Environment;
 import com.aggelowe.techquiry.common.exceptions.ConstructorException;
-import com.aggelowe.techquiry.database.dao.UserLoginDao;
 
 /**
  * The {@link DatabaseManager} class is the one responsible for initializing the
@@ -65,7 +64,6 @@ public final class DatabaseManager {
 		if (Environment.getSetup()) {
 			applySchema();
 		}
-		UserLoginDao.delete(2);
 	}
 
 	/**
