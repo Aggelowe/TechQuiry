@@ -6,7 +6,6 @@ import static com.aggelowe.techquiry.database.DatabaseConstants.UPVOTE_INSERT_SC
 import static com.aggelowe.techquiry.database.DatabaseConstants.UPVOTE_SELECT_RESPONSE_ID_SCRIPT;
 import static com.aggelowe.techquiry.database.DatabaseConstants.UPVOTE_SELECT_USER_ID_SCRIPT;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -16,11 +15,10 @@ import org.sqlite.SQLiteErrorCode;
 import org.sqlite.SQLiteException;
 
 import com.aggelowe.techquiry.common.exceptions.ConstructorException;
-import com.aggelowe.techquiry.database.Database;
-import com.aggelowe.techquiry.database.DatabaseUtilities;
+import com.aggelowe.techquiry.database.DatabaseManager;
 import com.aggelowe.techquiry.database.entities.Upvote;
 import com.aggelowe.techquiry.database.exceptions.DaoException;
-import com.aggelowe.techquiry.database.exceptions.SQLExecutionException;
+import com.aggelowe.techquiry.database.exceptions.SQLRunnerException;
 
 /**
  * The {@link UpvoteDao} interface provides methods to interact with the
@@ -50,14 +48,13 @@ public final class UpvoteDao {
 	 */
 	public static void delete(Upvote upvote) {
 		LOGGER.debug("Deleting upvote with information " + upvote);
-		List<PreparedStatement> statements = DatabaseUtilities.loadStatements(Database.getConnection(), UPVOTE_DELETE_SCRIPT);
-		if (statements.size() < 1) {
-			throw new DaoException("Invalid number of statements in " + UPVOTE_DELETE_SCRIPT + "!");
-		}
-		PreparedStatement statement = statements.getFirst();
 		int responseId = upvote.getResponseId();
 		int userId = upvote.getUserId();
-		DatabaseUtilities.executeStatement(statement, responseId, userId);
+		try {
+			DatabaseManager.getRunner().runScript(UPVOTE_DELETE_SCRIPT, responseId, userId);
+		} catch (SQLRunnerException exception) {
+			throw new DaoException("There was an error while deleting the upvote entry!", exception);
+		}
 	}
 
 	/**
@@ -72,13 +69,8 @@ public final class UpvoteDao {
 		int responseId = upvote.getResponseId();
 		int userId = upvote.getUserId();
 		try {
-			List<PreparedStatement> statements = DatabaseUtilities.loadStatements(Database.getConnection(), UPVOTE_INSERT_SCRIPT);
-			if (statements.size() < 1) {
-				throw new DaoException("Invalid number of statements in " + UPVOTE_INSERT_SCRIPT + "!");
-			}
-			PreparedStatement statement = statements.getFirst();
-			DatabaseUtilities.executeStatement(statement, responseId, userId);
-		} catch (SQLExecutionException exception) {
+			DatabaseManager.getRunner().runScript(UPVOTE_INSERT_SCRIPT, responseId, userId);
+		} catch (SQLRunnerException exception) {
 			Throwable cause = exception.getCause();
 			if (cause instanceof SQLiteException) {
 				return ((SQLiteException) cause).getResultCode();
@@ -97,12 +89,17 @@ public final class UpvoteDao {
 	 */
 	public static List<Upvote> selectFromResponseId(int responseId) {
 		LOGGER.debug("Getting upvotes with response id " + responseId);
-		List<PreparedStatement> statements = DatabaseUtilities.loadStatements(Database.getConnection(), UPVOTE_SELECT_RESPONSE_ID_SCRIPT);
-		if (statements.size() < 1) {
-			throw new DaoException("Invalid number of statements in " + UPVOTE_SELECT_RESPONSE_ID_SCRIPT + "!");
+		ResultSet result;
+		try {
+			List<ResultSet> results = DatabaseManager.getRunner().runScript(UPVOTE_SELECT_RESPONSE_ID_SCRIPT, responseId);
+			if (results.isEmpty()) {
+				result = null;
+			} else {
+				result = results.getFirst();
+			}
+		} catch (SQLRunnerException exception) {
+			throw new DaoException("There was an error while retrieving the response information!", exception);
 		}
-		PreparedStatement statement = statements.getFirst();
-		ResultSet result = DatabaseUtilities.executeStatement(statement, responseId);
 		if (result == null) {
 			throw new DaoException("The first statement in " + UPVOTE_SELECT_RESPONSE_ID_SCRIPT + " did not yeild results!");
 		}
@@ -133,12 +130,17 @@ public final class UpvoteDao {
 	 */
 	public static List<Upvote> selectFromUserId(int userId) {
 		LOGGER.debug("Getting upvotes with user id " + userId);
-		List<PreparedStatement> statements = DatabaseUtilities.loadStatements(Database.getConnection(), UPVOTE_SELECT_USER_ID_SCRIPT);
-		if (statements.size() < 1) {
-			throw new DaoException("Invalid number of statements in " + UPVOTE_SELECT_USER_ID_SCRIPT + "!");
+		ResultSet result;
+		try {
+			List<ResultSet> results = DatabaseManager.getRunner().runScript(UPVOTE_SELECT_USER_ID_SCRIPT, userId);
+			if (results.isEmpty()) {
+				result = null;
+			} else {
+				result = results.getFirst();
+			}
+		} catch (SQLRunnerException exception) {
+			throw new DaoException("There was an error while retrieving the response information!", exception);
 		}
-		PreparedStatement statement = statements.getFirst();
-		ResultSet result = DatabaseUtilities.executeStatement(statement, userId);
 		if (result == null) {
 			throw new DaoException("The first statement in " + UPVOTE_SELECT_USER_ID_SCRIPT + " did not yeild results!");
 		}

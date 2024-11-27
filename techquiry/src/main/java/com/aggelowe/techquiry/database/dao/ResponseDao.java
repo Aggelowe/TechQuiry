@@ -7,7 +7,6 @@ import static com.aggelowe.techquiry.database.DatabaseConstants.RESPONSE_SELECT_
 import static com.aggelowe.techquiry.database.DatabaseConstants.RESPONSE_SELECT_SCRIPT;
 import static com.aggelowe.techquiry.database.DatabaseConstants.RESPONSE_UPDATE_SCRIPT;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -17,11 +16,10 @@ import org.sqlite.SQLiteErrorCode;
 import org.sqlite.SQLiteException;
 
 import com.aggelowe.techquiry.common.exceptions.ConstructorException;
-import com.aggelowe.techquiry.database.Database;
-import com.aggelowe.techquiry.database.DatabaseUtilities;
+import com.aggelowe.techquiry.database.DatabaseManager;
 import com.aggelowe.techquiry.database.entities.Response;
 import com.aggelowe.techquiry.database.exceptions.DaoException;
-import com.aggelowe.techquiry.database.exceptions.SQLExecutionException;
+import com.aggelowe.techquiry.database.exceptions.SQLRunnerException;
 
 /**
  * The {@link ResponseDao} interface provides methods to interact with the
@@ -42,7 +40,7 @@ public final class ResponseDao {
 	private ResponseDao() {
 		throw new ConstructorException(getClass().getName() + " objects should not be constructed!");
 	}
-	
+
 	/**
 	 * This method deletes the response with the provided response id from the
 	 * application database.
@@ -51,12 +49,11 @@ public final class ResponseDao {
 	 */
 	public static void delete(int id) {
 		LOGGER.debug("Deleting response with id " + id);
-		List<PreparedStatement> statements = DatabaseUtilities.loadStatements(Database.getConnection(), RESPONSE_DELETE_SCRIPT);
-		if (statements.size() < 1) {
-			throw new DaoException("Invalid number of statements in " + RESPONSE_DELETE_SCRIPT + "!");
+		try {
+			DatabaseManager.getRunner().runScript(RESPONSE_DELETE_SCRIPT, id);
+		} catch (SQLRunnerException exception) {
+			throw new DaoException("There was an error while deleting the response entry!", exception);
 		}
-		PreparedStatement statement = statements.getFirst();
-		DatabaseUtilities.executeStatement(statement, id);
 	}
 
 	/**
@@ -74,13 +71,8 @@ public final class ResponseDao {
 		boolean anonymous = response.isAnonymous();
 		String content = response.getContent();
 		try {
-			List<PreparedStatement> statements = DatabaseUtilities.loadStatements(Database.getConnection(), RESPONSE_INSERT_SCRIPT);
-			if (statements.size() < 1) {
-				throw new DaoException("Invalid number of statements in " + RESPONSE_INSERT_SCRIPT + "!");
-			}
-			PreparedStatement statement = statements.getFirst();
-			DatabaseUtilities.executeStatement(statement, id, inquiryId, userId, anonymous, content);
-		} catch (SQLExecutionException exception) {
+			DatabaseManager.getRunner().runScript(RESPONSE_INSERT_SCRIPT, id, inquiryId, userId, anonymous, content);
+		} catch (SQLRunnerException exception) {
 			Throwable cause = exception.getCause();
 			if (cause instanceof SQLiteException) {
 				return ((SQLiteException) cause).getResultCode();
@@ -89,7 +81,7 @@ public final class ResponseDao {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * This method returns and retrieves the list of {@link Response} objects with
 	 * the given inquiry id from the application database.
@@ -99,12 +91,17 @@ public final class ResponseDao {
 	 */
 	public static List<Response> selectFromInquiryId(int inquiryId) {
 		LOGGER.debug("Getting responses with inquiry id " + inquiryId);
-		List<PreparedStatement> statements = DatabaseUtilities.loadStatements(Database.getConnection(), RESPONSE_SELECT_INQUIRY_ID_SCRIPT);
-		if (statements.size() < 1) {
-			throw new DaoException("Invalid number of statements in " + RESPONSE_SELECT_INQUIRY_ID_SCRIPT + "!");
+		ResultSet result;
+		try {
+			List<ResultSet> results = DatabaseManager.getRunner().runScript(RESPONSE_SELECT_INQUIRY_ID_SCRIPT, inquiryId);
+			if (results.isEmpty()) {
+				result = null;
+			} else {
+				result = results.getFirst();
+			}
+		} catch (SQLRunnerException exception) {
+			throw new DaoException("There was an error while retrieving the response information!", exception);
 		}
-		PreparedStatement statement = statements.getFirst();
-		ResultSet result = DatabaseUtilities.executeStatement(statement, inquiryId);
 		if (result == null) {
 			throw new DaoException("The first statement in " + RESPONSE_SELECT_INQUIRY_ID_SCRIPT + " did not yeild results!");
 		}
@@ -131,7 +128,7 @@ public final class ResponseDao {
 		}
 		return list;
 	}
-	
+
 	/**
 	 * This method returns and retrieves the only {@link Response} object with the
 	 * given response id from the application database.
@@ -141,12 +138,17 @@ public final class ResponseDao {
 	 */
 	public static Response select(int id) {
 		LOGGER.debug("Getting response with response id " + id);
-		List<PreparedStatement> statements = DatabaseUtilities.loadStatements(Database.getConnection(), RESPONSE_SELECT_SCRIPT);
-		if (statements.size() < 1) {
-			throw new DaoException("Invalid number of statements in " + RESPONSE_SELECT_SCRIPT + "!");
+		ResultSet result;
+		try {
+			List<ResultSet> results = DatabaseManager.getRunner().runScript(RESPONSE_SELECT_SCRIPT, id);
+			if (results.isEmpty()) {
+				result = null;
+			} else {
+				result = results.getFirst();
+			}
+		} catch (SQLRunnerException exception) {
+			throw new DaoException("There was an error while retrieving the response information!", exception);
 		}
-		PreparedStatement statement = statements.getFirst();
-		ResultSet result = DatabaseUtilities.executeStatement(statement, id);
 		if (result == null) {
 			throw new DaoException("The first statement in " + RESPONSE_SELECT_SCRIPT + " did not yeild results!");
 		}
@@ -172,11 +174,11 @@ public final class ResponseDao {
 		Response response = new Response(id, inquiryId, userId, anonymous, content);
 		return response;
 	}
-	
+
 	/**
 	 * This method replaces the information of an response entry with the data
-	 * contained in the {@link Response} object, using the response id from the object
-	 * to select the correct entry.
+	 * contained in the {@link Response} object, using the response id from the
+	 * object to select the correct entry.
 	 * 
 	 * @param response The response to update
 	 * @return The {@link SQLiteErrorCode}, if it exists
@@ -189,13 +191,8 @@ public final class ResponseDao {
 		boolean anonymous = response.isAnonymous();
 		String content = response.getContent();
 		try {
-			List<PreparedStatement> statements = DatabaseUtilities.loadStatements(Database.getConnection(), RESPONSE_UPDATE_SCRIPT);
-			if (statements.size() < 1) {
-				throw new DaoException("Invalid number of statements in " + RESPONSE_UPDATE_SCRIPT + "!");
-			}
-			PreparedStatement statement = statements.getFirst();
-			DatabaseUtilities.executeStatement(statement, inquiryId, userId, anonymous, content, id);
-		} catch (SQLExecutionException exception) {
+			DatabaseManager.getRunner().runScript(RESPONSE_UPDATE_SCRIPT, inquiryId, userId, anonymous, content, id);
+		} catch (SQLRunnerException exception) {
 			Throwable cause = exception.getCause();
 			if (cause instanceof SQLiteException) {
 				return ((SQLiteException) cause).getResultCode();
@@ -204,5 +201,5 @@ public final class ResponseDao {
 		}
 		return null;
 	}
-	
+
 }

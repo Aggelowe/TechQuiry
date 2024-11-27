@@ -8,7 +8,6 @@ import static com.aggelowe.techquiry.database.DatabaseConstants.INQUIRY_RANGE_SC
 import static com.aggelowe.techquiry.database.DatabaseConstants.INQUIRY_SELECT_SCRIPT;
 import static com.aggelowe.techquiry.database.DatabaseConstants.INQUIRY_UPDATE_SCRIPT;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -18,11 +17,10 @@ import org.sqlite.SQLiteErrorCode;
 import org.sqlite.SQLiteException;
 
 import com.aggelowe.techquiry.common.exceptions.ConstructorException;
-import com.aggelowe.techquiry.database.Database;
-import com.aggelowe.techquiry.database.DatabaseUtilities;
+import com.aggelowe.techquiry.database.DatabaseManager;
 import com.aggelowe.techquiry.database.entities.Inquiry;
 import com.aggelowe.techquiry.database.exceptions.DaoException;
-import com.aggelowe.techquiry.database.exceptions.SQLExecutionException;
+import com.aggelowe.techquiry.database.exceptions.SQLRunnerException;
 
 /**
  * The {@link InquiryDao} interface provides methods to interact with the
@@ -52,12 +50,18 @@ public final class InquiryDao {
 	 */
 	public static int count() {
 		LOGGER.debug("Getting inquiry entry count");
-		List<PreparedStatement> statements = DatabaseUtilities.loadStatements(Database.getConnection(), INQUIRY_COUNT_SCRIPT);
-		if (statements.size() < 1) {
-			throw new DaoException("Invalid number of statements in " + INQUIRY_COUNT_SCRIPT + "!");
+		ResultSet result;
+		try {
+			List<ResultSet> results = DatabaseManager.getRunner().runScript(INQUIRY_COUNT_SCRIPT);
+			if (results.isEmpty()) {
+				result = null;
+			} else {
+				result = results.getFirst();
+			}
+		} catch (SQLRunnerException exception) {
+			throw new DaoException("There was an error while retrieving the inquiry count!", exception);
 		}
-		PreparedStatement statement = statements.getFirst();
-		ResultSet result = DatabaseUtilities.executeStatement(statement);
+		DatabaseManager.getRunner().runScript(INQUIRY_COUNT_SCRIPT);
 		if (result == null) {
 			throw new DaoException("The first statement in " + INQUIRY_COUNT_SCRIPT + " did not yeild a result!");
 		}
@@ -78,12 +82,11 @@ public final class InquiryDao {
 	 */
 	public static void delete(int id) {
 		LOGGER.debug("Deleting inquiry with id " + id);
-		List<PreparedStatement> statements = DatabaseUtilities.loadStatements(Database.getConnection(), INQUIRY_DELETE_SCRIPT);
-		if (statements.size() < 1) {
-			throw new DaoException("Invalid number of statements in " + INQUIRY_DELETE_SCRIPT + "!");
+		try {
+			DatabaseManager.getRunner().runScript(INQUIRY_DELETE_SCRIPT, id);
+		} catch (SQLRunnerException exception) {
+			throw new DaoException("There was an error while deleting the inquiry entry!", exception);
 		}
-		PreparedStatement statement = statements.getFirst();
-		DatabaseUtilities.executeStatement(statement, id);
 	}
 
 	/**
@@ -101,13 +104,8 @@ public final class InquiryDao {
 		String content = inquiry.getContent();
 		boolean anonymous = inquiry.isAnonymous();
 		try {
-			List<PreparedStatement> statements = DatabaseUtilities.loadStatements(Database.getConnection(), INQUIRY_INSERT_SCRIPT);
-			if (statements.size() < 1) {
-				throw new DaoException("Invalid number of statements in " + INQUIRY_INSERT_SCRIPT + "!");
-			}
-			PreparedStatement statement = statements.getFirst();
-			DatabaseUtilities.executeStatement(statement, id, userId, title, content, anonymous);
-		} catch (SQLExecutionException exception) {
+			DatabaseManager.getRunner().runScript(INQUIRY_INSERT_SCRIPT, id, userId, title, content, anonymous);
+		} catch (SQLRunnerException exception) {
 			Throwable cause = exception.getCause();
 			if (cause instanceof SQLiteException) {
 				return ((SQLiteException) cause).getResultCode();
@@ -128,14 +126,16 @@ public final class InquiryDao {
 	 */
 	public static List<Inquiry> range(int count, int offset) {
 		LOGGER.debug("Getting " + count + " inquiry entries with offset " + offset);
-		List<PreparedStatement> statements = DatabaseUtilities.loadStatements(Database.getConnection(), INQUIRY_RANGE_SCRIPT);
-		if (statements.size() < 1) {
-			throw new DaoException("Invalid number of statements in " + INQUIRY_RANGE_SCRIPT + "!");
-		}
-		PreparedStatement statement = statements.getFirst();
-		ResultSet result = DatabaseUtilities.executeStatement(statement, offset, count);
-		if (result == null) {
-			throw new DaoException("The first statement in " + INQUIRY_RANGE_SCRIPT + " did not yeild results!");
+		ResultSet result;
+		try {
+			List<ResultSet> results = DatabaseManager.getRunner().runScript(INQUIRY_RANGE_SCRIPT, offset, count);
+			if (results.isEmpty()) {
+				result = null;
+			} else {
+				result = results.getFirst();
+			}
+		} catch (SQLRunnerException exception) {
+			throw new DaoException("There was an error while retrieving the inquiry information!", exception);
 		}
 		List<Inquiry> range = new ArrayList<>(count);
 		try {
@@ -172,12 +172,17 @@ public final class InquiryDao {
 	 */
 	public static Inquiry select(int id) {
 		LOGGER.debug("Getting inquiry with inquiry id " + id);
-		List<PreparedStatement> statements = DatabaseUtilities.loadStatements(Database.getConnection(), INQUIRY_SELECT_SCRIPT);
-		if (statements.size() < 1) {
-			throw new DaoException("Invalid number of statements in " + INQUIRY_SELECT_SCRIPT + "!");
+		ResultSet result;
+		try {
+			List<ResultSet> results = DatabaseManager.getRunner().runScript(INQUIRY_SELECT_SCRIPT, id);
+			if (results.isEmpty()) {
+				result = null;
+			} else {
+				result = results.getFirst();
+			}
+		} catch (SQLRunnerException exception) {
+			throw new DaoException("There was an error while retrieving the inquiry information!", exception);
 		}
-		PreparedStatement statement = statements.getFirst();
-		ResultSet result = DatabaseUtilities.executeStatement(statement, id);
 		if (result == null) {
 			throw new DaoException("The first statement in " + INQUIRY_SELECT_SCRIPT + " did not yeild results!");
 		}
@@ -220,13 +225,8 @@ public final class InquiryDao {
 		String content = inquiry.getContent();
 		boolean anonymous = inquiry.isAnonymous();
 		try {
-			List<PreparedStatement> statements = DatabaseUtilities.loadStatements(Database.getConnection(), INQUIRY_UPDATE_SCRIPT);
-			if (statements.size() < 1) {
-				throw new DaoException("Invalid number of statements in " + INQUIRY_UPDATE_SCRIPT + "!");
-			}
-			PreparedStatement statement = statements.getFirst();
-			DatabaseUtilities.executeStatement(statement, userId, title, content, anonymous, id);
-		} catch (SQLExecutionException exception) {
+			DatabaseManager.getRunner().runScript(INQUIRY_UPDATE_SCRIPT, userId, title, content, anonymous, id);
+		} catch (SQLRunnerException exception) {
 			Throwable cause = exception.getCause();
 			if (cause instanceof SQLiteException) {
 				return ((SQLiteException) cause).getResultCode();

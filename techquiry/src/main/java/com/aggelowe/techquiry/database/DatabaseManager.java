@@ -13,6 +13,7 @@ import org.sqlite.SQLiteConfig;
 
 import com.aggelowe.techquiry.common.Environment;
 import com.aggelowe.techquiry.common.exceptions.ConstructorException;
+import com.aggelowe.techquiry.database.dao.UserLoginDao;
 
 /**
  * The {@link DatabaseManager} class is the one responsible for initializing the
@@ -52,16 +53,19 @@ public final class DatabaseManager {
 		LOGGER.debug("Database URL: " + databaseUrl);
 		SQLiteConfig config = new SQLiteConfig();
 		config.enforceForeignKeys(true);
-		try (Connection connection = DriverManager.getConnection(databaseUrl, config.toProperties());) {
+		Connection connection = null;
+		try {
+			connection = DriverManager.getConnection(databaseUrl, config.toProperties());
 			connection.setAutoCommit(false);
-			runner = new SQLRunner(connection);
 		} catch (SQLException exception) {
 			LOGGER.error("An error occured while connecting to " + databaseUrl, exception);
 			System.exit(1);
 		}
+		runner = new SQLRunner(connection);
 		if (Environment.getSetup()) {
 			applySchema();
 		}
+		UserLoginDao.delete(2);
 	}
 
 	/**

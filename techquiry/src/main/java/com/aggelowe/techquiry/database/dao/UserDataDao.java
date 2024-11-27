@@ -8,7 +8,6 @@ import static com.aggelowe.techquiry.database.DatabaseConstants.USER_DATA_RANGE_
 import static com.aggelowe.techquiry.database.DatabaseConstants.USER_DATA_SELECT_SCRIPT;
 import static com.aggelowe.techquiry.database.DatabaseConstants.USER_DATA_UPDATE_SCRIPT;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -18,11 +17,10 @@ import org.sqlite.SQLiteErrorCode;
 import org.sqlite.SQLiteException;
 
 import com.aggelowe.techquiry.common.exceptions.ConstructorException;
-import com.aggelowe.techquiry.database.Database;
-import com.aggelowe.techquiry.database.DatabaseUtilities;
+import com.aggelowe.techquiry.database.DatabaseManager;
 import com.aggelowe.techquiry.database.entities.UserData;
 import com.aggelowe.techquiry.database.exceptions.DaoException;
-import com.aggelowe.techquiry.database.exceptions.SQLExecutionException;
+import com.aggelowe.techquiry.database.exceptions.SQLRunnerException;
 
 /**
  * The {@link UserDataDao} interface provides methods to interact with the
@@ -52,12 +50,17 @@ public final class UserDataDao {
 	 */
 	public static int count() {
 		LOGGER.debug("Getting user data entry count");
-		List<PreparedStatement> statements = DatabaseUtilities.loadStatements(Database.getConnection(), USER_DATA_COUNT_SCRIPT);
-		if (statements.size() < 1) {
-			throw new DaoException("Invalid number of statements in " + USER_DATA_COUNT_SCRIPT + "!");
+		ResultSet result;
+		try {
+			List<ResultSet> results = DatabaseManager.getRunner().runScript(USER_DATA_COUNT_SCRIPT);
+			if (results.isEmpty()) {
+				result = null;
+			} else {
+				result = results.getFirst();
+			}
+		} catch (SQLRunnerException exception) {
+			throw new DaoException("There was an error while retrieving the user count!", exception);
 		}
-		PreparedStatement statement = statements.getFirst();
-		ResultSet result = DatabaseUtilities.executeStatement(statement);
 		if (result == null) {
 			throw new DaoException("The first statement in " + USER_DATA_COUNT_SCRIPT + " did not yeild a result!");
 		}
@@ -78,12 +81,11 @@ public final class UserDataDao {
 	 */
 	public static void delete(int id) {
 		LOGGER.debug("Deleting user with id " + id);
-		List<PreparedStatement> statements = DatabaseUtilities.loadStatements(Database.getConnection(), USER_DATA_DELETE_SCRIPT);
-		if (statements.size() < 1) {
-			throw new DaoException("Invalid number of statements in " + USER_DATA_DELETE_SCRIPT + "!");
+		try {
+			DatabaseManager.getRunner().runScript(USER_DATA_DELETE_SCRIPT, id);
+		} catch (SQLRunnerException exception) {
+			throw new DaoException("There was an error while deleting the user data entry!", exception);
 		}
-		PreparedStatement statement = statements.getFirst();
-		DatabaseUtilities.executeStatement(statement, id);
 	}
 
 	/**
@@ -100,13 +102,8 @@ public final class UserDataDao {
 		String lastName = userData.getLastName();
 		byte[] icon = userData.getIcon();
 		try {
-			List<PreparedStatement> statements = DatabaseUtilities.loadStatements(Database.getConnection(), USER_DATA_INSERT_SCRIPT);
-			if (statements.size() < 1) {
-				throw new DaoException("Invalid number of statements in " + USER_DATA_INSERT_SCRIPT + "!");
-			}
-			PreparedStatement statement = statements.getFirst();
-			DatabaseUtilities.executeStatement(statement, id, firstName, lastName, icon);
-		} catch (SQLExecutionException exception) {
+			DatabaseManager.getRunner().runScript(USER_DATA_INSERT_SCRIPT, id, firstName, lastName, icon);
+		} catch (SQLRunnerException exception) {
 			Throwable cause = exception.getCause();
 			if (cause instanceof SQLiteException) {
 				return ((SQLiteException) cause).getResultCode();
@@ -117,8 +114,8 @@ public final class UserDataDao {
 	}
 
 	/**
-	 * This method returns and retrieves a list of {@link UserData} objects from
-	 * the application database, that has the given size and starts with the given
+	 * This method returns and retrieves a list of {@link UserData} objects from the
+	 * application database, that has the given size and starts with the given
 	 * offset.
 	 * 
 	 * @param count  The number of entries
@@ -127,12 +124,17 @@ public final class UserDataDao {
 	 */
 	public static List<UserData> range(int count, int offset) {
 		LOGGER.debug("Getting " + count + " user data entries with offset " + offset);
-		List<PreparedStatement> statements = DatabaseUtilities.loadStatements(Database.getConnection(), USER_DATA_RANGE_SCRIPT);
-		if (statements.size() < 1) {
-			throw new DaoException("Invalid number of statements in " + USER_DATA_RANGE_SCRIPT + "!");
+		ResultSet result;
+		try {
+			List<ResultSet> results = DatabaseManager.getRunner().runScript(USER_DATA_RANGE_SCRIPT, offset, count);
+			if (results.isEmpty()) {
+				result = null;
+			} else {
+				result = results.getFirst();
+			}
+		} catch (SQLRunnerException exception) {
+			throw new DaoException("There was an error while retrieving the user data information!", exception);
 		}
-		PreparedStatement statement = statements.getFirst();
-		ResultSet result = DatabaseUtilities.executeStatement(statement, offset, count);
 		if (result == null) {
 			throw new DaoException("The first statement in " + USER_DATA_RANGE_SCRIPT + " did not yeild results!");
 		}
@@ -160,7 +162,7 @@ public final class UserDataDao {
 		}
 		return range;
 	}
-	
+
 	/**
 	 * This method returns and retrieves the only {@link UserData} object with the
 	 * given user id from the application database.
@@ -170,12 +172,17 @@ public final class UserDataDao {
 	 */
 	public static UserData select(int id) {
 		LOGGER.debug("Getting user data with user id " + id);
-		List<PreparedStatement> statements = DatabaseUtilities.loadStatements(Database.getConnection(), USER_DATA_SELECT_SCRIPT);
-		if (statements.size() < 1) {
-			throw new DaoException("Invalid number of statements in " + USER_DATA_SELECT_SCRIPT + "!");
+		ResultSet result;
+		try {
+			List<ResultSet> results = DatabaseManager.getRunner().runScript(USER_DATA_SELECT_SCRIPT, id);
+			if (results.isEmpty()) {
+				result = null;
+			} else {
+				result = results.getFirst();
+			}
+		} catch (SQLRunnerException exception) {
+			throw new DaoException("There was an error while retrieving the user data information!", exception);
 		}
-		PreparedStatement statement = statements.getFirst();
-		ResultSet result = DatabaseUtilities.executeStatement(statement, id);
 		if (result == null) {
 			throw new DaoException("The first statement in " + USER_DATA_SELECT_SCRIPT + " did not yeild results!");
 		}
@@ -217,13 +224,8 @@ public final class UserDataDao {
 		String lastName = userData.getLastName();
 		byte[] icon = userData.getIcon();
 		try {
-			List<PreparedStatement> statements = DatabaseUtilities.loadStatements(Database.getConnection(), USER_DATA_UPDATE_SCRIPT);
-			if (statements.size() < 1) {
-				throw new DaoException("Invalid number of statements in " + USER_DATA_UPDATE_SCRIPT + "!");
-			}
-			PreparedStatement statement = statements.getFirst();
-			DatabaseUtilities.executeStatement(statement, firstName, lastName, icon, id);
-		} catch (SQLExecutionException exception) {
+			DatabaseManager.getRunner().runScript(USER_DATA_UPDATE_SCRIPT, firstName, lastName, icon, id);
+		} catch (SQLRunnerException exception) {
 			Throwable cause = exception.getCause();
 			if (cause instanceof SQLiteException) {
 				return ((SQLiteException) cause).getResultCode();
@@ -232,5 +234,5 @@ public final class UserDataDao {
 		}
 		return null;
 	}
-	
+
 }

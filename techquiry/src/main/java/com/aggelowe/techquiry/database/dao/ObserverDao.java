@@ -6,7 +6,6 @@ import static com.aggelowe.techquiry.database.DatabaseConstants.OBSERVER_INSERT_
 import static com.aggelowe.techquiry.database.DatabaseConstants.OBSERVER_SELECT_INQUIRY_ID_SCRIPT;
 import static com.aggelowe.techquiry.database.DatabaseConstants.OBSERVER_SELECT_USER_ID_SCRIPT;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -16,11 +15,10 @@ import org.sqlite.SQLiteErrorCode;
 import org.sqlite.SQLiteException;
 
 import com.aggelowe.techquiry.common.exceptions.ConstructorException;
-import com.aggelowe.techquiry.database.Database;
-import com.aggelowe.techquiry.database.DatabaseUtilities;
+import com.aggelowe.techquiry.database.DatabaseManager;
 import com.aggelowe.techquiry.database.entities.Observer;
 import com.aggelowe.techquiry.database.exceptions.DaoException;
-import com.aggelowe.techquiry.database.exceptions.SQLExecutionException;
+import com.aggelowe.techquiry.database.exceptions.SQLRunnerException;
 
 /**
  * The {@link ObserverDao} interface provides methods to interact with the
@@ -49,15 +47,13 @@ public final class ObserverDao {
 	 * @param observer The observer to delete
 	 */
 	public static void delete(Observer observer) {
-		LOGGER.debug("Deleting observer with information " + observer);
-		List<PreparedStatement> statements = DatabaseUtilities.loadStatements(Database.getConnection(), OBSERVER_DELETE_SCRIPT);
-		if (statements.size() < 1) {
-			throw new DaoException("Invalid number of statements in " + OBSERVER_DELETE_SCRIPT + "!");
-		}
-		PreparedStatement statement = statements.getFirst();
 		int inquiryId = observer.getInquiryId();
 		int userId = observer.getUserId();
-		DatabaseUtilities.executeStatement(statement, inquiryId, userId);
+		try {
+			DatabaseManager.getRunner().runScript(OBSERVER_DELETE_SCRIPT, inquiryId, userId);
+		} catch (SQLRunnerException exception) {
+			throw new DaoException("There was an error while deleting the observer entry!", exception);
+		}
 	}
 
 	/**
@@ -72,13 +68,8 @@ public final class ObserverDao {
 		int inquiryId = observer.getInquiryId();
 		int userId = observer.getUserId();
 		try {
-			List<PreparedStatement> statements = DatabaseUtilities.loadStatements(Database.getConnection(), OBSERVER_INSERT_SCRIPT);
-			if (statements.size() < 1) {
-				throw new DaoException("Invalid number of statements in " + OBSERVER_INSERT_SCRIPT + "!");
-			}
-			PreparedStatement statement = statements.getFirst();
-			DatabaseUtilities.executeStatement(statement, inquiryId, userId);
-		} catch (SQLExecutionException exception) {
+			DatabaseManager.getRunner().runScript(OBSERVER_INSERT_SCRIPT, inquiryId, userId);
+		} catch (SQLRunnerException exception) {
 			Throwable cause = exception.getCause();
 			if (cause instanceof SQLiteException) {
 				return ((SQLiteException) cause).getResultCode();
@@ -97,12 +88,17 @@ public final class ObserverDao {
 	 */
 	public static List<Observer> selectFromInquiryId(int inquiryId) {
 		LOGGER.debug("Getting observers with inquiry id " + inquiryId);
-		List<PreparedStatement> statements = DatabaseUtilities.loadStatements(Database.getConnection(), OBSERVER_SELECT_INQUIRY_ID_SCRIPT);
-		if (statements.size() < 1) {
-			throw new DaoException("Invalid number of statements in " + OBSERVER_SELECT_INQUIRY_ID_SCRIPT + "!");
+		ResultSet result;
+		try {
+			List<ResultSet> results = DatabaseManager.getRunner().runScript(OBSERVER_SELECT_INQUIRY_ID_SCRIPT, inquiryId);
+			if (results.isEmpty()) {
+				result = null;
+			} else {
+				result = results.getFirst();
+			}
+		} catch (SQLRunnerException exception) {
+			throw new DaoException("There was an error while retrieving the observer information!", exception);
 		}
-		PreparedStatement statement = statements.getFirst();
-		ResultSet result = DatabaseUtilities.executeStatement(statement, inquiryId);
 		if (result == null) {
 			throw new DaoException("The first statement in " + OBSERVER_SELECT_INQUIRY_ID_SCRIPT + " did not yeild results!");
 		}
@@ -123,7 +119,7 @@ public final class ObserverDao {
 		}
 		return list;
 	}
-	
+
 	/**
 	 * This method returns and retrieves the list of {@link Observer} objects with
 	 * the given user id from the application database.
@@ -133,12 +129,17 @@ public final class ObserverDao {
 	 */
 	public static List<Observer> selectFromUserId(int userId) {
 		LOGGER.debug("Getting observers with user id " + userId);
-		List<PreparedStatement> statements = DatabaseUtilities.loadStatements(Database.getConnection(), OBSERVER_SELECT_USER_ID_SCRIPT);
-		if (statements.size() < 1) {
-			throw new DaoException("Invalid number of statements in " + OBSERVER_SELECT_USER_ID_SCRIPT + "!");
+		ResultSet result;
+		try {
+			List<ResultSet> results = DatabaseManager.getRunner().runScript(OBSERVER_SELECT_USER_ID_SCRIPT, userId);
+			if (results.isEmpty()) {
+				result = null;
+			} else {
+				result = results.getFirst();
+			}
+		} catch (SQLRunnerException exception) {
+			throw new DaoException("There was an error while retrieving the observer information!", exception);
 		}
-		PreparedStatement statement = statements.getFirst();
-		ResultSet result = DatabaseUtilities.executeStatement(statement, userId);
 		if (result == null) {
 			throw new DaoException("The first statement in " + OBSERVER_SELECT_USER_ID_SCRIPT + " did not yeild results!");
 		}

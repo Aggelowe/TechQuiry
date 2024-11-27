@@ -9,7 +9,6 @@ import static com.aggelowe.techquiry.database.DatabaseConstants.USER_LOGIN_SELEC
 import static com.aggelowe.techquiry.database.DatabaseConstants.USER_LOGIN_SELECT_USERNAME_SCRIPT;
 import static com.aggelowe.techquiry.database.DatabaseConstants.USER_LOGIN_UPDATE_SCRIPT;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -20,11 +19,10 @@ import org.sqlite.SQLiteException;
 
 import com.aggelowe.techquiry.common.Utilities;
 import com.aggelowe.techquiry.common.exceptions.ConstructorException;
-import com.aggelowe.techquiry.database.Database;
-import com.aggelowe.techquiry.database.DatabaseUtilities;
+import com.aggelowe.techquiry.database.DatabaseManager;
 import com.aggelowe.techquiry.database.entities.UserLogin;
 import com.aggelowe.techquiry.database.exceptions.DaoException;
-import com.aggelowe.techquiry.database.exceptions.SQLExecutionException;
+import com.aggelowe.techquiry.database.exceptions.SQLRunnerException;
 
 /**
  * The {@link UserLoginDao} interface provides methods to interact with the
@@ -54,12 +52,17 @@ public final class UserLoginDao {
 	 */
 	public static int count() {
 		LOGGER.debug("Getting user login entry count");
-		List<PreparedStatement> statements = DatabaseUtilities.loadStatements(Database.getConnection(), USER_LOGIN_COUNT_SCRIPT);
-		if (statements.size() < 1) {
-			throw new DaoException("Invalid number of statements in " + USER_LOGIN_COUNT_SCRIPT + "!");
+		ResultSet result;
+		try {
+			List<ResultSet> results = DatabaseManager.getRunner().runScript(USER_LOGIN_COUNT_SCRIPT);
+			if (results.isEmpty()) {
+				result = null;
+			} else {
+				result = results.getFirst();
+			}
+		} catch (SQLRunnerException exception) {
+			throw new DaoException("There was an error while retrieving the user count!", exception);
 		}
-		PreparedStatement statement = statements.getFirst();
-		ResultSet result = DatabaseUtilities.executeStatement(statement);
 		if (result == null) {
 			throw new DaoException("The first statement in " + USER_LOGIN_COUNT_SCRIPT + " did not yeild a result!");
 		}
@@ -80,12 +83,11 @@ public final class UserLoginDao {
 	 */
 	public static void delete(int id) {
 		LOGGER.debug("Deleting user with id " + id);
-		List<PreparedStatement> statements = DatabaseUtilities.loadStatements(Database.getConnection(), USER_LOGIN_DELETE_SCRIPT);
-		if (statements.size() < 1) {
-			throw new DaoException("Invalid number of statements in " + USER_LOGIN_DELETE_SCRIPT + "!");
+		try {
+			DatabaseManager.getRunner().runScript(USER_LOGIN_DELETE_SCRIPT, id);
+		} catch (SQLRunnerException exception) {
+			throw new DaoException("There was an error while deleting the user login entry!", exception);
 		}
-		PreparedStatement statement = statements.getFirst();
-		DatabaseUtilities.executeStatement(statement, id);
 	}
 
 	/**
@@ -104,13 +106,8 @@ public final class UserLoginDao {
 		String encodedHash = Utilities.encodeBase64(passwordHash);
 		String encodedSalt = Utilities.encodeBase64(passwordSalt);
 		try {
-			List<PreparedStatement> statements = DatabaseUtilities.loadStatements(Database.getConnection(), USER_LOGIN_INSERT_SCRIPT);
-			if (statements.size() < 1) {
-				throw new DaoException("Invalid number of statements in " + USER_LOGIN_INSERT_SCRIPT + "!");
-			}
-			PreparedStatement statement = statements.getFirst();
-			DatabaseUtilities.executeStatement(statement, id, username, encodedHash, encodedSalt);
-		} catch (SQLExecutionException exception) {
+			DatabaseManager.getRunner().runScript(USER_LOGIN_INSERT_SCRIPT, id, username, encodedHash, encodedSalt);
+		} catch (SQLRunnerException exception) {
 			Throwable cause = exception.getCause();
 			if (cause instanceof SQLiteException) {
 				return ((SQLiteException) cause).getResultCode();
@@ -125,18 +122,23 @@ public final class UserLoginDao {
 	 * the application database, that has the given size and starts with the given
 	 * offset.
 	 * 
-	 * @param count The number of entries
+	 * @param count  The number of entries
 	 * @param offset The number of entries to skip
 	 * @return The selected range
 	 */
 	public static List<UserLogin> range(int count, int offset) {
 		LOGGER.debug("Getting " + count + " user login entries with offset " + offset);
-		List<PreparedStatement> statements = DatabaseUtilities.loadStatements(Database.getConnection(), USER_LOGIN_RANGE_SCRIPT);
-		if (statements.size() < 1) {
-			throw new DaoException("Invalid number of statements in " + USER_LOGIN_RANGE_SCRIPT + "!");
+		ResultSet result;
+		try {
+			List<ResultSet> results = DatabaseManager.getRunner().runScript(USER_LOGIN_RANGE_SCRIPT, offset, count);
+			if (results.isEmpty()) {
+				result = null;
+			} else {
+				result = results.getFirst();
+			}
+		} catch (SQLRunnerException exception) {
+			throw new DaoException("There was an error while retrieving the user login information!", exception);
 		}
-		PreparedStatement statement = statements.getFirst();
-		ResultSet result = DatabaseUtilities.executeStatement(statement, offset, count);
 		if (result == null) {
 			throw new DaoException("The first statement in " + USER_LOGIN_RANGE_SCRIPT + " did not yeild results!");
 		}
@@ -181,12 +183,17 @@ public final class UserLoginDao {
 	 */
 	public static UserLogin select(int id) {
 		LOGGER.debug("Getting user login with user id " + id);
-		List<PreparedStatement> statements = DatabaseUtilities.loadStatements(Database.getConnection(), USER_LOGIN_SELECT_SCRIPT);
-		if (statements.size() < 1) {
-			throw new DaoException("Invalid number of statements in " + USER_LOGIN_SELECT_SCRIPT + "!");
+		ResultSet result;
+		try {
+			List<ResultSet> results = DatabaseManager.getRunner().runScript(USER_LOGIN_SELECT_SCRIPT, id);
+			if (results.isEmpty()) {
+				result = null;
+			} else {
+				result = results.getFirst();
+			}
+		} catch (SQLRunnerException exception) {
+			throw new DaoException("There was an error while retrieving the user login information!", exception);
 		}
-		PreparedStatement statement = statements.getFirst();
-		ResultSet result = DatabaseUtilities.executeStatement(statement, id);
 		if (result == null) {
 			throw new DaoException("The first statement in " + USER_LOGIN_SELECT_SCRIPT + " did not yeild results!");
 		}
@@ -228,12 +235,17 @@ public final class UserLoginDao {
 	 */
 	public static UserLogin selectFromUsername(String username) {
 		LOGGER.debug("Getting user login with username " + username);
-		List<PreparedStatement> statements = DatabaseUtilities.loadStatements(Database.getConnection(), USER_LOGIN_SELECT_USERNAME_SCRIPT);
-		if (statements.size() < 1) {
-			throw new DaoException("Invalid number of statements in " + USER_LOGIN_SELECT_USERNAME_SCRIPT + "!");
+		ResultSet result;
+		try {
+			List<ResultSet> results = DatabaseManager.getRunner().runScript(USER_LOGIN_SELECT_USERNAME_SCRIPT, username);
+			if (results.isEmpty()) {
+				result = null;
+			} else {
+				result = results.getFirst();
+			}
+		} catch (SQLRunnerException exception) {
+			throw new DaoException("There was an error while retrieving the user login information!", exception);
 		}
-		PreparedStatement statement = statements.getFirst();
-		ResultSet result = DatabaseUtilities.executeStatement(statement, username);
 		if (result == null) {
 			throw new DaoException("The first statement in " + USER_LOGIN_SELECT_USERNAME_SCRIPT + " did not yeild results!");
 		}
@@ -283,13 +295,8 @@ public final class UserLoginDao {
 		String encodedHash = Utilities.encodeBase64(passwordHash);
 		String encodedSalt = Utilities.encodeBase64(passwordSalt);
 		try {
-			List<PreparedStatement> statements = DatabaseUtilities.loadStatements(Database.getConnection(), USER_LOGIN_UPDATE_SCRIPT);
-			if (statements.size() < 1) {
-				throw new DaoException("Invalid number of statements in " + USER_LOGIN_UPDATE_SCRIPT + "!");
-			}
-			PreparedStatement statement = statements.getFirst();
-			DatabaseUtilities.executeStatement(statement, username, encodedHash, encodedSalt, id);
-		} catch (SQLExecutionException exception) {
+			DatabaseManager.getRunner().runScript(USER_LOGIN_UPDATE_SCRIPT, username, encodedHash, encodedSalt, id);
+		} catch (SQLRunnerException exception) {
 			Throwable cause = exception.getCause();
 			if (cause instanceof SQLiteException) {
 				return ((SQLiteException) cause).getResultCode();
