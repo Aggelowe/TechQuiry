@@ -7,9 +7,7 @@ import static com.aggelowe.techquiry.database.DatabaseConstants.CREATE_SCHEMA_SC
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.List;
 
 import org.sqlite.SQLiteConfig;
 
@@ -17,18 +15,19 @@ import com.aggelowe.techquiry.common.Environment;
 import com.aggelowe.techquiry.common.exceptions.ConstructorException;
 
 /**
- * The {@link Database} class is the one responsible for initializing the
+ * The {@link DatabaseManager} class is the one responsible for initializing the
  * database used by the TechQuiry application.
  * 
  * @author Aggelowe
  * @since 0.0.1
  */
-public final class Database {
+public final class DatabaseManager {
 
 	/**
-	 * This objects represents the connection with the SQLite database.
+	 * This object is responsible for executing SQL scripts on the application
+	 * database
 	 */
-	private static Connection connection = null;
+	private static SQLRunner runner;
 
 	/**
 	 * This constructor will throw an {@link ConstructorException} whenever invoked.
@@ -37,7 +36,7 @@ public final class Database {
 	 * @throws ConstructorException Will always be thrown when the constructor is
 	 *                              invoked.
 	 */
-	private Database() {
+	private DatabaseManager() {
 		throw new ConstructorException(getClass().getName() + " objects should not be constructed!");
 	}
 
@@ -53,8 +52,9 @@ public final class Database {
 		LOGGER.debug("Database URL: " + databaseUrl);
 		SQLiteConfig config = new SQLiteConfig();
 		config.enforceForeignKeys(true);
-		try {
-			connection = DriverManager.getConnection(databaseUrl, config.toProperties());
+		try (Connection connection = DriverManager.getConnection(databaseUrl, config.toProperties());) {
+			connection.setAutoCommit(false);
+			runner = new SQLRunner(connection);
 		} catch (SQLException exception) {
 			LOGGER.error("An error occured while connecting to " + databaseUrl, exception);
 			System.exit(1);
@@ -70,18 +70,17 @@ public final class Database {
 	 */
 	private static void applySchema() {
 		LOGGER.debug("Applying database schema");
-		List<PreparedStatement> statements = DatabaseUtilities.loadStatements(connection, CREATE_SCHEMA_SCRIPT);
-		DatabaseUtilities.executeStatements(statements);
+		runner.runScript(CREATE_SCHEMA_SCRIPT);
 	}
 
 	/**
-	 * This method returns the {@link Connection} object linked to the application's
-	 * SQLite database file.
+	 * This method returns the {@link SQLRunner} responsible for executing SQL
+	 * scripts on the application database
 	 * 
-	 * @return The connection with the database file
+	 * @return The application's {@link SQLRunner}
 	 */
-	public static Connection getConnection() {
-		return connection;
+	public static SQLRunner getRunner() {
+		return runner;
 	}
 
 }

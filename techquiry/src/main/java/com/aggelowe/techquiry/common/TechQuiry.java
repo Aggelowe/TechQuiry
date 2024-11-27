@@ -12,7 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 
-import com.aggelowe.techquiry.database.Database;
+import com.aggelowe.techquiry.database.DatabaseManager;
 
 /**
  * This is the main class of the TechQuiry application, it is responsible for
@@ -56,7 +56,7 @@ public class TechQuiry {
 	@EventListener(ContextRefreshedEvent.class)
 	public void start() {
 		LOGGER.info("Starting core application components");
-		Database.initialize();
+		DatabaseManager.initialize();
 	}
 
 }
