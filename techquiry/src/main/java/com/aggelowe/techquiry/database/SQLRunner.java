@@ -51,7 +51,8 @@ public final class SQLRunner {
 	 * @param stream     The stream reading the file containing the SQL statements
 	 * @param parameters The parameters for the statements
 	 * @return The list of {@link ResultSet} objects
-	 * @throws SQLRunnerException If an error occurs while loading or running the script
+	 * @throws SQLRunnerException If an error occurs while loading or running the
+	 *                            script
 	 */
 	public List<ResultSet> runScript(InputStream stream, Object... parameters) throws SQLRunnerException {
 		synchronized (connection) {
@@ -69,11 +70,41 @@ public final class SQLRunner {
 	 * @param stream     The stream reading the file containing the SQL statements
 	 * @param parameters The parameters for the statements
 	 * @return The list of {@link ResultSet} objects
-	 * @throws SQLRunnerException If an error occurs while loading or running the script
+	 * @throws SQLRunnerException If an error occurs while loading or running the
+	 *                            script
 	 */
 	public List<ResultSet> runScript(String path, Object... parameters) throws SQLRunnerException {
 		InputStream stream = SQLRunner.class.getResourceAsStream(path);
 		return runScript(stream, parameters);
+	}
+
+	/**
+	 * This method prepares the given statement, executes it on the preset
+	 * connection and returns the output {@link ResultSet} object.
+	 * 
+	 * @param statement  The statement to execute
+	 * @param parameters The parameters of the statement
+	 * @return The result of the execution of the statement
+	 * @throws SQLRunnerException If an error occurs while loading or running the
+	 *                            script
+	 */
+	public ResultSet runStatement(String statement, Object... parameters) throws SQLRunnerException {
+		synchronized (connection) {
+			ResultSet result;
+			try {
+				PreparedStatement prepared = this.connection.prepareStatement(statement);
+				result = executeStatement(prepared, parameters);
+				connection.commit();
+			} catch (SQLException exception) {
+				try {
+					connection.rollback();
+				} catch (SQLException rollback) {
+					throw new SQLRunnerExecuteException("Could not rollback failed commit!", rollback);
+				}
+				throw new SQLRunnerExecuteException("An error occured while executing the provided SQL statement!", exception);
+			}
+			return result;
+		}
 	}
 
 	/**
@@ -85,7 +116,7 @@ public final class SQLRunner {
 	 * @param stream The stream reading the file containing the SQL statements
 	 * @return The list of {@link PreparedStatement} objects
 	 * @throws SQLRunnerLoadException If an error occurs while the statements are
-	 *                                being loaded	
+	 *                                being loaded
 	 */
 	private List<PreparedStatement> loadStatements(InputStream stream) throws SQLRunnerLoadException {
 		List<PreparedStatement> statements = new LinkedList<PreparedStatement>();
@@ -182,7 +213,8 @@ public final class SQLRunner {
 	 * @param statement  The {@link PreparedStatement} to execute
 	 * @param parameters The parameters for the statement
 	 * @return The results of the execution
-	 * @throws SQLRunnerExecuteException If an error occurs while executing the statement
+	 * @throws SQLRunnerExecuteException If an error occurs while executing the
+	 *                                   statement
 	 */
 	private ResultSet executeStatement(PreparedStatement statement, Object... parameters) throws SQLRunnerExecuteException {
 		ResultSet result;
@@ -208,7 +240,8 @@ public final class SQLRunner {
 	 * @param statements The list of statements to execute
 	 * @param parameters The parameters for the statements
 	 * @return The list of the result of each executed statement
-	 * @throws SQLRunnerExecuteException If an error occurs while executing the statements
+	 * @throws SQLRunnerExecuteException If an error occurs while executing the
+	 *                                   statements
 	 */
 	private List<ResultSet> executeStatements(List<PreparedStatement> statements, Object... parameters) throws SQLRunnerExecuteException {
 		List<ResultSet> results = new ArrayList<>(statements.size());

@@ -39,7 +39,7 @@ public final class DatabaseManager {
 	 * This object is responsible for initializing and managing the database of the
 	 * application.
 	 */
-	private static DatabaseManager databaseManager;
+	private static DatabaseManager manager;
 
 	/**
 	 * This object is responsible for executing SQL scripts on the application
@@ -120,9 +120,9 @@ public final class DatabaseManager {
 			LOGGER.error("An error occured while connecting to " + databaseUrl, exception);
 			System.exit(1);
 		}
-		databaseManager = new DatabaseManager(connection);
+		manager = new DatabaseManager(connection);
 		if (Environment.getSetup()) {
-			databaseManager.createSchema();
+			manager.createSchema();
 		}
 	}
 
@@ -148,7 +148,7 @@ public final class DatabaseManager {
 	 * @return The application's {@link DatabaseManager}
 	 */
 	public static DatabaseManager getManager() {
-		return databaseManager;
+		return manager;
 	}
 
 	/**
@@ -157,7 +157,7 @@ public final class DatabaseManager {
 	 * 
 	 * @return The application's {@link SQLRunner}
 	 */
-	public SQLRunner getRunner() {
+	SQLRunner getRunner() {
 		return runner;
 	}
 
