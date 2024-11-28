@@ -11,8 +11,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.aggelowe.techquiry.common.exceptions.IllegalConstructionException;
-import com.aggelowe.techquiry.database.DatabaseManager;
+import com.aggelowe.techquiry.database.SQLRunner;
 import com.aggelowe.techquiry.database.entities.Upvote;
 import com.aggelowe.techquiry.database.exceptions.DataAccessException;
 import com.aggelowe.techquiry.database.exceptions.DatabaseException;
@@ -28,14 +27,18 @@ import com.aggelowe.techquiry.database.exceptions.SQLRunnerLoadException;
 public final class UpvoteDao {
 
 	/**
-	 * This constructor will throw an {@link IllegalConstructionException} whenever invoked.
-	 * {@link UpvoteDao} objects should <b>not</b> be constructible.
-	 * 
-	 * @throws IllegalConstructionException Will always be thrown when the constructor is
-	 *                              invoked.
+	 * The runner responsible for executing the SQL scripts.
 	 */
-	private UpvoteDao() throws IllegalConstructionException {
-		throw new IllegalConstructionException(getClass().getName() + " objects should not be constructed!");
+	private final SQLRunner runner;
+
+	/**
+	 * This constructor constructs a new {@link UpvoteDao} instance that is
+	 * responsible for handling the data access for {@link Upvote} objects.
+	 * 
+	 * @param runner The SQL script runner
+	 */
+	public UpvoteDao(SQLRunner runner) {
+		this.runner = runner;
 	}
 
 	/**
@@ -45,12 +48,12 @@ public final class UpvoteDao {
 	 * @param upvote The upvote to delete
 	 * @throws DatabaseException If an error occurs while deleting the upvote entry
 	 */
-	public static void delete(Upvote upvote) throws DatabaseException {
+	public void delete(Upvote upvote) throws DatabaseException {
 		LOGGER.debug("Deleting upvote with information " + upvote);
 		int responseId = upvote.getResponseId();
 		int userId = upvote.getUserId();
 		try {
-			DatabaseManager.getRunner().runScript(UPVOTE_DELETE_SCRIPT, responseId, userId);
+			runner.runScript(UPVOTE_DELETE_SCRIPT, responseId, userId);
 		} catch (SQLRunnerLoadException exception) {
 			throw new DataAccessException("There was an error while deleting the upvote entry!", exception);
 		}
@@ -63,12 +66,12 @@ public final class UpvoteDao {
 	 * @param upvote The upvote to insert
 	 * @throws DatabaseException If an error occurs while inserting the upvote entry
 	 */
-	public static void insert(Upvote upvote) throws DatabaseException {
+	public void insert(Upvote upvote) throws DatabaseException {
 		LOGGER.debug("Inserting upvote with information " + upvote);
 		int responseId = upvote.getResponseId();
 		int userId = upvote.getUserId();
 		try {
-			DatabaseManager.getRunner().runScript(UPVOTE_INSERT_SCRIPT, responseId, userId);
+			runner.runScript(UPVOTE_INSERT_SCRIPT, responseId, userId);
 		} catch (SQLRunnerLoadException exception) {
 			throw new DataAccessException("There was an error while inserting the upvote entry!", exception);
 		}
@@ -82,11 +85,11 @@ public final class UpvoteDao {
 	 * @return The upvotes with the given id
 	 * @throws DatabaseException If an error occurs while retrieving the response information
 	 */
-	public static List<Upvote> selectFromResponseId(int responseId) throws DatabaseException {
+	public List<Upvote> selectFromResponseId(int responseId) throws DatabaseException {
 		LOGGER.debug("Getting upvotes with response id " + responseId);
 		ResultSet result;
 		try {
-			List<ResultSet> results = DatabaseManager.getRunner().runScript(UPVOTE_SELECT_RESPONSE_ID_SCRIPT, responseId);
+			List<ResultSet> results = runner.runScript(UPVOTE_SELECT_RESPONSE_ID_SCRIPT, responseId);
 			if (results.isEmpty()) {
 				result = null;
 			} else {
@@ -124,11 +127,11 @@ public final class UpvoteDao {
 	 * @return The upvotes with the given id
 	 * @throws DatabaseException If an error occurs while retrieving the response information
 	 */
-	public static List<Upvote> selectFromUserId(int userId) throws DatabaseException {
+	public List<Upvote> selectFromUserId(int userId) throws DatabaseException {
 		LOGGER.debug("Getting upvotes with user id " + userId);
 		ResultSet result;
 		try {
-			List<ResultSet> results = DatabaseManager.getRunner().runScript(UPVOTE_SELECT_USER_ID_SCRIPT, userId);
+			List<ResultSet> results = runner.runScript(UPVOTE_SELECT_USER_ID_SCRIPT, userId);
 			if (results.isEmpty()) {
 				result = null;
 			} else {

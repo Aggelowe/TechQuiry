@@ -15,8 +15,7 @@ import java.util.List;
 
 import org.sqlite.SQLiteErrorCode;
 
-import com.aggelowe.techquiry.common.exceptions.IllegalConstructionException;
-import com.aggelowe.techquiry.database.DatabaseManager;
+import com.aggelowe.techquiry.database.SQLRunner;
 import com.aggelowe.techquiry.database.entities.UserData;
 import com.aggelowe.techquiry.database.exceptions.DataAccessException;
 import com.aggelowe.techquiry.database.exceptions.DatabaseException;
@@ -32,15 +31,20 @@ import com.aggelowe.techquiry.database.exceptions.SQLRunnerLoadException;
 public final class UserDataDao {
 
 	/**
-	 * This constructor will throw an {@link IllegalConstructionException} whenever invoked.
-	 * {@link UserDataDao} objects should <b>not</b> be constructible.
-	 * 
-	 * @throws IllegalConstructionException Will always be thrown when the constructor is
-	 *                              invoked.
+	 * The runner responsible for executing the SQL scripts.
 	 */
-	private UserDataDao() throws IllegalConstructionException {
-		throw new IllegalConstructionException(getClass().getName() + " objects should not be constructed!");
+	private final SQLRunner runner;
+
+	/**
+	 * This constructor constructs a new {@link UserDataDao} instance that is
+	 * responsible for handling the data access for {@link UserData} objects.
+	 * 
+	 * @param runner The SQL script runner
+	 */
+	public UserDataDao(SQLRunner runner) {
+		this.runner = runner;
 	}
+
 
 	/**
 	 * This method returns the number of user data entries inside the application
@@ -49,11 +53,11 @@ public final class UserDataDao {
 	 * @return The number of user data entries in the database
 	 * @throws DatabaseException If an error occurs while retrieving the user count
 	 */
-	public static int count() throws DatabaseException {
+	public int count() throws DatabaseException {
 		LOGGER.debug("Getting user data entry count");
 		ResultSet result;
 		try {
-			List<ResultSet> results = DatabaseManager.getRunner().runScript(USER_DATA_COUNT_SCRIPT);
+			List<ResultSet> results = runner.runScript(USER_DATA_COUNT_SCRIPT);
 			if (results.isEmpty()) {
 				result = null;
 			} else {
@@ -81,10 +85,10 @@ public final class UserDataDao {
 	 * @param id The id of the user data entry
 	 * @throws DatabaseException If an error occurs while deleting the user data entry
 	 */
-	public static void delete(int id) throws DatabaseException {
+	public void delete(int id) throws DatabaseException {
 		LOGGER.debug("Deleting user with id " + id);
 		try {
-			DatabaseManager.getRunner().runScript(USER_DATA_DELETE_SCRIPT, id);
+			runner.runScript(USER_DATA_DELETE_SCRIPT, id);
 		} catch (SQLRunnerLoadException exception) {
 			throw new DataAccessException("There was an error while deleting the user data entry!", exception);
 		}
@@ -97,14 +101,14 @@ public final class UserDataDao {
 	 * @param userData The user data to insert
 	 * @throws DatabaseException If an error occurs while inserting the user data entry
 	 */
-	public static void insert(UserData userData) throws DatabaseException {
+	public void insert(UserData userData) throws DatabaseException {
 		LOGGER.debug("Inserting user data with information " + userData);
 		int id = userData.getId();
 		String firstName = userData.getFirstName();
 		String lastName = userData.getLastName();
 		byte[] icon = userData.getIcon();
 		try {
-			DatabaseManager.getRunner().runScript(USER_DATA_INSERT_SCRIPT, id, firstName, lastName, icon);
+			runner.runScript(USER_DATA_INSERT_SCRIPT, id, firstName, lastName, icon);
 		} catch (SQLRunnerLoadException exception) {
 			throw new DataAccessException("There was an error while inserting the user data entry!", exception);
 		}
@@ -120,11 +124,11 @@ public final class UserDataDao {
 	 * @return The selected range
 	 * @throws DatabaseException If an error occurs while retrieving the user data information
 	 */
-	public static List<UserData> range(int count, int offset) throws DatabaseException {
+	public List<UserData> range(int count, int offset) throws DatabaseException {
 		LOGGER.debug("Getting " + count + " user data entries with offset " + offset);
 		ResultSet result;
 		try {
-			List<ResultSet> results = DatabaseManager.getRunner().runScript(USER_DATA_RANGE_SCRIPT, offset, count);
+			List<ResultSet> results = runner.runScript(USER_DATA_RANGE_SCRIPT, offset, count);
 			if (results.isEmpty()) {
 				result = null;
 			} else {
@@ -169,11 +173,11 @@ public final class UserDataDao {
 	 * @return The user data with the given id
 	 * @throws DatabaseException If an error occurs while retrieving the user data information
 	 */
-	public static UserData select(int id) throws DatabaseException {
+	public UserData select(int id) throws DatabaseException {
 		LOGGER.debug("Getting user data with user id " + id);
 		ResultSet result;
 		try {
-			List<ResultSet> results = DatabaseManager.getRunner().runScript(USER_DATA_SELECT_SCRIPT, id);
+			List<ResultSet> results = runner.runScript(USER_DATA_SELECT_SCRIPT, id);
 			if (results.isEmpty()) {
 				result = null;
 			} else {
@@ -217,14 +221,14 @@ public final class UserDataDao {
 	 * @return The {@link SQLiteErrorCode}, if it exists
 	 * @throws DatabaseException If an error occurs while updating the user data entry
 	 */
-	public static void update(UserData userData) throws DatabaseException {
+	public void update(UserData userData) throws DatabaseException {
 		LOGGER.debug("Updating user data with data " + userData);
 		int id = userData.getId();
 		String firstName = userData.getFirstName();
 		String lastName = userData.getLastName();
 		byte[] icon = userData.getIcon();
 		try {
-			DatabaseManager.getRunner().runScript(USER_DATA_UPDATE_SCRIPT, firstName, lastName, icon, id);
+			runner.runScript(USER_DATA_UPDATE_SCRIPT, firstName, lastName, icon, id);
 		} catch (SQLRunnerLoadException exception) {
 			throw new DataAccessException("There was an error while updating the user data entry!", exception);
 		}

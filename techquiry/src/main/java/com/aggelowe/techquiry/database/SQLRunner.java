@@ -33,20 +33,13 @@ public final class SQLRunner {
 	private final Connection connection;
 
 	/**
-	 * This constructor will throw an {@link ConstructorException} whenever invoked.
-	 * {@link SQLRunner} objects should <b>not</b> be constructible.
-	 * 
-	 * @throws ConstructorException Will always be thrown when the constructor is
-	 *                              invoked.
-	 */
-	/**
 	 * This constructor constructs a new {@link SQLRunner} instance with the
 	 * provided connection as the interface between the application and the
 	 * database.
 	 * 
 	 * @param connection The database connection
 	 */
-	SQLRunner(Connection connection) {
+	public SQLRunner(Connection connection) {
 		this.connection = connection;
 	}
 

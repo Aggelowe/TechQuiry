@@ -11,8 +11,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.aggelowe.techquiry.common.exceptions.IllegalConstructionException;
-import com.aggelowe.techquiry.database.DatabaseManager;
+import com.aggelowe.techquiry.database.SQLRunner;
 import com.aggelowe.techquiry.database.entities.Observer;
 import com.aggelowe.techquiry.database.exceptions.DataAccessException;
 import com.aggelowe.techquiry.database.exceptions.DatabaseException;
@@ -26,16 +25,20 @@ import com.aggelowe.techquiry.database.exceptions.SQLRunnerLoadException;
  * @since 0.0.1
  */
 public final class ObserverDao {
+	
+	/**
+	 * The runner responsible for executing the SQL scripts.
+	 */
+	private final SQLRunner runner;
 
 	/**
-	 * This constructor will throw an {@link IllegalConstructionException} whenever invoked.
-	 * {@link ObserverDao} objects should <b>not</b> be constructible.
+	 * This constructor constructs a new {@link ObserverDao} instance that is
+	 * responsible for handling the data access for {@link Observer} objects.
 	 * 
-	 * @throws IllegalConstructionException Will always be thrown when the constructor is
-	 *                              invoked.
+	 * @param runner The SQL script runner
 	 */
-	private ObserverDao() throws IllegalConstructionException {
-		throw new IllegalConstructionException(getClass().getName() + " objects should not be constructed!");
+	public ObserverDao(SQLRunner runner) {
+		this.runner = runner;
 	}
 
 	/**
@@ -45,11 +48,11 @@ public final class ObserverDao {
 	 * @param observer The observer to delete
 	 * @throws DatabaseException If an error occurs while deleting the observer entry
 	 */
-	public static void delete(Observer observer) throws DatabaseException {
+	public void delete(Observer observer) throws DatabaseException {
 		int inquiryId = observer.getInquiryId();
 		int userId = observer.getUserId();
 		try {
-			DatabaseManager.getRunner().runScript(OBSERVER_DELETE_SCRIPT, inquiryId, userId);
+			runner.runScript(OBSERVER_DELETE_SCRIPT, inquiryId, userId);
 		} catch (SQLRunnerLoadException exception) {
 			throw new DataAccessException("There was an error while deleting the observer entry!", exception);
 		}
@@ -62,12 +65,12 @@ public final class ObserverDao {
 	 * @param observer The observer to insert
 	 * @throws DatabaseException If an error occurs while inserting the observer entry
 	 */
-	public static void insert(Observer observer) throws DatabaseException {
+	public void insert(Observer observer) throws DatabaseException {
 		LOGGER.debug("Inserting observer with information " + observer);
 		int inquiryId = observer.getInquiryId();
 		int userId = observer.getUserId();
 		try {
-			DatabaseManager.getRunner().runScript(OBSERVER_INSERT_SCRIPT, inquiryId, userId);
+			runner.runScript(OBSERVER_INSERT_SCRIPT, inquiryId, userId);
 		} catch (SQLRunnerLoadException exception) {
 			throw new DataAccessException("There was an error while inserting the observer entry!", exception);
 		}
@@ -81,11 +84,11 @@ public final class ObserverDao {
 	 * @return The observers with the given id
 	 * @throws DatabaseException If an error occurs while retrieving the observer information
 	 */
-	public static List<Observer> selectFromInquiryId(int inquiryId) throws DatabaseException {
+	public List<Observer> selectFromInquiryId(int inquiryId) throws DatabaseException {
 		LOGGER.debug("Getting observers with inquiry id " + inquiryId);
 		ResultSet result;
 		try {
-			List<ResultSet> results = DatabaseManager.getRunner().runScript(OBSERVER_SELECT_INQUIRY_ID_SCRIPT, inquiryId);
+			List<ResultSet> results = runner.runScript(OBSERVER_SELECT_INQUIRY_ID_SCRIPT, inquiryId);
 			if (results.isEmpty()) {
 				result = null;
 			} else {
@@ -123,11 +126,11 @@ public final class ObserverDao {
 	 * @return The observers with the given id
 	 * @throws DatabaseException If an error occurs while retrieving the observer information
 	 */
-	public static List<Observer> selectFromUserId(int userId) throws DatabaseException {
+	public List<Observer> selectFromUserId(int userId) throws DatabaseException {
 		LOGGER.debug("Getting observers with user id " + userId);
 		ResultSet result;
 		try {
-			List<ResultSet> results = DatabaseManager.getRunner().runScript(OBSERVER_SELECT_USER_ID_SCRIPT, userId);
+			List<ResultSet> results = runner.runScript(OBSERVER_SELECT_USER_ID_SCRIPT, userId);
 			if (results.isEmpty()) {
 				result = null;
 			} else {

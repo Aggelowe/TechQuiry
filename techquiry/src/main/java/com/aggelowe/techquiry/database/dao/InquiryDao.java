@@ -13,8 +13,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.aggelowe.techquiry.common.exceptions.IllegalConstructionException;
-import com.aggelowe.techquiry.database.DatabaseManager;
+import com.aggelowe.techquiry.database.SQLRunner;
 import com.aggelowe.techquiry.database.entities.Inquiry;
 import com.aggelowe.techquiry.database.exceptions.DataAccessException;
 import com.aggelowe.techquiry.database.exceptions.DatabaseException;
@@ -30,14 +29,18 @@ import com.aggelowe.techquiry.database.exceptions.SQLRunnerLoadException;
 public final class InquiryDao {
 
 	/**
-	 * This constructor will throw an {@link IllegalConstructionException} whenever invoked.
-	 * {@link InquiryDao} objects should <b>not</b> be constructible.
-	 * 
-	 * @throws IllegalConstructionException Will always be thrown when the constructor is
-	 *                              invoked.
+	 * The runner responsible for executing the SQL scripts.
 	 */
-	private InquiryDao() throws IllegalConstructionException {
-		throw new IllegalConstructionException(getClass().getName() + " objects should not be constructed!");
+	private final SQLRunner runner;
+
+	/**
+	 * This constructor constructs a new {@link InquiryDao} instance that is
+	 * responsible for handling the data access for {@link Inquiry} objects.
+	 * 
+	 * @param runner The SQL script runner
+	 */
+	public InquiryDao(SQLRunner runner) {
+		this.runner = runner;
 	}
 
 	/**
@@ -45,13 +48,14 @@ public final class InquiryDao {
 	 * database.
 	 * 
 	 * @return The number of inquiry entries in the database
-	 * @throws DatabaseException If an error occurs while retrieving the inquiry count
+	 * @throws DatabaseException If an error occurs while retrieving the inquiry
+	 *                           count
 	 */
-	public static int count() throws DatabaseException {
+	public int count() throws DatabaseException {
 		LOGGER.debug("Getting inquiry entry count");
 		ResultSet result;
 		try {
-			List<ResultSet> results = DatabaseManager.getRunner().runScript(INQUIRY_COUNT_SCRIPT);
+			List<ResultSet> results = runner.runScript(INQUIRY_COUNT_SCRIPT);
 			if (results.isEmpty()) {
 				result = null;
 			} else {
@@ -60,7 +64,6 @@ public final class InquiryDao {
 		} catch (SQLRunnerLoadException exception) {
 			throw new DataAccessException("There was an error while retrieving the inquiry count!", exception);
 		}
-		DatabaseManager.getRunner().runScript(INQUIRY_COUNT_SCRIPT);
 		if (result == null) {
 			throw new DataAccessException("The first statement in " + INQUIRY_COUNT_SCRIPT + " did not yeild a result!");
 		}
@@ -80,10 +83,10 @@ public final class InquiryDao {
 	 * @param id The id of the inquiry entry
 	 * @throws DatabaseException If an error occurs while deleting the inquiry entry
 	 */
-	public static void delete(int id) throws DatabaseException {
+	public void delete(int id) throws DatabaseException {
 		LOGGER.debug("Deleting inquiry with id " + id);
 		try {
-			DatabaseManager.getRunner().runScript(INQUIRY_DELETE_SCRIPT, id);
+			runner.runScript(INQUIRY_DELETE_SCRIPT, id);
 		} catch (SQLRunnerLoadException exception) {
 			throw new DataAccessException("There was an error while deleting the inquiry entry!", exception);
 		}
@@ -94,9 +97,10 @@ public final class InquiryDao {
 	 * in the application database.
 	 * 
 	 * @param inquiry The inquiry to insert
-	 * @throws DatabaseException If an error occurs while inserting the inquiry entry
+	 * @throws DatabaseException If an error occurs while inserting the inquiry
+	 *                           entry
 	 */
-	public static void insert(Inquiry inquiry) throws DatabaseException {
+	public void insert(Inquiry inquiry) throws DatabaseException {
 		LOGGER.debug("Inserting inquiry with information " + inquiry);
 		int id = inquiry.getId();
 		int userId = inquiry.getUserId();
@@ -104,7 +108,7 @@ public final class InquiryDao {
 		String content = inquiry.getContent();
 		boolean anonymous = inquiry.isAnonymous();
 		try {
-			DatabaseManager.getRunner().runScript(INQUIRY_INSERT_SCRIPT, id, userId, title, content, anonymous);
+			runner.runScript(INQUIRY_INSERT_SCRIPT, id, userId, title, content, anonymous);
 		} catch (SQLRunnerLoadException exception) {
 			throw new DataAccessException("There was an error while inserting the inquiry entry!", exception);
 		}
@@ -118,13 +122,14 @@ public final class InquiryDao {
 	 * @param count  The number of entries
 	 * @param offset The number of entries to skip
 	 * @return The selected range
-	 * @throws DatabaseException If an error occurs while retrieving the inquiry information
+	 * @throws DatabaseException If an error occurs while retrieving the inquiry
+	 *                           information
 	 */
-	public static List<Inquiry> range(int count, int offset) throws DatabaseException {
+	public List<Inquiry> range(int count, int offset) throws DatabaseException {
 		LOGGER.debug("Getting " + count + " inquiry entries with offset " + offset);
 		ResultSet result;
 		try {
-			List<ResultSet> results = DatabaseManager.getRunner().runScript(INQUIRY_RANGE_SCRIPT, offset, count);
+			List<ResultSet> results = runner.runScript(INQUIRY_RANGE_SCRIPT, offset, count);
 			if (results.isEmpty()) {
 				result = null;
 			} else {
@@ -165,13 +170,14 @@ public final class InquiryDao {
 	 * 
 	 * @param id The inquiry id
 	 * @return The inquiry with the given id
-	 * @throws DatabaseException If an error occurs while retrieving the inquiry information
+	 * @throws DatabaseException If an error occurs while retrieving the inquiry
+	 *                           information
 	 */
-	public static Inquiry select(int id) throws DatabaseException {
+	public Inquiry select(int id) throws DatabaseException {
 		LOGGER.debug("Getting inquiry with inquiry id " + id);
 		ResultSet result;
 		try {
-			List<ResultSet> results = DatabaseManager.getRunner().runScript(INQUIRY_SELECT_SCRIPT, id);
+			List<ResultSet> results = runner.runScript(INQUIRY_SELECT_SCRIPT, id);
 			if (results.isEmpty()) {
 				result = null;
 			} else {
@@ -214,7 +220,7 @@ public final class InquiryDao {
 	 * @param inquiry The inquiry to update
 	 * @throws DatabaseException If an error occurs while updating the inquiry entry
 	 */
-	public static void update(Inquiry inquiry) throws DatabaseException {
+	public void update(Inquiry inquiry) throws DatabaseException {
 		LOGGER.debug("rUpdating inquiry with data " + inquiry);
 		int id = inquiry.getId();
 		int userId = inquiry.getUserId();
@@ -222,7 +228,7 @@ public final class InquiryDao {
 		String content = inquiry.getContent();
 		boolean anonymous = inquiry.isAnonymous();
 		try {
-			DatabaseManager.getRunner().runScript(INQUIRY_UPDATE_SCRIPT, userId, title, content, anonymous, id);
+			runner.runScript(INQUIRY_UPDATE_SCRIPT, userId, title, content, anonymous, id);
 		} catch (SQLRunnerLoadException exception) {
 			throw new DataAccessException("There was an error while updating the inquiry entry!", exception);
 		}
