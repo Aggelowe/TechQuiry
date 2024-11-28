@@ -12,7 +12,6 @@ import java.sql.SQLException;
 import org.sqlite.SQLiteConfig;
 
 import com.aggelowe.techquiry.common.Environment;
-import com.aggelowe.techquiry.common.exceptions.IllegalConstructionException;
 import com.aggelowe.techquiry.database.dao.InquiryDao;
 import com.aggelowe.techquiry.database.dao.ObserverDao;
 import com.aggelowe.techquiry.database.dao.ResponseDao;
@@ -37,56 +36,68 @@ import com.aggelowe.techquiry.database.exceptions.SQLRunnerException;
 public final class DatabaseManager {
 
 	/**
+	 * This object is responsible for initializing and managing the database of the
+	 * application.
+	 */
+	private static DatabaseManager databaseManager;
+
+	/**
 	 * This object is responsible for executing SQL scripts on the application
 	 * database
 	 */
-	private static SQLRunner runner;
+	private final SQLRunner runner;
 
 	/**
 	 * The object responsible for handling the data access for {@link Inquiry}
 	 * objects.
 	 */
-	private static InquiryDao inquiryDao;
+	private final InquiryDao inquiryDao;
 
 	/**
 	 * The object responsible for handling the data access for {@link Observer}
 	 * objects.
 	 */
-	private static ObserverDao observerDao;
+	private final ObserverDao observerDao;
 
 	/**
 	 * The object responsible for handling the data access for {@link Response}
 	 * objects.
 	 */
-	private static ResponseDao responseDao;
+	private final ResponseDao responseDao;
 
 	/**
 	 * The object responsible for handling the data access for {@link Upvote}
 	 * objects.
 	 */
-	private static UpvoteDao upvoteDao;
+	private final UpvoteDao upvoteDao;
 
 	/**
 	 * The object responsible for handling the data access for {@link UserData}
 	 * objects.
 	 */
-	private static UserDataDao userDataDao;
+	private final UserDataDao userDataDao;
 
 	/**
 	 * The responsible for handling the data access for {@link UserLoginDao}
 	 * objects.
 	 */
-	private static UserLoginDao userLoginDao;
+	private final UserLoginDao userLoginDao;
 
 	/**
-	 * This constructor will throw an {@link IllegalConstructionException} whenever
-	 * invoked. {@link Database} objects should <b>not</b> be constructible.
+	 * This constructor constructs a new {@link DatabaseManager} instance with the
+	 * provided connection as the interface between the application and the
+	 * database.
 	 * 
-	 * @throws IllegalConstructionException Will always be thrown when the
-	 *                                      constructor is invoked.
+	 * @param connection The database connection
 	 */
-	private DatabaseManager() throws IllegalConstructionException {
-		throw new IllegalConstructionException(getClass().getName() + " objects should not be constructed!");
+	public DatabaseManager(Connection connection) {
+		this.runner = new SQLRunner(connection);
+		this.inquiryDao = new InquiryDao(runner);
+		this.observerDao = new ObserverDao(runner);
+		this.responseDao = new ResponseDao(runner);
+		this.upvoteDao = new UpvoteDao(runner);
+		this.userDataDao = new UserDataDao(runner);
+		this.userLoginDao = new UserLoginDao(runner);
 	}
 
 	/**
@@ -109,22 +120,10 @@ public final class DatabaseManager {
 			LOGGER.error("An error occured while connecting to " + databaseUrl, exception);
 			System.exit(1);
 		}
-		runner = new SQLRunner(connection);
-		makeDaos();
-		createSchema();
-	}
-
-	/**
-	 * This method initializes the data access objects necessary for the operation
-	 * of the application.
-	 */
-	private static void makeDaos() {
-		inquiryDao = new InquiryDao(runner);
-		observerDao = new ObserverDao(runner);
-		responseDao = new ResponseDao(runner);
-		upvoteDao = new UpvoteDao(runner);
-		userDataDao = new UserDataDao(runner);
-		userLoginDao = new UserLoginDao(runner);
+		databaseManager = new DatabaseManager(connection);
+		if (Environment.getSetup()) {
+			databaseManager.createSchema();
+		}
 	}
 
 	/**
@@ -132,16 +131,24 @@ public final class DatabaseManager {
 	 * environment variable is true. If the operation fails, the application will
 	 * exit.
 	 */
-	private static void createSchema() {
-		if (Environment.getSetup()) {
-			LOGGER.debug("Applying database schema");
-			try {
-				runner.runScript(CREATE_SCHEMA_SCRIPT);
-			} catch (SQLRunnerException exception) {
-				LOGGER.error("An error occured while applying the database schema!", exception);
-				System.exit(1);
-			}
+	public void createSchema() {
+		LOGGER.debug("Applying database schema");
+		try {
+			runner.runScript(CREATE_SCHEMA_SCRIPT);
+		} catch (SQLRunnerException exception) {
+			LOGGER.error("An error occured while applying the database schema!", exception);
+			System.exit(1);
 		}
+	}
+
+	/**
+	 * This method returns the {@link DatabaseManager} responsible for initializing
+	 * and managing the database of the application.
+	 * 
+	 * @return The application's {@link DatabaseManager}
+	 */
+	public static DatabaseManager getManager() {
+		return databaseManager;
 	}
 
 	/**
@@ -150,7 +157,7 @@ public final class DatabaseManager {
 	 * 
 	 * @return The application's {@link SQLRunner}
 	 */
-	public static SQLRunner getRunner() {
+	public SQLRunner getRunner() {
 		return runner;
 	}
 
@@ -160,7 +167,7 @@ public final class DatabaseManager {
 	 * 
 	 * @return The {@link Inquiry} data access object
 	 */
-	public static InquiryDao getInquiryDao() {
+	public InquiryDao getInquiryDao() {
 		return inquiryDao;
 	}
 
@@ -170,7 +177,7 @@ public final class DatabaseManager {
 	 * 
 	 * @return The {@link Observer} data access object
 	 */
-	public static ObserverDao getObserverDao() {
+	public ObserverDao getObserverDao() {
 		return observerDao;
 	}
 
@@ -180,7 +187,7 @@ public final class DatabaseManager {
 	 * 
 	 * @return The {@link Response} data access object
 	 */
-	public static ResponseDao getResponseDao() {
+	public ResponseDao getResponseDao() {
 		return responseDao;
 	}
 
@@ -190,7 +197,7 @@ public final class DatabaseManager {
 	 * 
 	 * @return The {@link Upvote} data access object
 	 */
-	public static UpvoteDao getUpvoteDao() {
+	public UpvoteDao getUpvoteDao() {
 		return upvoteDao;
 	}
 
@@ -200,7 +207,7 @@ public final class DatabaseManager {
 	 * 
 	 * @return The {@link UserData} data access object
 	 */
-	public static UserDataDao getUserDataDao() {
+	public UserDataDao getUserDataDao() {
 		return userDataDao;
 	}
 
@@ -210,7 +217,7 @@ public final class DatabaseManager {
 	 * 
 	 * @return The {@link UserLogin} data access object
 	 */
-	public static UserLoginDao getUserLoginDao() {
+	public UserLoginDao getUserLoginDao() {
 		return userLoginDao;
 	}
 
