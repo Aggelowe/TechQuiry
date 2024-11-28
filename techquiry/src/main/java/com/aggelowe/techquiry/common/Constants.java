@@ -3,7 +3,7 @@ package com.aggelowe.techquiry.common;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.aggelowe.techquiry.common.exceptions.ConstructorException;
+import com.aggelowe.techquiry.common.exceptions.IllegalConstructionException;
 
 /**
  * {@link Constants} is a class that holds constants that are important for the
@@ -15,14 +15,14 @@ import com.aggelowe.techquiry.common.exceptions.ConstructorException;
 public final class Constants {
 
 	/**
-	 * This constructor will throw an {@link ConstructorException} whenever invoked.
+	 * This constructor will throw an {@link IllegalConstructionException} whenever invoked.
 	 * {@link Constants} objects should <b>not</b> be constructible.
 	 * 
-	 * @throws ConstructorException Will always be thrown when the constructor is
+	 * @throws IllegalConstructionException Will always be thrown when the constructor is
 	 *                              invoked.
 	 */
-	private Constants() {
-		throw new ConstructorException(getClass().getName() + " objects should not be constructed!");
+	private Constants() throws IllegalConstructionException {
+		throw new IllegalConstructionException(getClass().getName() + " objects should not be constructed!");
 	}
 
 	/**

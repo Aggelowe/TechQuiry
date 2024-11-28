@@ -1,8 +1,5 @@
 package com.aggelowe.techquiry.database.entities;
 
-import com.aggelowe.techquiry.common.exceptions.ConstructorException;
-import com.aggelowe.techquiry.database.exceptions.EntityException;
-
 /**
  * The {@link Inquiry} class represents an inquiry entry of the TechQuiry
  * application along with the respective information and data.
@@ -48,9 +45,6 @@ public class Inquiry {
 	 * @param anonymous Whether the author is anonymous
 	 */
 	public Inquiry(int id, int userId, String title, String content, boolean anonymous) {
-		if (title == null || content == null) {
-			throw new ConstructorException("The provided inquiry information should not be NULL!");
-		}
 		this.id = id;
 		this.userId = userId;
 		this.title = title;
@@ -118,9 +112,6 @@ public class Inquiry {
 	 * @param title The inquiry's title
 	 */
 	public void setTitle(String title) {
-		if (title == null) {
-			throw new EntityException("The provided title should not be NULL!");
-		}
 		this.title = title;
 	}
 	
@@ -130,9 +121,6 @@ public class Inquiry {
 	 * @param content The inquiry's content
 	 */
 	public void setContent(String content) {
-		if (content == null) {
-			throw new EntityException("The provided content should not be NULL!");
-		}
 		this.content = content;
 	}
 

@@ -1,8 +1,5 @@
 package com.aggelowe.techquiry.database.entities;
 
-import com.aggelowe.techquiry.common.exceptions.ConstructorException;
-import com.aggelowe.techquiry.database.exceptions.EntityException;
-
 /**
  * The {@link Response} class represents an response entry of the TechQuiry
  * application along with the respective information and data.
@@ -48,9 +45,6 @@ public class Response {
 	 * @param content   The response's content
 	 */
 	public Response(int id, int inquiryId, int userId, boolean anonymous, String content) {
-		if (content == null) {
-			throw new ConstructorException("The provided response information should not be NULL!");
-		}
 		this.id = id;
 		this.inquiryId = inquiryId;
 		this.userId = userId;
@@ -136,9 +130,6 @@ public class Response {
 	 * @param content The response's content
 	 */
 	public void setContent(String content) {
-		if (content == null) {
-			throw new EntityException("The provided content should not be NULL!");
-		}
 		this.content = content;
 	}
 

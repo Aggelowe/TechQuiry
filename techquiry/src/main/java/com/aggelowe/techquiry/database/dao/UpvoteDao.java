@@ -11,14 +11,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.sqlite.SQLiteErrorCode;
-import org.sqlite.SQLiteException;
-
-import com.aggelowe.techquiry.common.exceptions.ConstructorException;
+import com.aggelowe.techquiry.common.exceptions.IllegalConstructionException;
 import com.aggelowe.techquiry.database.DatabaseManager;
 import com.aggelowe.techquiry.database.entities.Upvote;
-import com.aggelowe.techquiry.database.exceptions.DaoException;
-import com.aggelowe.techquiry.database.exceptions.SQLRunnerException;
+import com.aggelowe.techquiry.database.exceptions.DataAccessException;
+import com.aggelowe.techquiry.database.exceptions.DatabaseException;
+import com.aggelowe.techquiry.database.exceptions.SQLRunnerLoadException;
 
 /**
  * The {@link UpvoteDao} interface provides methods to interact with the
@@ -30,14 +28,14 @@ import com.aggelowe.techquiry.database.exceptions.SQLRunnerException;
 public final class UpvoteDao {
 
 	/**
-	 * This constructor will throw an {@link ConstructorException} whenever invoked.
+	 * This constructor will throw an {@link IllegalConstructionException} whenever invoked.
 	 * {@link UpvoteDao} objects should <b>not</b> be constructible.
 	 * 
-	 * @throws ConstructorException Will always be thrown when the constructor is
+	 * @throws IllegalConstructionException Will always be thrown when the constructor is
 	 *                              invoked.
 	 */
-	private UpvoteDao() {
-		throw new ConstructorException(getClass().getName() + " objects should not be constructed!");
+	private UpvoteDao() throws IllegalConstructionException {
+		throw new IllegalConstructionException(getClass().getName() + " objects should not be constructed!");
 	}
 
 	/**
@@ -45,15 +43,16 @@ public final class UpvoteDao {
 	 * application database.
 	 * 
 	 * @param upvote The upvote to delete
+	 * @throws DatabaseException If an error occurs while deleting the upvote entry
 	 */
-	public static void delete(Upvote upvote) {
+	public static void delete(Upvote upvote) throws DatabaseException {
 		LOGGER.debug("Deleting upvote with information " + upvote);
 		int responseId = upvote.getResponseId();
 		int userId = upvote.getUserId();
 		try {
 			DatabaseManager.getRunner().runScript(UPVOTE_DELETE_SCRIPT, responseId, userId);
-		} catch (SQLRunnerException exception) {
-			throw new DaoException("There was an error while deleting the upvote entry!", exception);
+		} catch (SQLRunnerLoadException exception) {
+			throw new DataAccessException("There was an error while deleting the upvote entry!", exception);
 		}
 	}
 
@@ -62,22 +61,17 @@ public final class UpvoteDao {
 	 * the application database.
 	 * 
 	 * @param upvote The upvote to insert
-	 * @return The {@link SQLiteErrorCode}, if it exists
+	 * @throws DatabaseException If an error occurs while inserting the upvote entry
 	 */
-	public static SQLiteErrorCode insert(Upvote upvote) {
+	public static void insert(Upvote upvote) throws DatabaseException {
 		LOGGER.debug("Inserting upvote with information " + upvote);
 		int responseId = upvote.getResponseId();
 		int userId = upvote.getUserId();
 		try {
 			DatabaseManager.getRunner().runScript(UPVOTE_INSERT_SCRIPT, responseId, userId);
-		} catch (SQLRunnerException exception) {
-			Throwable cause = exception.getCause();
-			if (cause instanceof SQLiteException) {
-				return ((SQLiteException) cause).getResultCode();
-			}
-			throw new DaoException("There was an error while inserting the upvote entry!", exception);
+		} catch (SQLRunnerLoadException exception) {
+			throw new DataAccessException("There was an error while inserting the upvote entry!", exception);
 		}
-		return null;
 	}
 
 	/**
@@ -86,8 +80,9 @@ public final class UpvoteDao {
 	 * 
 	 * @param responseId The response id
 	 * @return The upvotes with the given id
+	 * @throws DatabaseException If an error occurs while retrieving the response information
 	 */
-	public static List<Upvote> selectFromResponseId(int responseId) {
+	public static List<Upvote> selectFromResponseId(int responseId) throws DatabaseException {
 		LOGGER.debug("Getting upvotes with response id " + responseId);
 		ResultSet result;
 		try {
@@ -97,11 +92,11 @@ public final class UpvoteDao {
 			} else {
 				result = results.getFirst();
 			}
-		} catch (SQLRunnerException exception) {
-			throw new DaoException("There was an error while retrieving the response information!", exception);
+		} catch (SQLRunnerLoadException exception) {
+			throw new DataAccessException("There was an error while retrieving the response information!", exception);
 		}
 		if (result == null) {
-			throw new DaoException("The first statement in " + UPVOTE_SELECT_RESPONSE_ID_SCRIPT + " did not yeild results!");
+			throw new DataAccessException("The first statement in " + UPVOTE_SELECT_RESPONSE_ID_SCRIPT + " did not yeild results!");
 		}
 		List<Upvote> list = new ArrayList<>();
 		try {
@@ -110,13 +105,13 @@ public final class UpvoteDao {
 				try {
 					userId = result.getInt("user_id");
 				} catch (SQLException exception) {
-					throw new DaoException("There was an error while retrieving the upvote information", exception);
+					throw new DataAccessException("There was an error while retrieving the upvote information", exception);
 				}
 				Upvote upvote = new Upvote(responseId, userId);
 				list.add(upvote);
 			}
 		} catch (SQLException exception) {
-			throw new DaoException("A database error occured!", exception);
+			throw new DataAccessException("A database error occured!", exception);
 		}
 		return list;
 	}
@@ -127,8 +122,9 @@ public final class UpvoteDao {
 	 * 
 	 * @param userId The user id
 	 * @return The upvotes with the given id
+	 * @throws DatabaseException If an error occurs while retrieving the response information
 	 */
-	public static List<Upvote> selectFromUserId(int userId) {
+	public static List<Upvote> selectFromUserId(int userId) throws DatabaseException {
 		LOGGER.debug("Getting upvotes with user id " + userId);
 		ResultSet result;
 		try {
@@ -138,11 +134,11 @@ public final class UpvoteDao {
 			} else {
 				result = results.getFirst();
 			}
-		} catch (SQLRunnerException exception) {
-			throw new DaoException("There was an error while retrieving the response information!", exception);
+		} catch (SQLRunnerLoadException exception) {
+			throw new DataAccessException("There was an error while retrieving the response information!", exception);
 		}
 		if (result == null) {
-			throw new DaoException("The first statement in " + UPVOTE_SELECT_USER_ID_SCRIPT + " did not yeild results!");
+			throw new DataAccessException("The first statement in " + UPVOTE_SELECT_USER_ID_SCRIPT + " did not yeild results!");
 		}
 		List<Upvote> list = new ArrayList<>();
 		try {
@@ -151,13 +147,13 @@ public final class UpvoteDao {
 				try {
 					responseId = result.getInt("response_id");
 				} catch (SQLException exception) {
-					throw new DaoException("There was an error while retrieving the upvote information", exception);
+					throw new DataAccessException("There was an error while retrieving the upvote information", exception);
 				}
 				Upvote response = new Upvote(responseId, userId);
 				list.add(response);
 			}
 		} catch (SQLException exception) {
-			throw new DaoException("A database error occured!", exception);
+			throw new DataAccessException("A database error occured!", exception);
 		}
 		return list;
 	}

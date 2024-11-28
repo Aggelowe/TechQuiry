@@ -11,14 +11,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.sqlite.SQLiteErrorCode;
-import org.sqlite.SQLiteException;
-
-import com.aggelowe.techquiry.common.exceptions.ConstructorException;
+import com.aggelowe.techquiry.common.exceptions.IllegalConstructionException;
 import com.aggelowe.techquiry.database.DatabaseManager;
 import com.aggelowe.techquiry.database.entities.Observer;
-import com.aggelowe.techquiry.database.exceptions.DaoException;
-import com.aggelowe.techquiry.database.exceptions.SQLRunnerException;
+import com.aggelowe.techquiry.database.exceptions.DataAccessException;
+import com.aggelowe.techquiry.database.exceptions.DatabaseException;
+import com.aggelowe.techquiry.database.exceptions.SQLRunnerLoadException;
 
 /**
  * The {@link ObserverDao} interface provides methods to interact with the
@@ -30,14 +28,14 @@ import com.aggelowe.techquiry.database.exceptions.SQLRunnerException;
 public final class ObserverDao {
 
 	/**
-	 * This constructor will throw an {@link ConstructorException} whenever invoked.
+	 * This constructor will throw an {@link IllegalConstructionException} whenever invoked.
 	 * {@link ObserverDao} objects should <b>not</b> be constructible.
 	 * 
-	 * @throws ConstructorException Will always be thrown when the constructor is
+	 * @throws IllegalConstructionException Will always be thrown when the constructor is
 	 *                              invoked.
 	 */
-	private ObserverDao() {
-		throw new ConstructorException(getClass().getName() + " objects should not be constructed!");
+	private ObserverDao() throws IllegalConstructionException {
+		throw new IllegalConstructionException(getClass().getName() + " objects should not be constructed!");
 	}
 
 	/**
@@ -45,14 +43,15 @@ public final class ObserverDao {
 	 * application database.
 	 * 
 	 * @param observer The observer to delete
+	 * @throws DatabaseException If an error occurs while deleting the observer entry
 	 */
-	public static void delete(Observer observer) {
+	public static void delete(Observer observer) throws DatabaseException {
 		int inquiryId = observer.getInquiryId();
 		int userId = observer.getUserId();
 		try {
 			DatabaseManager.getRunner().runScript(OBSERVER_DELETE_SCRIPT, inquiryId, userId);
-		} catch (SQLRunnerException exception) {
-			throw new DaoException("There was an error while deleting the observer entry!", exception);
+		} catch (SQLRunnerLoadException exception) {
+			throw new DataAccessException("There was an error while deleting the observer entry!", exception);
 		}
 	}
 
@@ -61,22 +60,17 @@ public final class ObserverDao {
 	 * in the application database.
 	 * 
 	 * @param observer The observer to insert
-	 * @return The {@link SQLiteErrorCode}, if it exists
+	 * @throws DatabaseException If an error occurs while inserting the observer entry
 	 */
-	public static SQLiteErrorCode insert(Observer observer) {
+	public static void insert(Observer observer) throws DatabaseException {
 		LOGGER.debug("Inserting observer with information " + observer);
 		int inquiryId = observer.getInquiryId();
 		int userId = observer.getUserId();
 		try {
 			DatabaseManager.getRunner().runScript(OBSERVER_INSERT_SCRIPT, inquiryId, userId);
-		} catch (SQLRunnerException exception) {
-			Throwable cause = exception.getCause();
-			if (cause instanceof SQLiteException) {
-				return ((SQLiteException) cause).getResultCode();
-			}
-			throw new DaoException("There was an error while inserting the observer entry!", exception);
+		} catch (SQLRunnerLoadException exception) {
+			throw new DataAccessException("There was an error while inserting the observer entry!", exception);
 		}
-		return null;
 	}
 
 	/**
@@ -85,8 +79,9 @@ public final class ObserverDao {
 	 * 
 	 * @param inquiryId The inquiry id
 	 * @return The observers with the given id
+	 * @throws DatabaseException If an error occurs while retrieving the observer information
 	 */
-	public static List<Observer> selectFromInquiryId(int inquiryId) {
+	public static List<Observer> selectFromInquiryId(int inquiryId) throws DatabaseException {
 		LOGGER.debug("Getting observers with inquiry id " + inquiryId);
 		ResultSet result;
 		try {
@@ -96,11 +91,11 @@ public final class ObserverDao {
 			} else {
 				result = results.getFirst();
 			}
-		} catch (SQLRunnerException exception) {
-			throw new DaoException("There was an error while retrieving the observer information!", exception);
+		} catch (SQLRunnerLoadException exception) {
+			throw new DataAccessException("There was an error while retrieving the observer information!", exception);
 		}
 		if (result == null) {
-			throw new DaoException("The first statement in " + OBSERVER_SELECT_INQUIRY_ID_SCRIPT + " did not yeild results!");
+			throw new DataAccessException("The first statement in " + OBSERVER_SELECT_INQUIRY_ID_SCRIPT + " did not yeild results!");
 		}
 		List<Observer> list = new ArrayList<>();
 		try {
@@ -109,13 +104,13 @@ public final class ObserverDao {
 				try {
 					userId = result.getInt("user_id");
 				} catch (SQLException exception) {
-					throw new DaoException("There was an error while retrieving the observer information", exception);
+					throw new DataAccessException("There was an error while retrieving the observer information", exception);
 				}
 				Observer observer = new Observer(inquiryId, userId);
 				list.add(observer);
 			}
 		} catch (SQLException exception) {
-			throw new DaoException("A database error occured!", exception);
+			throw new DataAccessException("A database error occured!", exception);
 		}
 		return list;
 	}
@@ -126,8 +121,9 @@ public final class ObserverDao {
 	 * 
 	 * @param userId The user id
 	 * @return The observers with the given id
+	 * @throws DatabaseException If an error occurs while retrieving the observer information
 	 */
-	public static List<Observer> selectFromUserId(int userId) {
+	public static List<Observer> selectFromUserId(int userId) throws DatabaseException {
 		LOGGER.debug("Getting observers with user id " + userId);
 		ResultSet result;
 		try {
@@ -137,11 +133,11 @@ public final class ObserverDao {
 			} else {
 				result = results.getFirst();
 			}
-		} catch (SQLRunnerException exception) {
-			throw new DaoException("There was an error while retrieving the observer information!", exception);
+		} catch (SQLRunnerLoadException exception) {
+			throw new DataAccessException("There was an error while retrieving the observer information!", exception);
 		}
 		if (result == null) {
-			throw new DaoException("The first statement in " + OBSERVER_SELECT_USER_ID_SCRIPT + " did not yeild results!");
+			throw new DataAccessException("The first statement in " + OBSERVER_SELECT_USER_ID_SCRIPT + " did not yeild results!");
 		}
 		List<Observer> list = new ArrayList<>();
 		try {
@@ -150,13 +146,13 @@ public final class ObserverDao {
 				try {
 					inquiryId = result.getInt("inquiry_id");
 				} catch (SQLException exception) {
-					throw new DaoException("There was an error while retrieving the observer information", exception);
+					throw new DataAccessException("There was an error while retrieving the observer information", exception);
 				}
 				Observer observer = new Observer(inquiryId, userId);
 				list.add(observer);
 			}
 		} catch (SQLException exception) {
-			throw new DaoException("A database error occured!", exception);
+			throw new DataAccessException("A database error occured!", exception);
 		}
 		return list;
 	}

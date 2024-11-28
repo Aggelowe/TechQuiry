@@ -14,13 +14,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.sqlite.SQLiteErrorCode;
-import org.sqlite.SQLiteException;
 
-import com.aggelowe.techquiry.common.exceptions.ConstructorException;
+import com.aggelowe.techquiry.common.exceptions.IllegalConstructionException;
 import com.aggelowe.techquiry.database.DatabaseManager;
 import com.aggelowe.techquiry.database.entities.UserData;
-import com.aggelowe.techquiry.database.exceptions.DaoException;
-import com.aggelowe.techquiry.database.exceptions.SQLRunnerException;
+import com.aggelowe.techquiry.database.exceptions.DataAccessException;
+import com.aggelowe.techquiry.database.exceptions.DatabaseException;
+import com.aggelowe.techquiry.database.exceptions.SQLRunnerLoadException;
 
 /**
  * The {@link UserDataDao} interface provides methods to interact with the
@@ -32,14 +32,14 @@ import com.aggelowe.techquiry.database.exceptions.SQLRunnerException;
 public final class UserDataDao {
 
 	/**
-	 * This constructor will throw an {@link ConstructorException} whenever invoked.
+	 * This constructor will throw an {@link IllegalConstructionException} whenever invoked.
 	 * {@link UserDataDao} objects should <b>not</b> be constructible.
 	 * 
-	 * @throws ConstructorException Will always be thrown when the constructor is
+	 * @throws IllegalConstructionException Will always be thrown when the constructor is
 	 *                              invoked.
 	 */
-	private UserDataDao() {
-		throw new ConstructorException(getClass().getName() + " objects should not be constructed!");
+	private UserDataDao() throws IllegalConstructionException {
+		throw new IllegalConstructionException(getClass().getName() + " objects should not be constructed!");
 	}
 
 	/**
@@ -47,8 +47,9 @@ public final class UserDataDao {
 	 * database.
 	 * 
 	 * @return The number of user data entries in the database
+	 * @throws DatabaseException If an error occurs while retrieving the user count
 	 */
-	public static int count() {
+	public static int count() throws DatabaseException {
 		LOGGER.debug("Getting user data entry count");
 		ResultSet result;
 		try {
@@ -58,17 +59,17 @@ public final class UserDataDao {
 			} else {
 				result = results.getFirst();
 			}
-		} catch (SQLRunnerException exception) {
-			throw new DaoException("There was an error while retrieving the user count!", exception);
+		} catch (SQLRunnerLoadException exception) {
+			throw new DataAccessException("There was an error while retrieving the user count!", exception);
 		}
 		if (result == null) {
-			throw new DaoException("The first statement in " + USER_DATA_COUNT_SCRIPT + " did not yeild a result!");
+			throw new DataAccessException("The first statement in " + USER_DATA_COUNT_SCRIPT + " did not yeild a result!");
 		}
 		int count;
 		try {
 			count = result.getInt("users_count");
 		} catch (SQLException exception) {
-			throw new DaoException("There was an error while retrieving the user count!", exception);
+			throw new DataAccessException("There was an error while retrieving the user count!", exception);
 		}
 		return count;
 	}
@@ -78,13 +79,14 @@ public final class UserDataDao {
 	 * application database.
 	 * 
 	 * @param id The id of the user data entry
+	 * @throws DatabaseException If an error occurs while deleting the user data entry
 	 */
-	public static void delete(int id) {
+	public static void delete(int id) throws DatabaseException {
 		LOGGER.debug("Deleting user with id " + id);
 		try {
 			DatabaseManager.getRunner().runScript(USER_DATA_DELETE_SCRIPT, id);
-		} catch (SQLRunnerException exception) {
-			throw new DaoException("There was an error while deleting the user data entry!", exception);
+		} catch (SQLRunnerLoadException exception) {
+			throw new DataAccessException("There was an error while deleting the user data entry!", exception);
 		}
 	}
 
@@ -93,9 +95,9 @@ public final class UserDataDao {
 	 * entry in the application database.
 	 * 
 	 * @param userData The user data to insert
-	 * @return The {@link SQLiteErrorCode}, if it exists
+	 * @throws DatabaseException If an error occurs while inserting the user data entry
 	 */
-	public static SQLiteErrorCode insert(UserData userData) {
+	public static void insert(UserData userData) throws DatabaseException {
 		LOGGER.debug("Inserting user data with information " + userData);
 		int id = userData.getId();
 		String firstName = userData.getFirstName();
@@ -103,14 +105,9 @@ public final class UserDataDao {
 		byte[] icon = userData.getIcon();
 		try {
 			DatabaseManager.getRunner().runScript(USER_DATA_INSERT_SCRIPT, id, firstName, lastName, icon);
-		} catch (SQLRunnerException exception) {
-			Throwable cause = exception.getCause();
-			if (cause instanceof SQLiteException) {
-				return ((SQLiteException) cause).getResultCode();
-			}
-			throw new DaoException("There was an error while inserting the user data entry!", exception);
+		} catch (SQLRunnerLoadException exception) {
+			throw new DataAccessException("There was an error while inserting the user data entry!", exception);
 		}
-		return null;
 	}
 
 	/**
@@ -121,8 +118,9 @@ public final class UserDataDao {
 	 * @param count  The number of entries
 	 * @param offset The number of entries to skip
 	 * @return The selected range
+	 * @throws DatabaseException If an error occurs while retrieving the user data information
 	 */
-	public static List<UserData> range(int count, int offset) {
+	public static List<UserData> range(int count, int offset) throws DatabaseException {
 		LOGGER.debug("Getting " + count + " user data entries with offset " + offset);
 		ResultSet result;
 		try {
@@ -132,11 +130,11 @@ public final class UserDataDao {
 			} else {
 				result = results.getFirst();
 			}
-		} catch (SQLRunnerException exception) {
-			throw new DaoException("There was an error while retrieving the user data information!", exception);
+		} catch (SQLRunnerLoadException exception) {
+			throw new DataAccessException("There was an error while retrieving the user data information!", exception);
 		}
 		if (result == null) {
-			throw new DaoException("The first statement in " + USER_DATA_RANGE_SCRIPT + " did not yeild results!");
+			throw new DataAccessException("The first statement in " + USER_DATA_RANGE_SCRIPT + " did not yeild results!");
 		}
 		List<UserData> range = new ArrayList<>(count);
 		try {
@@ -151,14 +149,14 @@ public final class UserDataDao {
 					lastName = result.getString("last_name");
 					icon = result.getBytes("icon");
 				} catch (SQLException exception) {
-					throw new DaoException("There was an error while retrieving the user data information", exception);
+					throw new DataAccessException("There was an error while retrieving the user data information", exception);
 				}
 				UserData userData = new UserData(id, firstName, lastName);
 				userData.setIcon(icon);
 				range.add(userData);
 			}
 		} catch (SQLException exception) {
-			throw new DaoException("A database error occured!", exception);
+			throw new DataAccessException("A database error occured!", exception);
 		}
 		return range;
 	}
@@ -169,8 +167,9 @@ public final class UserDataDao {
 	 * 
 	 * @param id The user id
 	 * @return The user data with the given id
+	 * @throws DatabaseException If an error occurs while retrieving the user data information
 	 */
-	public static UserData select(int id) {
+	public static UserData select(int id) throws DatabaseException {
 		LOGGER.debug("Getting user data with user id " + id);
 		ResultSet result;
 		try {
@@ -180,18 +179,18 @@ public final class UserDataDao {
 			} else {
 				result = results.getFirst();
 			}
-		} catch (SQLRunnerException exception) {
-			throw new DaoException("There was an error while retrieving the user data information!", exception);
+		} catch (SQLRunnerLoadException exception) {
+			throw new DataAccessException("There was an error while retrieving the user data information!", exception);
 		}
 		if (result == null) {
-			throw new DaoException("The first statement in " + USER_DATA_SELECT_SCRIPT + " did not yeild results!");
+			throw new DataAccessException("The first statement in " + USER_DATA_SELECT_SCRIPT + " did not yeild results!");
 		}
 		try {
 			if (!result.next()) {
 				return null;
 			}
 		} catch (SQLException exception) {
-			throw new DaoException("A database error occured!", exception);
+			throw new DataAccessException("A database error occured!", exception);
 		}
 		String firstName;
 		String lastName;
@@ -202,7 +201,7 @@ public final class UserDataDao {
 			lastName = result.getString("last_name");
 			icon = result.getBytes("icon");
 		} catch (SQLException exception) {
-			throw new DaoException("There was an error while retrieving the user data information", exception);
+			throw new DataAccessException("There was an error while retrieving the user data information", exception);
 		}
 		UserData userData = new UserData(id, firstName, lastName);
 		userData.setIcon(icon);
@@ -216,8 +215,9 @@ public final class UserDataDao {
 	 * 
 	 * @param userData The user data to update
 	 * @return The {@link SQLiteErrorCode}, if it exists
+	 * @throws DatabaseException If an error occurs while updating the user data entry
 	 */
-	public static SQLiteErrorCode update(UserData userData) {
+	public static void update(UserData userData) throws DatabaseException {
 		LOGGER.debug("Updating user data with data " + userData);
 		int id = userData.getId();
 		String firstName = userData.getFirstName();
@@ -225,14 +225,9 @@ public final class UserDataDao {
 		byte[] icon = userData.getIcon();
 		try {
 			DatabaseManager.getRunner().runScript(USER_DATA_UPDATE_SCRIPT, firstName, lastName, icon, id);
-		} catch (SQLRunnerException exception) {
-			Throwable cause = exception.getCause();
-			if (cause instanceof SQLiteException) {
-				return ((SQLiteException) cause).getResultCode();
-			}
-			throw new DaoException("There was an error while updating the user data entry!", exception);
+		} catch (SQLRunnerLoadException exception) {
+			throw new DataAccessException("There was an error while updating the user data entry!", exception);
 		}
-		return null;
 	}
 
 }

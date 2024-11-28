@@ -1,16 +1,16 @@
 package com.aggelowe.techquiry.database.exceptions;
 
-import com.aggelowe.techquiry.common.exceptions.ApplicationException;
+import com.aggelowe.techquiry.common.exceptions.TechQuiryException;
 
 /**
- * {@link DatabaseException} is an {@link ApplicationException} subclass that is
+ * {@link DatabaseException} is an {@link TechQuiryException} subclass that is
  * thrown when a database related operation is attempted to be performed but
  * fails.
  * 
  * @author Aggelowe
  * @since 0.0.1
  */
-public class DatabaseException extends ApplicationException {
+public class DatabaseException extends TechQuiryException {
 
 	/**
 	 * Constructs a new {@link DatabaseException} with the given message.

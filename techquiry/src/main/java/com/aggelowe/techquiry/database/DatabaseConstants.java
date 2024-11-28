@@ -1,6 +1,6 @@
 package com.aggelowe.techquiry.database;
 
-import com.aggelowe.techquiry.common.exceptions.ConstructorException;
+import com.aggelowe.techquiry.common.exceptions.IllegalConstructionException;
 
 /**
  * {@link DatabaseConstants} is a class that holds constants that are important
@@ -13,14 +13,14 @@ import com.aggelowe.techquiry.common.exceptions.ConstructorException;
 public final class DatabaseConstants {
 
 	/**
-	 * This constructor will throw an {@link ConstructorException} whenever invoked.
+	 * This constructor will throw an {@link IllegalConstructionException} whenever invoked.
 	 * {@link DatabaseConstants} objects should <b>not</b> be constructible.
 	 * 
-	 * @throws ConstructorException Will always be thrown when the constructor is
+	 * @throws IllegalConstructionException Will always be thrown when the constructor is
 	 *                              invoked.
 	 */
-	private DatabaseConstants() {
-		throw new ConstructorException(getClass().getName() + " objects should not be constructed!");
+	private DatabaseConstants() throws IllegalConstructionException {
+		throw new IllegalConstructionException(getClass().getName() + " objects should not be constructed!");
 	}
 
 	/**

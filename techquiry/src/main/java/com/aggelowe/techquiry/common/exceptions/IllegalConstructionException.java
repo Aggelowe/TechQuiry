@@ -1,21 +1,21 @@
 package com.aggelowe.techquiry.common.exceptions;
 
 /**
- * {@link ConstructorException} is an {@link ApplicationException}
+ * {@link IllegalConstructionException} is an {@link TechQuiryException}
  * subclass that is thrown when an invalid invocation of a constructor is
  * performed.
  * 
  * @author Aggelowe
  * @since 0.0.1
  */
-public class ConstructorException extends ApplicationException {
+public class IllegalConstructionException extends TechQuiryException {
 
 	/**
-	 * Constructs a new {@link ConstructorException} with the given message.
+	 * Constructs a new {@link IllegalConstructionException} with the given message.
 	 *
 	 * @param message The details message of the exception.
 	 */
-	public ConstructorException(String message) {
+	public IllegalConstructionException(String message) {
 		super(message);
 	}
 

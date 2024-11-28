@@ -21,6 +21,7 @@ public class SQLRunnerException extends DatabaseException {
 
 	/**
 	 * Constructs a new {@link SQLRunnerException} with the given message and cause.
+
 	 *
 	 * @param message The details message of the exception.
 	 * @param cause   The <i>cause</i> of the exception.

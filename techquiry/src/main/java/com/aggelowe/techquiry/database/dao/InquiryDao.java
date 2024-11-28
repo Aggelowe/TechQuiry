@@ -13,14 +13,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.sqlite.SQLiteErrorCode;
-import org.sqlite.SQLiteException;
-
-import com.aggelowe.techquiry.common.exceptions.ConstructorException;
+import com.aggelowe.techquiry.common.exceptions.IllegalConstructionException;
 import com.aggelowe.techquiry.database.DatabaseManager;
 import com.aggelowe.techquiry.database.entities.Inquiry;
-import com.aggelowe.techquiry.database.exceptions.DaoException;
-import com.aggelowe.techquiry.database.exceptions.SQLRunnerException;
+import com.aggelowe.techquiry.database.exceptions.DataAccessException;
+import com.aggelowe.techquiry.database.exceptions.DatabaseException;
+import com.aggelowe.techquiry.database.exceptions.SQLRunnerLoadException;
 
 /**
  * The {@link InquiryDao} interface provides methods to interact with the
@@ -32,14 +30,14 @@ import com.aggelowe.techquiry.database.exceptions.SQLRunnerException;
 public final class InquiryDao {
 
 	/**
-	 * This constructor will throw an {@link ConstructorException} whenever invoked.
+	 * This constructor will throw an {@link IllegalConstructionException} whenever invoked.
 	 * {@link InquiryDao} objects should <b>not</b> be constructible.
 	 * 
-	 * @throws ConstructorException Will always be thrown when the constructor is
+	 * @throws IllegalConstructionException Will always be thrown when the constructor is
 	 *                              invoked.
 	 */
-	private InquiryDao() {
-		throw new ConstructorException(getClass().getName() + " objects should not be constructed!");
+	private InquiryDao() throws IllegalConstructionException {
+		throw new IllegalConstructionException(getClass().getName() + " objects should not be constructed!");
 	}
 
 	/**
@@ -47,8 +45,9 @@ public final class InquiryDao {
 	 * database.
 	 * 
 	 * @return The number of inquiry entries in the database
+	 * @throws DatabaseException If an error occurs while retrieving the inquiry count
 	 */
-	public static int count() {
+	public static int count() throws DatabaseException {
 		LOGGER.debug("Getting inquiry entry count");
 		ResultSet result;
 		try {
@@ -58,18 +57,18 @@ public final class InquiryDao {
 			} else {
 				result = results.getFirst();
 			}
-		} catch (SQLRunnerException exception) {
-			throw new DaoException("There was an error while retrieving the inquiry count!", exception);
+		} catch (SQLRunnerLoadException exception) {
+			throw new DataAccessException("There was an error while retrieving the inquiry count!", exception);
 		}
 		DatabaseManager.getRunner().runScript(INQUIRY_COUNT_SCRIPT);
 		if (result == null) {
-			throw new DaoException("The first statement in " + INQUIRY_COUNT_SCRIPT + " did not yeild a result!");
+			throw new DataAccessException("The first statement in " + INQUIRY_COUNT_SCRIPT + " did not yeild a result!");
 		}
 		int count;
 		try {
 			count = result.getInt("inquiry_count");
 		} catch (SQLException exception) {
-			throw new DaoException("There was an error while retrieving the inquiry count!", exception);
+			throw new DataAccessException("There was an error while retrieving the inquiry count!", exception);
 		}
 		return count;
 	}
@@ -79,13 +78,14 @@ public final class InquiryDao {
 	 * application database.
 	 * 
 	 * @param id The id of the inquiry entry
+	 * @throws DatabaseException If an error occurs while deleting the inquiry entry
 	 */
-	public static void delete(int id) {
+	public static void delete(int id) throws DatabaseException {
 		LOGGER.debug("Deleting inquiry with id " + id);
 		try {
 			DatabaseManager.getRunner().runScript(INQUIRY_DELETE_SCRIPT, id);
-		} catch (SQLRunnerException exception) {
-			throw new DaoException("There was an error while deleting the inquiry entry!", exception);
+		} catch (SQLRunnerLoadException exception) {
+			throw new DataAccessException("There was an error while deleting the inquiry entry!", exception);
 		}
 	}
 
@@ -94,9 +94,9 @@ public final class InquiryDao {
 	 * in the application database.
 	 * 
 	 * @param inquiry The inquiry to insert
-	 * @return The {@link SQLiteErrorCode}, if it exists
+	 * @throws DatabaseException If an error occurs while inserting the inquiry entry
 	 */
-	public static SQLiteErrorCode insert(Inquiry inquiry) {
+	public static void insert(Inquiry inquiry) throws DatabaseException {
 		LOGGER.debug("Inserting inquiry with information " + inquiry);
 		int id = inquiry.getId();
 		int userId = inquiry.getUserId();
@@ -105,14 +105,9 @@ public final class InquiryDao {
 		boolean anonymous = inquiry.isAnonymous();
 		try {
 			DatabaseManager.getRunner().runScript(INQUIRY_INSERT_SCRIPT, id, userId, title, content, anonymous);
-		} catch (SQLRunnerException exception) {
-			Throwable cause = exception.getCause();
-			if (cause instanceof SQLiteException) {
-				return ((SQLiteException) cause).getResultCode();
-			}
-			throw new DaoException("There was an error while inserting the inquiry entry!", exception);
+		} catch (SQLRunnerLoadException exception) {
+			throw new DataAccessException("There was an error while inserting the inquiry entry!", exception);
 		}
-		return null;
 	}
 
 	/**
@@ -123,8 +118,9 @@ public final class InquiryDao {
 	 * @param count  The number of entries
 	 * @param offset The number of entries to skip
 	 * @return The selected range
+	 * @throws DatabaseException If an error occurs while retrieving the inquiry information
 	 */
-	public static List<Inquiry> range(int count, int offset) {
+	public static List<Inquiry> range(int count, int offset) throws DatabaseException {
 		LOGGER.debug("Getting " + count + " inquiry entries with offset " + offset);
 		ResultSet result;
 		try {
@@ -134,8 +130,8 @@ public final class InquiryDao {
 			} else {
 				result = results.getFirst();
 			}
-		} catch (SQLRunnerException exception) {
-			throw new DaoException("There was an error while retrieving the inquiry information!", exception);
+		} catch (SQLRunnerLoadException exception) {
+			throw new DataAccessException("There was an error while retrieving the inquiry information!", exception);
 		}
 		List<Inquiry> range = new ArrayList<>(count);
 		try {
@@ -152,13 +148,13 @@ public final class InquiryDao {
 					content = result.getString("content");
 					anonymous = result.getBoolean("anonymous");
 				} catch (SQLException exception) {
-					throw new DaoException("There was an error while retrieving the inquiry information", exception);
+					throw new DataAccessException("There was an error while retrieving the inquiry information", exception);
 				}
 				Inquiry inquiry = new Inquiry(id, userId, title, content, anonymous);
 				range.add(inquiry);
 			}
 		} catch (SQLException exception) {
-			throw new DaoException("A database error occured!", exception);
+			throw new DataAccessException("A database error occured!", exception);
 		}
 		return range;
 	}
@@ -169,8 +165,9 @@ public final class InquiryDao {
 	 * 
 	 * @param id The inquiry id
 	 * @return The inquiry with the given id
+	 * @throws DatabaseException If an error occurs while retrieving the inquiry information
 	 */
-	public static Inquiry select(int id) {
+	public static Inquiry select(int id) throws DatabaseException {
 		LOGGER.debug("Getting inquiry with inquiry id " + id);
 		ResultSet result;
 		try {
@@ -180,18 +177,18 @@ public final class InquiryDao {
 			} else {
 				result = results.getFirst();
 			}
-		} catch (SQLRunnerException exception) {
-			throw new DaoException("There was an error while retrieving the inquiry information!", exception);
+		} catch (SQLRunnerLoadException exception) {
+			throw new DataAccessException("There was an error while retrieving the inquiry information!", exception);
 		}
 		if (result == null) {
-			throw new DaoException("The first statement in " + INQUIRY_SELECT_SCRIPT + " did not yeild results!");
+			throw new DataAccessException("The first statement in " + INQUIRY_SELECT_SCRIPT + " did not yeild results!");
 		}
 		try {
 			if (!result.next()) {
 				return null;
 			}
 		} catch (SQLException exception) {
-			throw new DaoException("A database error occured!", exception);
+			throw new DataAccessException("A database error occured!", exception);
 		}
 		int userId;
 		String title;
@@ -203,7 +200,7 @@ public final class InquiryDao {
 			content = result.getString("content");
 			anonymous = result.getBoolean("anonymous");
 		} catch (SQLException exception) {
-			throw new DaoException("There was an error while retrieving the inquiry information", exception);
+			throw new DataAccessException("There was an error while retrieving the inquiry information", exception);
 		}
 		Inquiry inquiry = new Inquiry(id, userId, title, content, anonymous);
 		return inquiry;
@@ -215,10 +212,10 @@ public final class InquiryDao {
 	 * to select the correct entry.
 	 * 
 	 * @param inquiry The inquiry to update
-	 * @return The {@link SQLiteErrorCode}, if it exists
+	 * @throws DatabaseException If an error occurs while updating the inquiry entry
 	 */
-	public static SQLiteErrorCode update(Inquiry inquiry) {
-		LOGGER.debug("Updating inquiry with data " + inquiry);
+	public static void update(Inquiry inquiry) throws DatabaseException {
+		LOGGER.debug("rUpdating inquiry with data " + inquiry);
 		int id = inquiry.getId();
 		int userId = inquiry.getUserId();
 		String title = inquiry.getTitle();
@@ -226,14 +223,9 @@ public final class InquiryDao {
 		boolean anonymous = inquiry.isAnonymous();
 		try {
 			DatabaseManager.getRunner().runScript(INQUIRY_UPDATE_SCRIPT, userId, title, content, anonymous, id);
-		} catch (SQLRunnerException exception) {
-			Throwable cause = exception.getCause();
-			if (cause instanceof SQLiteException) {
-				return ((SQLiteException) cause).getResultCode();
-			}
-			throw new DaoException("There was an error while updating the inquiry entry!", exception);
+		} catch (SQLRunnerLoadException exception) {
+			throw new DataAccessException("There was an error while updating the inquiry entry!", exception);
 		}
-		return null;
 	}
 
 }

@@ -12,7 +12,8 @@ import java.sql.SQLException;
 import org.sqlite.SQLiteConfig;
 
 import com.aggelowe.techquiry.common.Environment;
-import com.aggelowe.techquiry.common.exceptions.ConstructorException;
+import com.aggelowe.techquiry.common.exceptions.IllegalConstructionException;
+import com.aggelowe.techquiry.database.exceptions.SQLRunnerException;
 
 /**
  * The {@link DatabaseManager} class is the one responsible for initializing the
@@ -30,14 +31,14 @@ public final class DatabaseManager {
 	private static SQLRunner runner;
 
 	/**
-	 * This constructor will throw an {@link ConstructorException} whenever invoked.
+	 * This constructor will throw an {@link IllegalConstructionException} whenever invoked.
 	 * {@link Database} objects should <b>not</b> be constructible.
 	 * 
-	 * @throws ConstructorException Will always be thrown when the constructor is
+	 * @throws IllegalConstructionException Will always be thrown when the constructor is
 	 *                              invoked.
 	 */
-	private DatabaseManager() {
-		throw new ConstructorException(getClass().getName() + " objects should not be constructed!");
+	private DatabaseManager() throws IllegalConstructionException {
+		throw new IllegalConstructionException(getClass().getName() + " objects should not be constructed!");
 	}
 
 	/**
@@ -62,17 +63,14 @@ public final class DatabaseManager {
 		}
 		runner = new SQLRunner(connection);
 		if (Environment.getSetup()) {
-			applySchema();
+			LOGGER.debug("Applying database schema");
+			try {
+				runner.runScript(CREATE_SCHEMA_SCRIPT);
+			} catch (SQLRunnerException exception) {
+				LOGGER.error("An error occured while applying the database schema!", exception);
+				System.exit(1);
+			}
 		}
-	}
-
-	/**
-	 * This method applies the TechQuiry database schema to the application's
-	 * database. If an error occurs during this process, the application will exit.
-	 */
-	private static void applySchema() {
-		LOGGER.debug("Applying database schema");
-		runner.runScript(CREATE_SCHEMA_SCRIPT);
 	}
 
 	/**

@@ -14,15 +14,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.sqlite.SQLiteErrorCode;
-import org.sqlite.SQLiteException;
-
 import com.aggelowe.techquiry.common.Utilities;
-import com.aggelowe.techquiry.common.exceptions.ConstructorException;
+import com.aggelowe.techquiry.common.exceptions.IllegalConstructionException;
 import com.aggelowe.techquiry.database.DatabaseManager;
 import com.aggelowe.techquiry.database.entities.UserLogin;
-import com.aggelowe.techquiry.database.exceptions.DaoException;
-import com.aggelowe.techquiry.database.exceptions.SQLRunnerException;
+import com.aggelowe.techquiry.database.exceptions.DataAccessException;
+import com.aggelowe.techquiry.database.exceptions.DatabaseException;
+import com.aggelowe.techquiry.database.exceptions.SQLRunnerLoadException;
 
 /**
  * The {@link UserLoginDao} interface provides methods to interact with the
@@ -34,14 +32,14 @@ import com.aggelowe.techquiry.database.exceptions.SQLRunnerException;
 public final class UserLoginDao {
 
 	/**
-	 * This constructor will throw an {@link ConstructorException} whenever invoked.
+	 * This constructor will throw an {@link IllegalConstructionException} whenever invoked.
 	 * {@link UserLoginDao} objects should <b>not</b> be constructible.
 	 * 
-	 * @throws ConstructorException Will always be thrown when the constructor is
+	 * @throws IllegalConstructionException Will always be thrown when the constructor is
 	 *                              invoked.
 	 */
-	private UserLoginDao() {
-		throw new ConstructorException(getClass().getName() + " objects should not be constructed!");
+	private UserLoginDao() throws IllegalConstructionException {
+		throw new IllegalConstructionException(getClass().getName() + " objects should not be constructed!");
 	}
 
 	/**
@@ -49,8 +47,9 @@ public final class UserLoginDao {
 	 * database.
 	 * 
 	 * @return The number of user logins in the database
+	 * @throws DatabaseException If an error occurs while retrieving the user count
 	 */
-	public static int count() {
+	public static int count() throws DatabaseException {
 		LOGGER.debug("Getting user login entry count");
 		ResultSet result;
 		try {
@@ -60,17 +59,17 @@ public final class UserLoginDao {
 			} else {
 				result = results.getFirst();
 			}
-		} catch (SQLRunnerException exception) {
-			throw new DaoException("There was an error while retrieving the user count!", exception);
+		} catch (SQLRunnerLoadException exception) {
+			throw new DataAccessException("There was an error while retrieving the user count!", exception);
 		}
 		if (result == null) {
-			throw new DaoException("The first statement in " + USER_LOGIN_COUNT_SCRIPT + " did not yeild a result!");
+			throw new DataAccessException("The first statement in " + USER_LOGIN_COUNT_SCRIPT + " did not yeild a result!");
 		}
 		int count;
 		try {
 			count = result.getInt("users_count");
 		} catch (SQLException exception) {
-			throw new DaoException("There was an error while retrieving the user count!", exception);
+			throw new DataAccessException("There was an error while retrieving the user count!", exception);
 		}
 		return count;
 	}
@@ -80,13 +79,14 @@ public final class UserLoginDao {
 	 * application database.
 	 * 
 	 * @param id The id of the user login entry
+	 * @throws DatabaseException If an error occurs while deleting the user login entry
 	 */
-	public static void delete(int id) {
+	public static void delete(int id) throws DatabaseException {
 		LOGGER.debug("Deleting user with id " + id);
 		try {
 			DatabaseManager.getRunner().runScript(USER_LOGIN_DELETE_SCRIPT, id);
-		} catch (SQLRunnerException exception) {
-			throw new DaoException("There was an error while deleting the user login entry!", exception);
+		} catch (SQLRunnerLoadException exception) {
+			throw new DataAccessException("There was an error while deleting the user login entry!", exception);
 		}
 	}
 
@@ -95,9 +95,9 @@ public final class UserLoginDao {
 	 * entry in the application database.
 	 * 
 	 * @param userLogin The user login to insert
-	 * @return The {@link SQLiteErrorCode}, if it exists
+	 * @throws DatabaseException If an error occurs while inserting the user login entry
 	 */
-	public static SQLiteErrorCode insert(UserLogin userLogin) {
+	public static void insert(UserLogin userLogin) throws DatabaseException {
 		LOGGER.debug("Inserting user login with information " + userLogin);
 		int id = userLogin.getId();
 		String username = userLogin.getUsername();
@@ -107,14 +107,9 @@ public final class UserLoginDao {
 		String encodedSalt = Utilities.encodeBase64(passwordSalt);
 		try {
 			DatabaseManager.getRunner().runScript(USER_LOGIN_INSERT_SCRIPT, id, username, encodedHash, encodedSalt);
-		} catch (SQLRunnerException exception) {
-			Throwable cause = exception.getCause();
-			if (cause instanceof SQLiteException) {
-				return ((SQLiteException) cause).getResultCode();
-			}
-			throw new DaoException("There was an error while inserting the user login entry!", exception);
+		} catch (SQLRunnerLoadException exception) {
+			throw new DataAccessException("There was an error while inserting the user login entry!", exception);
 		}
-		return null;
 	}
 
 	/**
@@ -125,8 +120,9 @@ public final class UserLoginDao {
 	 * @param count  The number of entries
 	 * @param offset The number of entries to skip
 	 * @return The selected range
+	 * @throws DatabaseException If an error occurs while retrieving the user login information
 	 */
-	public static List<UserLogin> range(int count, int offset) {
+	public static List<UserLogin> range(int count, int offset) throws DatabaseException {
 		LOGGER.debug("Getting " + count + " user login entries with offset " + offset);
 		ResultSet result;
 		try {
@@ -136,11 +132,11 @@ public final class UserLoginDao {
 			} else {
 				result = results.getFirst();
 			}
-		} catch (SQLRunnerException exception) {
-			throw new DaoException("There was an error while retrieving the user login information!", exception);
+		} catch (SQLRunnerLoadException exception) {
+			throw new DataAccessException("There was an error while retrieving the user login information!", exception);
 		}
 		if (result == null) {
-			throw new DaoException("The first statement in " + USER_LOGIN_RANGE_SCRIPT + " did not yeild results!");
+			throw new DataAccessException("The first statement in " + USER_LOGIN_RANGE_SCRIPT + " did not yeild results!");
 		}
 		List<UserLogin> range = new ArrayList<>(count);
 		try {
@@ -155,7 +151,7 @@ public final class UserLoginDao {
 					encodedHash = result.getString("password_hash");
 					encodedSalt = result.getString("password_salt");
 				} catch (SQLException exception) {
-					throw new DaoException("There was an error while retrieving the user login information", exception);
+					throw new DataAccessException("There was an error while retrieving the user login information", exception);
 				}
 				byte[] passwordHash;
 				byte[] passwordSalt;
@@ -163,13 +159,13 @@ public final class UserLoginDao {
 					passwordHash = Utilities.decodeBase64(encodedHash);
 					passwordSalt = Utilities.decodeBase64(encodedSalt);
 				} catch (IllegalArgumentException exception) {
-					throw new DaoException("There was an error while retrieving the user login information!", exception);
+					throw new DataAccessException("There was an error while retrieving the user login information!", exception);
 				}
 				UserLogin userLogin = new UserLogin(id, username, passwordHash, passwordSalt);
 				range.add(userLogin);
 			}
 		} catch (SQLException exception) {
-			throw new DaoException("A database error occured!", exception);
+			throw new DataAccessException("A database error occured!", exception);
 		}
 		return range;
 	}
@@ -180,8 +176,9 @@ public final class UserLoginDao {
 	 * 
 	 * @param id The user id
 	 * @return The user login with the given id
+	 * @throws DatabaseException If an error occurs while retrieving the user login information
 	 */
-	public static UserLogin select(int id) {
+	public static UserLogin select(int id) throws DatabaseException {
 		LOGGER.debug("Getting user login with user id " + id);
 		ResultSet result;
 		try {
@@ -191,18 +188,18 @@ public final class UserLoginDao {
 			} else {
 				result = results.getFirst();
 			}
-		} catch (SQLRunnerException exception) {
-			throw new DaoException("There was an error while retrieving the user login information!", exception);
+		} catch (SQLRunnerLoadException exception) {
+			throw new DataAccessException("There was an error while retrieving the user login information!", exception);
 		}
 		if (result == null) {
-			throw new DaoException("The first statement in " + USER_LOGIN_SELECT_SCRIPT + " did not yeild results!");
+			throw new DataAccessException("The first statement in " + USER_LOGIN_SELECT_SCRIPT + " did not yeild results!");
 		}
 		try {
 			if (!result.next()) {
 				return null;
 			}
 		} catch (SQLException exception) {
-			throw new DaoException("A database error occured!", exception);
+			throw new DataAccessException("A database error occured!", exception);
 		}
 		String username;
 		String encodedHash;
@@ -212,7 +209,7 @@ public final class UserLoginDao {
 			encodedHash = result.getString("password_hash");
 			encodedSalt = result.getString("password_salt");
 		} catch (SQLException exception) {
-			throw new DaoException("There was an error while retrieving the user login information", exception);
+			throw new DataAccessException("There was an error while retrieving the user login information", exception);
 		}
 		byte[] passwordHash;
 		byte[] passwordSalt;
@@ -220,7 +217,7 @@ public final class UserLoginDao {
 			passwordHash = Utilities.decodeBase64(encodedHash);
 			passwordSalt = Utilities.decodeBase64(encodedSalt);
 		} catch (IllegalArgumentException exception) {
-			throw new DaoException("There was an error while retrieving the user login information!", exception);
+			throw new DataAccessException("There was an error while retrieving the user login information!", exception);
 		}
 		UserLogin userLogin = new UserLogin(id, username, passwordHash, passwordSalt);
 		return userLogin;
@@ -232,8 +229,9 @@ public final class UserLoginDao {
 	 * 
 	 * @param username The username
 	 * @return The user login with the given username
+	 * @throws DatabaseException If an error occurs while retrieving the user login information
 	 */
-	public static UserLogin selectFromUsername(String username) {
+	public static UserLogin selectFromUsername(String username) throws DatabaseException {
 		LOGGER.debug("Getting user login with username " + username);
 		ResultSet result;
 		try {
@@ -243,18 +241,18 @@ public final class UserLoginDao {
 			} else {
 				result = results.getFirst();
 			}
-		} catch (SQLRunnerException exception) {
-			throw new DaoException("There was an error while retrieving the user login information!", exception);
+		} catch (SQLRunnerLoadException exception) {
+			throw new DataAccessException("There was an error while retrieving the user login information!", exception);
 		}
 		if (result == null) {
-			throw new DaoException("The first statement in " + USER_LOGIN_SELECT_USERNAME_SCRIPT + " did not yeild results!");
+			throw new DataAccessException("The first statement in " + USER_LOGIN_SELECT_USERNAME_SCRIPT + " did not yeild results!");
 		}
 		try {
 			if (!result.next()) {
 				return null;
 			}
 		} catch (SQLException exception) {
-			throw new DaoException("A database error occured!", exception);
+			throw new DataAccessException("A database error occured!", exception);
 		}
 		int id;
 		String encodedHash;
@@ -264,7 +262,7 @@ public final class UserLoginDao {
 			encodedHash = result.getString("password_hash");
 			encodedSalt = result.getString("password_salt");
 		} catch (SQLException exception) {
-			throw new DaoException("There was an error while retrieving the user login information", exception);
+			throw new DataAccessException("There was an error while retrieving the user login information", exception);
 		}
 		byte[] passwordHash;
 		byte[] passwordSalt;
@@ -272,7 +270,7 @@ public final class UserLoginDao {
 			passwordHash = Utilities.decodeBase64(encodedHash);
 			passwordSalt = Utilities.decodeBase64(encodedSalt);
 		} catch (IllegalArgumentException exception) {
-			throw new DaoException("There was an error while retrieving the user login information!", exception);
+			throw new DataAccessException("There was an error while retrieving the user login information!", exception);
 		}
 		UserLogin userLogin = new UserLogin(id, username, passwordHash, passwordSalt);
 		return userLogin;
@@ -284,9 +282,9 @@ public final class UserLoginDao {
 	 * to select the correct entry.
 	 * 
 	 * @param userLogin The user login to update
-	 * @return The {@link SQLiteErrorCode}, if it exists
+	 * @throws DatabaseException If an error occurs while updating the user login entry
 	 */
-	public static SQLiteErrorCode update(UserLogin userLogin) {
+	public static void update(UserLogin userLogin) throws DatabaseException {
 		LOGGER.debug("Updating user login with data " + userLogin);
 		int id = userLogin.getId();
 		String username = userLogin.getUsername();
@@ -296,14 +294,9 @@ public final class UserLoginDao {
 		String encodedSalt = Utilities.encodeBase64(passwordSalt);
 		try {
 			DatabaseManager.getRunner().runScript(USER_LOGIN_UPDATE_SCRIPT, username, encodedHash, encodedSalt, id);
-		} catch (SQLRunnerException exception) {
-			Throwable cause = exception.getCause();
-			if (cause instanceof SQLiteException) {
-				return ((SQLiteException) cause).getResultCode();
-			}
-			throw new DaoException("There was an error while updating the user login entry!", exception);
+		} catch (SQLRunnerLoadException exception) {
+			throw new DataAccessException("There was an error while updating the user login entry!", exception);
 		}
-		return null;
 	}
 
 }

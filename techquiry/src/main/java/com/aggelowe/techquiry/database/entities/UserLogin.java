@@ -1,7 +1,6 @@
 package com.aggelowe.techquiry.database.entities;
 
 import com.aggelowe.techquiry.common.Utilities;
-import com.aggelowe.techquiry.database.exceptions.EntityException;
 
 /**
  * The {@link UserLogin} class represents a user login of the TechQuiry
@@ -42,9 +41,6 @@ public class UserLogin {
 	 * @param passwordSalt The salt used in the password hash
 	 */
 	public UserLogin(int id, String username, byte[] passwordHash, byte[] passwordSalt) {
-		if (username == null || passwordHash == null || passwordSalt == null) {
-			throw new EntityException("The provided user login information should not be NULL!");
-		}
 		this.id = id;
 		this.username = username;
 		this.passwordHash = passwordHash;
@@ -93,9 +89,6 @@ public class UserLogin {
 	 * @param username The user's username
 	 */
 	public void setUsername(String username) {
-		if (username == null) {
-			throw new EntityException("The provided username should not be NULL!");
-		}
 		this.username = username;
 	}
 
@@ -105,9 +98,6 @@ public class UserLogin {
 	 * @param passwordHash The user's password hash
 	 */
 	public void setPasswordHash(byte[] passwordHash) {
-		if (passwordHash == null) {
-			throw new EntityException("The provided password hash should not be NULL!");
-		}
 		this.passwordHash = passwordHash;
 	}
 
@@ -117,9 +107,6 @@ public class UserLogin {
 	 * @param passwordSalt The user password's salt
 	 */
 	public void setPasswordSalt(byte[] passwordSalt) {
-		if (passwordSalt == null) {
-			throw new EntityException("The provided password salt should not be NULL!");
-		}
 		this.passwordSalt = passwordSalt;
 	}
 

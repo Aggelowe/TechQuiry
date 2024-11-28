@@ -5,8 +5,8 @@ import static com.aggelowe.techquiry.common.Constants.EXECUTION_DIRECTORY;
 import java.io.File;
 import java.util.function.Function;
 
-import com.aggelowe.techquiry.common.exceptions.ConstructorException;
-import com.aggelowe.techquiry.common.exceptions.EnvironmentException;
+import com.aggelowe.techquiry.common.exceptions.IllegalConstructionException;
+import com.aggelowe.techquiry.common.exceptions.InvalidEnvironmentVariableException;
 
 /**
  * The {@link Environment} class is the one responsible for providing the
@@ -26,10 +26,10 @@ public final class Environment {
 		try {
 			value = Integer.valueOf(orignal);
 		} catch (NumberFormatException exception) {
-			throw new EnvironmentException("The given port is not an integer.", exception);
+			throw new InvalidEnvironmentVariableException("The given port is not an integer.", exception);
 		}
 		if (value <= 0 || value >= 65535) {
-			throw new EnvironmentException("The given port is not within the valid port range.");
+			throw new InvalidEnvironmentVariableException("The given port is not within the valid port range.");
 		}
 		return value;
 	});
@@ -40,10 +40,10 @@ public final class Environment {
 	private static final Entry<File> WORK_DIRECTORY = new Entry<>("TQ_PATH", new File(EXECUTION_DIRECTORY), (original) -> {
 		File file = new File(original);
 		if (!file.exists()) {
-			throw new EnvironmentException("The given path does not exist.");
+			throw new InvalidEnvironmentVariableException("The given path does not exist.");
 		}
 		if (!file.isDirectory()) {
-			throw new EnvironmentException("The given path is not a directory.");
+			throw new InvalidEnvironmentVariableException("The given path is not a directory.");
 		}
 		return file;
 	});
@@ -51,7 +51,7 @@ public final class Environment {
 	/**
 	 * The {@link Entry} containing whether to perform the initial setup.
 	 */
-	private static final Entry<Boolean> SETUP = new Entry<>("TQ_SETUP", (original) -> Boolean.parseBoolean(original));
+	private static final Entry<Boolean> SETUP = new Entry<>("TQ_SETUP", false, (original) -> Boolean.parseBoolean(original));
 
 	/**
 	 * The {@link Entry} class is responsible for loading, converting and storing
@@ -79,31 +79,17 @@ public final class Environment {
 		 * @param converter The {@link Function} that defines how to convert the value
 		 *                  from a {@link String}
 		 */
-		public Entry(String key, Output fallback, Function<String, Output> converter) {
+		public Entry(String key, Output fallback, IConverter<Output> converter) {
 			final String original = System.getenv(key);
 			Output value = fallback;
 			if (original != null) {
 				try {
-					value = converter.apply(original);
+					value = converter.convert(original);
 				} catch (Exception exception) {
 					Constants.LOGGER.error(exception);
 				}
 			}
 			this.value = value;
-		}
-
-		/**
-		 * This constructor constructs a new {@link Entry} object. The value is obtained
-		 * from the environment variables using the given key. If the variable found, it
-		 * is converted to the {@link Output} type using the given converter. If it is
-		 * not found or the conversion fails, NULL is used instead.
-		 * 
-		 * @param key       The key of the environment variable
-		 * @param converter The {@link Function} that defines how to convert the value
-		 *                  from a {@link String}
-		 */
-		public Entry(String key, Function<String, Output> converter) {
-			this(key, null, converter);
 		}
 
 		/**
@@ -118,14 +104,35 @@ public final class Environment {
 	}
 
 	/**
-	 * This constructor will throw an {@link ConstructorException} whenever invoked.
+	 * The {@link IConverter} functional interface is used to define how a string
+	 * can be converted to the target type.
+	 * 
+	 * @param <Output> The target type
+	 */
+	@FunctionalInterface
+	private interface IConverter<Output> {
+
+		/**
+		 * This method converts the {@link String} provided into an object of type
+		 * {@link Output}.
+		 * 
+		 * @param original The string to convert to the target type
+		 * @return The converted value
+		 * @throws InvalidEnvironmentVariableException If an error occurs during the conversion
+		 */
+		Output convert(String original) throws InvalidEnvironmentVariableException;
+
+	}
+
+	/**
+	 * This constructor will throw an {@link IllegalConstructionException} whenever invoked.
 	 * {@link Environment} objects should <b>not</b> be constructible.
 	 * 
-	 * @throws ConstructorException Will always be thrown when the constructor is
+	 * @throws IllegalConstructionException Will always be thrown when the constructor is
 	 *                              invoked.
 	 */
-	private Environment() {
-		throw new ConstructorException(getClass().getName() + " objects should not be constructed!");
+	private Environment() throws IllegalConstructionException {
+		throw new IllegalConstructionException(getClass().getName() + " objects should not be constructed!");
 	}
 
 	/**
@@ -155,8 +162,7 @@ public final class Environment {
 	 * @return Whether to perform the initial setup
 	 */
 	public static boolean getSetup() {
-		Boolean value = SETUP.get();
-		return value == null ? false : value;
+		return SETUP.get();
 	}
 
 }

@@ -1,7 +1,6 @@
 package com.aggelowe.techquiry.database.entities;
 
 import com.aggelowe.techquiry.common.Utilities;
-import com.aggelowe.techquiry.database.exceptions.EntityException;
 
 /**
  * The {@link UserData} class represents a user data entry of the TechQuiry
@@ -41,9 +40,6 @@ public class UserData {
 	 * @param passwordHash The user's last name
 	 */
 	public UserData(int id, String firstName, String lastName) {
-		if (firstName == null || lastName == null) {
-			throw new EntityException("The provided user data information should not be NULL!");
-		}
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -91,9 +87,6 @@ public class UserData {
 	 * @param firstName The user's first name
 	 */
 	public void setFirstName(String firstName) {
-		if (firstName == null) {
-			throw new EntityException("The provided first name should not be NULL!");
-		}
 		this.firstName = firstName;
 	}
 
@@ -103,9 +96,6 @@ public class UserData {
 	 * @param lastName The user's last name
 	 */
 	public void setLastName(String lastName) {
-		if (lastName == null) {
-			throw new EntityException("The provided last name should not be NULL!");
-		}
 		this.lastName = lastName;
 	}
 	

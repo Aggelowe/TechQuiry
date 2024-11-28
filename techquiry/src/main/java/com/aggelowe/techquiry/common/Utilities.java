@@ -1,10 +1,11 @@
 package com.aggelowe.techquiry.common;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Base64.Decoder;
 import java.util.Base64.Encoder;
 
-import com.aggelowe.techquiry.common.exceptions.ConstructorException;
+import com.aggelowe.techquiry.common.exceptions.IllegalConstructionException;
 
 /**
  * The {@link Utilities} contains several utility methods that are important for
@@ -16,14 +17,14 @@ import com.aggelowe.techquiry.common.exceptions.ConstructorException;
 public final class Utilities {
 
 	/**
-	 * This constructor will throw an {@link ConstructorException} whenever
+	 * This constructor will throw an {@link IllegalConstructionException} whenever
 	 * invoked. {@link Utilities} objects should <b>not</b> be constructible.
 	 * 
-	 * @throws ConstructorException Will always be thrown when the
+	 * @throws IllegalConstructionException Will always be thrown when the
 	 *                                      constructor is invoked.
 	 */
-	private Utilities() {
-		throw new ConstructorException(getClass().getName() + " objects should not be constructed!");
+	private Utilities() throws IllegalConstructionException {
+		throw new IllegalConstructionException(getClass().getName() + " objects should not be constructed!");
 	}
 
 	/**
@@ -36,7 +37,7 @@ public final class Utilities {
 	public static String encodeBase64(byte[] source) {
 		Encoder encoder = Base64.getEncoder();
 		byte[] raw = encoder.encode(source);
-		String encoded = new String(raw);
+		String encoded = new String(raw, StandardCharsets.UTF_8);
 		return encoded;
 	}
 
@@ -50,7 +51,7 @@ public final class Utilities {
 	 */
 	public static byte[] decodeBase64(String encoded) {
 		Decoder decoder = Base64.getDecoder();
-		byte[] raw = encoded.getBytes();
+		byte[] raw = encoded.getBytes(StandardCharsets.UTF_8);
 		byte[] decoded = decoder.decode(raw);
 		return decoded;
 	}

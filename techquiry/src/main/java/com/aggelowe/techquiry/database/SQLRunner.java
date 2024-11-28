@@ -15,6 +15,8 @@ import java.util.List;
 
 import com.aggelowe.techquiry.common.Constants;
 import com.aggelowe.techquiry.database.exceptions.SQLRunnerException;
+import com.aggelowe.techquiry.database.exceptions.SQLRunnerExecuteException;
+import com.aggelowe.techquiry.database.exceptions.SQLRunnerLoadException;
 
 /**
  * The {@link SQLRunner} class is responsible for executing the provided SQL
@@ -56,8 +58,9 @@ public final class SQLRunner {
 	 * @param stream     The stream reading the file containing the SQL statements
 	 * @param parameters The parameters for the statements
 	 * @return The list of {@link ResultSet} objects
+	 * @throws SQLRunnerException If an error occurs while loading or running the script
 	 */
-	public List<ResultSet> runScript(InputStream stream, Object... parameters) {
+	public List<ResultSet> runScript(InputStream stream, Object... parameters) throws SQLRunnerException {
 		synchronized (connection) {
 			List<PreparedStatement> statements = loadStatements(stream);
 			return executeStatements(statements, parameters);
@@ -73,8 +76,9 @@ public final class SQLRunner {
 	 * @param stream     The stream reading the file containing the SQL statements
 	 * @param parameters The parameters for the statements
 	 * @return The list of {@link ResultSet} objects
+	 * @throws SQLRunnerException If an error occurs while loading or running the script
 	 */
-	public List<ResultSet> runScript(String path, Object... parameters) {
+	public List<ResultSet> runScript(String path, Object... parameters) throws SQLRunnerException {
 		InputStream stream = SQLRunner.class.getResourceAsStream(path);
 		return runScript(stream, parameters);
 	}
@@ -87,8 +91,10 @@ public final class SQLRunner {
 	 * 
 	 * @param stream The stream reading the file containing the SQL statements
 	 * @return The list of {@link PreparedStatement} objects
+	 * @throws SQLRunnerLoadException If an error occurs while the statements are
+	 *                                being loaded	
 	 */
-	private List<PreparedStatement> loadStatements(InputStream stream) {
+	private List<PreparedStatement> loadStatements(InputStream stream) throws SQLRunnerLoadException {
 		List<PreparedStatement> statements = new LinkedList<PreparedStatement>();
 		BufferedInputStream buffer = new BufferedInputStream(stream);
 		StringBuilder commandBuilder = new StringBuilder();
@@ -162,14 +168,14 @@ public final class SQLRunner {
 				previous = character;
 			}
 		} catch (IOException exception) {
-			throw new SQLRunnerException("An exception occured while reading the SQL script!", exception);
+			throw new SQLRunnerLoadException("An exception occured while reading the SQL script!", exception);
 		} catch (SQLException exception) {
-			throw new SQLRunnerException("The SQL statement could not be constructed!", exception);
+			throw new SQLRunnerLoadException("The SQL statement could not be constructed!", exception);
 		} finally {
 			try {
 				buffer.close();
 			} catch (IOException exception) {
-				throw new SQLRunnerException("The SQL script input stream could not be closed!", exception);
+				throw new SQLRunnerLoadException("The SQL script input stream could not be closed!", exception);
 			}
 		}
 		return statements;
@@ -183,8 +189,9 @@ public final class SQLRunner {
 	 * @param statement  The {@link PreparedStatement} to execute
 	 * @param parameters The parameters for the statement
 	 * @return The results of the execution
+	 * @throws SQLRunnerExecuteException If an error occurs while executing the statement
 	 */
-	private ResultSet executeStatement(PreparedStatement statement, Object... parameters) {
+	private ResultSet executeStatement(PreparedStatement statement, Object... parameters) throws SQLRunnerExecuteException {
 		ResultSet result;
 		try {
 			int index = 1;
@@ -195,7 +202,7 @@ public final class SQLRunner {
 			statement.execute();
 			result = statement.getResultSet();
 		} catch (SQLException exception) {
-			throw new SQLRunnerException("An error occured while executing the given statement!", exception);
+			throw new SQLRunnerExecuteException("An error occured while executing the given statement!", exception);
 		}
 		return result;
 	}
@@ -208,8 +215,9 @@ public final class SQLRunner {
 	 * @param statements The list of statements to execute
 	 * @param parameters The parameters for the statements
 	 * @return The list of the result of each executed statement
+	 * @throws SQLRunnerExecuteException If an error occurs while executing the statements
 	 */
-	private List<ResultSet> executeStatements(List<PreparedStatement> statements, Object... parameters) {
+	private List<ResultSet> executeStatements(List<PreparedStatement> statements, Object... parameters) throws SQLRunnerExecuteException {
 		List<ResultSet> results = new ArrayList<>(statements.size());
 		try {
 			for (PreparedStatement statement : statements) {
@@ -228,9 +236,9 @@ public final class SQLRunner {
 			try {
 				connection.rollback();
 			} catch (SQLException rollback) {
-				throw new SQLRunnerException("Could not rollback failed commit!", rollback);
+				throw new SQLRunnerExecuteException("Could not rollback failed commit!", rollback);
 			}
-			throw new SQLRunnerException("An error occured while executing the provided SQL statements!", exception);
+			throw new SQLRunnerExecuteException("An error occured while executing the provided SQL statements!", exception);
 		}
 		return results;
 	}
