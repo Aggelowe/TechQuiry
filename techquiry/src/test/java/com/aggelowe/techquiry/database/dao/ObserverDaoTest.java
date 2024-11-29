@@ -19,13 +19,13 @@ import org.junit.jupiter.api.Test;
 import org.sqlite.SQLiteConfig;
 
 import com.aggelowe.techquiry.database.SQLRunner;
-import com.aggelowe.techquiry.database.entities.Inquiry;
+import com.aggelowe.techquiry.database.entities.Observer;
 import com.aggelowe.techquiry.database.exceptions.SQLRunnerExecuteException;
 
-public class InquiryDaoTest {
+public class ObserverDaoTest {
 
 	Connection connection;
-	InquiryDao inquiryDao;
+	ObserverDao observerDao;
 
 	@BeforeEach
 	public void initialize() {
@@ -34,7 +34,7 @@ public class InquiryDaoTest {
 		config.enforceForeignKeys(true);
 		connection = assertDoesNotThrow(() -> DriverManager.getConnection(databaseUrl, config.toProperties()));
 		assertDoesNotThrow(() -> connection.setAutoCommit(false));
-		inquiryDao = new InquiryDao(new SQLRunner(connection));
+		observerDao = new ObserverDao(new SQLRunner(connection));
 		assertDoesNotThrow(() -> {
 			Statement statement = connection.createStatement();
 			statement.execute("CREATE TABLE IF NOT EXISTS \"user_login\" (\n"
@@ -54,11 +54,23 @@ public class InquiryDaoTest {
 							+ "	FOREIGN KEY (\"user_id\") REFERENCES \"user_login\"(\"user_id\")\n"
 							+ "	ON UPDATE CASCADE ON DELETE CASCADE\n"
 							+ ");");
+			statement.execute("CREATE TABLE IF NOT EXISTS \"observer\" (\n"
+							+ "	\"inquiry_id\" INTEGER NOT NULL,\n"
+							+ "	\"user_id\" INTEGER NOT NULL,\n"
+							+ "	PRIMARY KEY(\"inquiry_id\", \"user_id\"),\n"
+							+ "	FOREIGN KEY (\"inquiry_id\") REFERENCES \"inquiry\"(\"inquiry_id\")\n"
+							+ "	ON UPDATE CASCADE ON DELETE CASCADE,\n"
+							+ "	FOREIGN KEY (\"user_id\") REFERENCES \"user_login\"(\"user_id\")\n"
+							+ "	ON UPDATE CASCADE ON DELETE CASCADE\n"
+							+ ");");
 			statement.execute("INSERT INTO user_login(user_id, username, password_hash, password_salt) VALUES(0, 'alice', 'MTIzNDU2Nzg=', 'MTIzNA==');");
 			statement.execute("INSERT INTO user_login(user_id, username, password_hash, password_salt) VALUES(1, 'bob', 'cGFzc3dvcmQ=', 'cGFzcw==');");
 			statement.execute("INSERT INTO inquiry(inquiry_id, user_id, title, content, anonymous) VALUES(0, 1, 'Test',	'Test Content', true);");
 			statement.execute("INSERT INTO inquiry(inquiry_id, user_id, title, content, anonymous) VALUES(1, 0, 'Example',	'Example Content', true);");
 			statement.execute("INSERT INTO inquiry(inquiry_id, user_id, title, content, anonymous) VALUES(2, 0, 'Instance',	'Instance Content', true);");
+			statement.execute("INSERT INTO observer(inquiry_id, user_id) VALUES(0, 0);");
+			statement.execute("INSERT INTO observer(inquiry_id, user_id) VALUES(0, 1);");
+			statement.execute("INSERT INTO observer(inquiry_id, user_id) VALUES(1, 1);");
 			connection.commit();
 		});
 	}
@@ -71,87 +83,49 @@ public class InquiryDaoTest {
 	}
 
 	@Test
-	public void testCountSuccess() {
-		int count = assertDoesNotThrow(() -> inquiryDao.count());
-		assertEquals(3, count);
-	}
-
-	@Test
 	public void testDeleteSuccess() {
-		assertDoesNotThrow(() -> inquiryDao.delete(1));
+		assertDoesNotThrow(() -> observerDao.delete(new Observer(1, 1)));
 		Statement statement = assertDoesNotThrow(() -> connection.createStatement());
-		assertDoesNotThrow(() -> statement.execute("SELECT * FROM inquiry WHERE inquiry_id = 1"));
+		assertDoesNotThrow(() -> statement.execute("SELECT * FROM observer WHERE inquiry_id = 1"));
 		ResultSet result = assertDoesNotThrow(() -> statement.getResultSet());
 		assertNotNull(result);
 		assertFalse(assertDoesNotThrow(() -> result.next()));
 	}
-
+	
 	@Test
 	public void testInsertSuccess() {
-		assertDoesNotThrow(() -> inquiryDao.insert(new Inquiry(3, 0, "Success", "Success Content", false)));
+		assertDoesNotThrow(() -> observerDao.insert(new Observer(2, 1)));
 		Statement statement = assertDoesNotThrow(() -> connection.createStatement());
-		assertDoesNotThrow(() -> statement.execute("SELECT * FROM inquiry WHERE inquiry_id = 3"));
+		assertDoesNotThrow(() -> statement.execute("SELECT * FROM observer WHERE inquiry_id = 2 AND user_id = 1"));
 		ResultSet result = assertDoesNotThrow(() -> statement.getResultSet());
 		assertNotNull(result);
 		assertTrue(assertDoesNotThrow(() -> result.next()));
-		assertEquals(3, assertDoesNotThrow(() -> result.getInt("inquiry_id")));
-		assertEquals(0, assertDoesNotThrow(() -> result.getInt("user_id")));
-		assertEquals("Success", assertDoesNotThrow(() -> result.getString("title")));
-		assertEquals("Success Content", assertDoesNotThrow(() -> result.getString("content")));
-		assertEquals(false, assertDoesNotThrow(() -> result.getBoolean("anonymous")));
-		assertFalse(assertDoesNotThrow(() -> result.next()));
+		assertEquals(2, assertDoesNotThrow(() -> result.getInt("inquiry_id")));
+		assertEquals(1, assertDoesNotThrow(() -> result.getInt("user_id")));
 	}
-
+	
 	@Test
 	public void testInsertException() {
-		assertThrows(SQLRunnerExecuteException.class, () -> inquiryDao.insert(new Inquiry(2, 0, "Fail", "Fail Content", true)));
-		assertThrows(SQLRunnerExecuteException.class, () -> inquiryDao.insert(new Inquiry(3, 2, "Fail", "Fail Content", true)));
-		assertThrows(SQLRunnerExecuteException.class, () -> inquiryDao.insert(new Inquiry(3, 0, null, null, true)));
+		assertThrows(SQLRunnerExecuteException.class, () -> observerDao.insert(new Observer(0, 0)));
+		assertThrows(SQLRunnerExecuteException.class, () -> observerDao.insert(new Observer(3, 2)));
 	}
-
+	
 	@Test
-	public void testRangeSuccess() {
-		List<Inquiry> inquiries = assertDoesNotThrow(() -> inquiryDao.range(2, 1));
-		assertEquals(2, inquiries.size());
-		Inquiry inquiry0 = inquiries.get(0);
-		assertEquals(1, inquiry0.getId());
-		assertEquals(0, inquiry0.getUserId());
-		assertEquals("Example", inquiry0.getTitle());
-		assertEquals("Example Content", inquiry0.getContent());
-		assertEquals(true, inquiry0.isAnonymous());
-		Inquiry inquiry1 = inquiries.get(1);
-		assertEquals(2, inquiry1.getId());
+	public void testSelecrFromInquiryIdSuccess() {
+		List<Observer> observers = assertDoesNotThrow(() -> observerDao.selectFromInquiryId(1));
+		assertEquals(1, observers.size());
+		Observer observer = observers.getFirst();
+		assertEquals(1, observer.getInquiryId());
+		assertEquals(1, observer.getUserId());
 	}
-
+	
 	@Test
-	public void testSelectSuccess() {
-		Inquiry inquiry = assertDoesNotThrow(() -> inquiryDao.select(1));
-		assertEquals(1, inquiry.getId());
-		assertEquals(0, inquiry.getUserId());
-		assertEquals("Example", inquiry.getTitle());
-		assertEquals("Example Content", inquiry.getContent());
-		assertEquals(true, inquiry.isAnonymous());
+	public void testSelecrFromUserIdSuccess() {
+		List<Observer> observers = assertDoesNotThrow(() -> observerDao.selectFromUserId(1));
+		assertEquals(2, observers.size());
+		Observer observer = observers.getFirst();
+		assertEquals(0, observer.getInquiryId());
+		assertEquals(1, observer.getUserId());
 	}
-
-	@Test
-	public void testUpdateSuccess() {
-		assertDoesNotThrow(() -> inquiryDao.update(new Inquiry(0, 1, "Updated", "Updated Content", false)));
-		Statement statement = assertDoesNotThrow(() -> connection.createStatement());
-		assertDoesNotThrow(() -> statement.execute("SELECT * FROM inquiry WHERE inquiry_id = 0"));
-		ResultSet result = assertDoesNotThrow(() -> statement.getResultSet());
-		assertNotNull(result);
-		assertTrue(assertDoesNotThrow(() -> result.next()));
-		assertEquals(0, assertDoesNotThrow(() -> result.getInt("inquiry_id")));
-		assertEquals(1, assertDoesNotThrow(() -> result.getInt("user_id")));
-		assertEquals("Updated", assertDoesNotThrow(() -> result.getString("title")));
-		assertEquals("Updated Content", assertDoesNotThrow(() -> result.getString("content")));
-		assertEquals(false, assertDoesNotThrow(() -> result.getBoolean("anonymous")));
-	}
-
-	@Test
-	public void testUpdateException() {
-		assertThrows(SQLRunnerExecuteException.class, () -> inquiryDao.update(new Inquiry(0, 3, "Fail", "Fail Content", false)));
-		assertThrows(SQLRunnerExecuteException.class, () -> inquiryDao.update(new Inquiry(0, 1, null, null, false)));
-	}
-
+	
 }
