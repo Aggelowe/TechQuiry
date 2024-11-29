@@ -15,7 +15,6 @@ import com.aggelowe.techquiry.database.SQLRunner;
 import com.aggelowe.techquiry.database.entities.Upvote;
 import com.aggelowe.techquiry.database.exceptions.DataAccessException;
 import com.aggelowe.techquiry.database.exceptions.DatabaseException;
-import com.aggelowe.techquiry.database.exceptions.SQLRunnerLoadException;
 
 /**
  * The {@link UpvoteDao} interface provides methods to interact with the
@@ -52,11 +51,7 @@ public final class UpvoteDao {
 		LOGGER.debug("Deleting upvote with information " + upvote);
 		int responseId = upvote.getResponseId();
 		int userId = upvote.getUserId();
-		try {
-			runner.runScript(UPVOTE_DELETE_SCRIPT, responseId, userId);
-		} catch (SQLRunnerLoadException exception) {
-			throw new DataAccessException("There was an error while deleting the upvote entry!", exception);
-		}
+		runner.runScript(UPVOTE_DELETE_SCRIPT, responseId, userId);
 	}
 
 	/**
@@ -70,11 +65,7 @@ public final class UpvoteDao {
 		LOGGER.debug("Inserting upvote with information " + upvote);
 		int responseId = upvote.getResponseId();
 		int userId = upvote.getUserId();
-		try {
-			runner.runScript(UPVOTE_INSERT_SCRIPT, responseId, userId);
-		} catch (SQLRunnerLoadException exception) {
-			throw new DataAccessException("There was an error while inserting the upvote entry!", exception);
-		}
+		runner.runScript(UPVOTE_INSERT_SCRIPT, responseId, userId);
 	}
 
 	/**
@@ -83,23 +74,17 @@ public final class UpvoteDao {
 	 * 
 	 * @param responseId The response id
 	 * @return The upvotes with the given id
-	 * @throws DatabaseException If an error occurs while retrieving the response information
+	 * @throws DatabaseException If an error occurs while retrieving the response
+	 *                           information
 	 */
 	public List<Upvote> selectFromResponseId(int responseId) throws DatabaseException {
 		LOGGER.debug("Getting upvotes with response id " + responseId);
+		List<ResultSet> results = runner.runScript(UPVOTE_SELECT_RESPONSE_ID_SCRIPT, responseId);
 		ResultSet result;
-		try {
-			List<ResultSet> results = runner.runScript(UPVOTE_SELECT_RESPONSE_ID_SCRIPT, responseId);
-			if (results.isEmpty()) {
-				result = null;
-			} else {
-				result = results.getFirst();
-			}
-		} catch (SQLRunnerLoadException exception) {
-			throw new DataAccessException("There was an error while retrieving the response information!", exception);
-		}
-		if (result == null) {
+		if (results.isEmpty()) {
 			throw new DataAccessException("The first statement in " + UPVOTE_SELECT_RESPONSE_ID_SCRIPT + " did not yeild results!");
+		} else {
+			result = results.getFirst();
 		}
 		List<Upvote> list = new ArrayList<>();
 		try {
@@ -125,23 +110,17 @@ public final class UpvoteDao {
 	 * 
 	 * @param userId The user id
 	 * @return The upvotes with the given id
-	 * @throws DatabaseException If an error occurs while retrieving the response information
+	 * @throws DatabaseException If an error occurs while retrieving the response
+	 *                           information
 	 */
 	public List<Upvote> selectFromUserId(int userId) throws DatabaseException {
 		LOGGER.debug("Getting upvotes with user id " + userId);
+		List<ResultSet> results = runner.runScript(UPVOTE_SELECT_USER_ID_SCRIPT, userId);
 		ResultSet result;
-		try {
-			List<ResultSet> results = runner.runScript(UPVOTE_SELECT_USER_ID_SCRIPT, userId);
-			if (results.isEmpty()) {
-				result = null;
-			} else {
-				result = results.getFirst();
-			}
-		} catch (SQLRunnerLoadException exception) {
-			throw new DataAccessException("There was an error while retrieving the response information!", exception);
-		}
-		if (result == null) {
+		if (results.isEmpty()) {
 			throw new DataAccessException("The first statement in " + UPVOTE_SELECT_USER_ID_SCRIPT + " did not yeild results!");
+		} else {
+			result = results.getFirst();
 		}
 		List<Upvote> list = new ArrayList<>();
 		try {

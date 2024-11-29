@@ -17,7 +17,6 @@ import com.aggelowe.techquiry.database.SQLRunner;
 import com.aggelowe.techquiry.database.entities.Inquiry;
 import com.aggelowe.techquiry.database.exceptions.DataAccessException;
 import com.aggelowe.techquiry.database.exceptions.DatabaseException;
-import com.aggelowe.techquiry.database.exceptions.SQLRunnerLoadException;
 
 /**
  * The {@link InquiryDao} interface provides methods to interact with the
@@ -53,19 +52,12 @@ public final class InquiryDao {
 	 */
 	public int count() throws DatabaseException {
 		LOGGER.debug("Getting inquiry entry count");
+		List<ResultSet> results = runner.runScript(INQUIRY_COUNT_SCRIPT);
 		ResultSet result;
-		try {
-			List<ResultSet> results = runner.runScript(INQUIRY_COUNT_SCRIPT);
-			if (results.isEmpty()) {
-				result = null;
-			} else {
-				result = results.getFirst();
-			}
-		} catch (SQLRunnerLoadException exception) {
-			throw new DataAccessException("There was an error while retrieving the inquiry count!", exception);
-		}
-		if (result == null) {
+		if (results.isEmpty()) {
 			throw new DataAccessException("The first statement in " + INQUIRY_COUNT_SCRIPT + " did not yeild a result!");
+		} else {
+			result = results.getFirst();
 		}
 		int count;
 		try {
@@ -85,11 +77,7 @@ public final class InquiryDao {
 	 */
 	public void delete(int id) throws DatabaseException {
 		LOGGER.debug("Deleting inquiry with id " + id);
-		try {
-			runner.runScript(INQUIRY_DELETE_SCRIPT, id);
-		} catch (SQLRunnerLoadException exception) {
-			throw new DataAccessException("There was an error while deleting the inquiry entry!", exception);
-		}
+		runner.runScript(INQUIRY_DELETE_SCRIPT, id);
 	}
 
 	/**
@@ -107,11 +95,7 @@ public final class InquiryDao {
 		String title = inquiry.getTitle();
 		String content = inquiry.getContent();
 		boolean anonymous = inquiry.isAnonymous();
-		try {
-			runner.runScript(INQUIRY_INSERT_SCRIPT, id, userId, title, content, anonymous);
-		} catch (SQLRunnerLoadException exception) {
-			throw new DataAccessException("There was an error while inserting the inquiry entry!", exception);
-		}
+		runner.runScript(INQUIRY_INSERT_SCRIPT, id, userId, title, content, anonymous);
 	}
 
 	/**
@@ -127,16 +111,12 @@ public final class InquiryDao {
 	 */
 	public List<Inquiry> range(int count, int offset) throws DatabaseException {
 		LOGGER.debug("Getting " + count + " inquiry entries with offset " + offset);
+		List<ResultSet> results = runner.runScript(INQUIRY_RANGE_SCRIPT, offset, count);
 		ResultSet result;
-		try {
-			List<ResultSet> results = runner.runScript(INQUIRY_RANGE_SCRIPT, offset, count);
-			if (results.isEmpty()) {
-				result = null;
-			} else {
-				result = results.getFirst();
-			}
-		} catch (SQLRunnerLoadException exception) {
-			throw new DataAccessException("There was an error while retrieving the inquiry information!", exception);
+		if (results.isEmpty()) {
+			throw new DataAccessException("The first statement in " + INQUIRY_RANGE_SCRIPT + " did not yeild a result!");
+		} else {
+			result = results.getFirst();
 		}
 		List<Inquiry> range = new ArrayList<>(count);
 		try {
@@ -175,19 +155,12 @@ public final class InquiryDao {
 	 */
 	public Inquiry select(int id) throws DatabaseException {
 		LOGGER.debug("Getting inquiry with inquiry id " + id);
+		List<ResultSet> results = runner.runScript(INQUIRY_SELECT_SCRIPT, id);
 		ResultSet result;
-		try {
-			List<ResultSet> results = runner.runScript(INQUIRY_SELECT_SCRIPT, id);
-			if (results.isEmpty()) {
-				result = null;
-			} else {
-				result = results.getFirst();
-			}
-		} catch (SQLRunnerLoadException exception) {
-			throw new DataAccessException("There was an error while retrieving the inquiry information!", exception);
-		}
-		if (result == null) {
+		if (results.isEmpty()) {
 			throw new DataAccessException("The first statement in " + INQUIRY_SELECT_SCRIPT + " did not yeild results!");
+		} else {
+			result = results.getFirst();
 		}
 		try {
 			if (!result.next()) {
@@ -227,11 +200,7 @@ public final class InquiryDao {
 		String title = inquiry.getTitle();
 		String content = inquiry.getContent();
 		boolean anonymous = inquiry.isAnonymous();
-		try {
-			runner.runScript(INQUIRY_UPDATE_SCRIPT, userId, title, content, anonymous, id);
-		} catch (SQLRunnerLoadException exception) {
-			throw new DataAccessException("There was an error while updating the inquiry entry!", exception);
-		}
+		runner.runScript(INQUIRY_UPDATE_SCRIPT, userId, title, content, anonymous, id);
 	}
 
 }

@@ -16,7 +16,6 @@ import com.aggelowe.techquiry.database.SQLRunner;
 import com.aggelowe.techquiry.database.entities.Response;
 import com.aggelowe.techquiry.database.exceptions.DataAccessException;
 import com.aggelowe.techquiry.database.exceptions.DatabaseException;
-import com.aggelowe.techquiry.database.exceptions.SQLRunnerLoadException;
 
 /**
  * The {@link ResponseDao} interface provides methods to interact with the
@@ -42,21 +41,17 @@ public final class ResponseDao {
 		this.runner = runner;
 	}
 
-
 	/**
 	 * This method deletes the response with the provided response id from the
 	 * application database.
 	 * 
 	 * @param id The id of the response entry
-	 * @throws DatabaseException If an error occurs while deleting the response entry
+	 * @throws DatabaseException If an error occurs while deleting the response
+	 *                           entry
 	 */
 	public void delete(int id) throws DatabaseException {
 		LOGGER.debug("Deleting response with id " + id);
-		try {
-			runner.runScript(RESPONSE_DELETE_SCRIPT, id);
-		} catch (SQLRunnerLoadException exception) {
-			throw new DataAccessException("There was an error while deleting the response entry!", exception);
-		}
+		runner.runScript(RESPONSE_DELETE_SCRIPT, id);
 	}
 
 	/**
@@ -64,7 +59,8 @@ public final class ResponseDao {
 	 * in the application database.
 	 * 
 	 * @param response The response to insert
-	 * @throws DatabaseException If an error occurs while inserting the response entry
+	 * @throws DatabaseException If an error occurs while inserting the response
+	 *                           entry
 	 */
 	public void insert(Response response) throws DatabaseException {
 		LOGGER.debug("Inserting response with information " + response);
@@ -73,11 +69,7 @@ public final class ResponseDao {
 		int userId = response.getUserId();
 		boolean anonymous = response.isAnonymous();
 		String content = response.getContent();
-		try {
-			runner.runScript(RESPONSE_INSERT_SCRIPT, id, inquiryId, userId, anonymous, content);
-		} catch (SQLRunnerLoadException exception) {
-			throw new DataAccessException("There was an error while inserting the response entry!", exception);
-		}
+		runner.runScript(RESPONSE_INSERT_SCRIPT, id, inquiryId, userId, anonymous, content);
 	}
 
 	/**
@@ -86,23 +78,17 @@ public final class ResponseDao {
 	 * 
 	 * @param inquiryId The inquiry id
 	 * @return The responses with the given id
-	 * @throws DatabaseException If an error occurs while retrieving the response information
+	 * @throws DatabaseException If an error occurs while retrieving the response
+	 *                           information
 	 */
 	public List<Response> selectFromInquiryId(int inquiryId) throws DatabaseException {
 		LOGGER.debug("Getting responses with inquiry id " + inquiryId);
+		List<ResultSet> results = runner.runScript(RESPONSE_SELECT_INQUIRY_ID_SCRIPT, inquiryId);
 		ResultSet result;
-		try {
-			List<ResultSet> results = runner.runScript(RESPONSE_SELECT_INQUIRY_ID_SCRIPT, inquiryId);
-			if (results.isEmpty()) {
-				result = null;
-			} else {
-				result = results.getFirst();
-			}
-		} catch (SQLRunnerLoadException exception) {
-			throw new DataAccessException("There was an error while retrieving the response information!", exception);
-		}
-		if (result == null) {
+		if (results.isEmpty()) {
 			throw new DataAccessException("The first statement in " + RESPONSE_SELECT_INQUIRY_ID_SCRIPT + " did not yeild results!");
+		} else {
+			result = results.getFirst();
 		}
 		List<Response> list = new ArrayList<>();
 		try {
@@ -134,23 +120,17 @@ public final class ResponseDao {
 	 * 
 	 * @param id The response id
 	 * @return The response with the given id
-	 * @throws DatabaseException If an error occurs while retrieving the response information
+	 * @throws DatabaseException If an error occurs while retrieving the response
+	 *                           information
 	 */
 	public Response select(int id) throws DatabaseException {
 		LOGGER.debug("Getting response with response id " + id);
+		List<ResultSet> results = runner.runScript(RESPONSE_SELECT_SCRIPT, id);
 		ResultSet result;
-		try {
-			List<ResultSet> results = runner.runScript(RESPONSE_SELECT_SCRIPT, id);
-			if (results.isEmpty()) {
-				result = null;
-			} else {
-				result = results.getFirst();
-			}
-		} catch (SQLRunnerLoadException exception) {
-			throw new DataAccessException("There was an error while retrieving the response information!", exception);
-		}
-		if (result == null) {
+		if (results.isEmpty()) {
 			throw new DataAccessException("The first statement in " + RESPONSE_SELECT_SCRIPT + " did not yeild results!");
+		} else {
+			result = results.getFirst();
 		}
 		try {
 			if (!result.next()) {
@@ -181,7 +161,8 @@ public final class ResponseDao {
 	 * object to select the correct entry.
 	 * 
 	 * @param response The response to update
-	 * @throws DatabaseException If an error occurs while updating the response entry
+	 * @throws DatabaseException If an error occurs while updating the response
+	 *                           entry
 	 */
 	public void update(Response response) throws DatabaseException {
 		LOGGER.debug("Updating response with data " + response);
@@ -190,11 +171,7 @@ public final class ResponseDao {
 		int userId = response.getUserId();
 		boolean anonymous = response.isAnonymous();
 		String content = response.getContent();
-		try {
-			runner.runScript(RESPONSE_UPDATE_SCRIPT, inquiryId, userId, anonymous, content, id);
-		} catch (SQLRunnerLoadException exception) {
-			throw new DataAccessException("There was an error while updating the response entry!", exception);
-		}
+		runner.runScript(RESPONSE_UPDATE_SCRIPT, inquiryId, userId, anonymous, content, id);
 	}
 
 }

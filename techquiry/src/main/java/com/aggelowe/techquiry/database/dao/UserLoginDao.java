@@ -19,7 +19,6 @@ import com.aggelowe.techquiry.database.SQLRunner;
 import com.aggelowe.techquiry.database.entities.UserLogin;
 import com.aggelowe.techquiry.database.exceptions.DataAccessException;
 import com.aggelowe.techquiry.database.exceptions.DatabaseException;
-import com.aggelowe.techquiry.database.exceptions.SQLRunnerLoadException;
 
 /**
  * The {@link UserLoginDao} interface provides methods to interact with the
@@ -45,7 +44,6 @@ public final class UserLoginDao {
 		this.runner = runner;
 	}
 
-
 	/**
 	 * This method returns the number of user login entries inside the application
 	 * database.
@@ -55,19 +53,12 @@ public final class UserLoginDao {
 	 */
 	public int count() throws DatabaseException {
 		LOGGER.debug("Getting user login entry count");
+		List<ResultSet> results = runner.runScript(USER_LOGIN_COUNT_SCRIPT);
 		ResultSet result;
-		try {
-			List<ResultSet> results = runner.runScript(USER_LOGIN_COUNT_SCRIPT);
-			if (results.isEmpty()) {
-				result = null;
-			} else {
-				result = results.getFirst();
-			}
-		} catch (SQLRunnerLoadException exception) {
-			throw new DataAccessException("There was an error while retrieving the user count!", exception);
-		}
-		if (result == null) {
+		if (results.isEmpty()) {
 			throw new DataAccessException("The first statement in " + USER_LOGIN_COUNT_SCRIPT + " did not yeild a result!");
+		} else {
+			result = results.getFirst();
 		}
 		int count;
 		try {
@@ -83,15 +74,12 @@ public final class UserLoginDao {
 	 * application database.
 	 * 
 	 * @param id The id of the user login entry
-	 * @throws DatabaseException If an error occurs while deleting the user login entry
+	 * @throws DatabaseException If an error occurs while deleting the user login
+	 *                           entry
 	 */
 	public void delete(int id) throws DatabaseException {
 		LOGGER.debug("Deleting user with id " + id);
-		try {
-			runner.runScript(USER_LOGIN_DELETE_SCRIPT, id);
-		} catch (SQLRunnerLoadException exception) {
-			throw new DataAccessException("There was an error while deleting the user login entry!", exception);
-		}
+		runner.runScript(USER_LOGIN_DELETE_SCRIPT, id);
 	}
 
 	/**
@@ -99,7 +87,8 @@ public final class UserLoginDao {
 	 * entry in the application database.
 	 * 
 	 * @param userLogin The user login to insert
-	 * @throws DatabaseException If an error occurs while inserting the user login entry
+	 * @throws DatabaseException If an error occurs while inserting the user login
+	 *                           entry
 	 */
 	public void insert(UserLogin userLogin) throws DatabaseException {
 		LOGGER.debug("Inserting user login with information " + userLogin);
@@ -109,11 +98,7 @@ public final class UserLoginDao {
 		byte[] passwordSalt = userLogin.getPasswordSalt();
 		String encodedHash = Utilities.encodeBase64(passwordHash);
 		String encodedSalt = Utilities.encodeBase64(passwordSalt);
-		try {
-			runner.runScript(USER_LOGIN_INSERT_SCRIPT, id, username, encodedHash, encodedSalt);
-		} catch (SQLRunnerLoadException exception) {
-			throw new DataAccessException("There was an error while inserting the user login entry!", exception);
-		}
+		runner.runScript(USER_LOGIN_INSERT_SCRIPT, id, username, encodedHash, encodedSalt);
 	}
 
 	/**
@@ -124,23 +109,17 @@ public final class UserLoginDao {
 	 * @param count  The number of entries
 	 * @param offset The number of entries to skip
 	 * @return The selected range
-	 * @throws DatabaseException If an error occurs while retrieving the user login information
+	 * @throws DatabaseException If an error occurs while retrieving the user login
+	 *                           information
 	 */
 	public List<UserLogin> range(int count, int offset) throws DatabaseException {
 		LOGGER.debug("Getting " + count + " user login entries with offset " + offset);
+		List<ResultSet> results = runner.runScript(USER_LOGIN_RANGE_SCRIPT, offset, count);
 		ResultSet result;
-		try {
-			List<ResultSet> results = runner.runScript(USER_LOGIN_RANGE_SCRIPT, offset, count);
-			if (results.isEmpty()) {
-				result = null;
-			} else {
-				result = results.getFirst();
-			}
-		} catch (SQLRunnerLoadException exception) {
-			throw new DataAccessException("There was an error while retrieving the user login information!", exception);
-		}
-		if (result == null) {
+		if (results.isEmpty()) {
 			throw new DataAccessException("The first statement in " + USER_LOGIN_RANGE_SCRIPT + " did not yeild results!");
+		} else {
+			result = results.getFirst();
 		}
 		List<UserLogin> range = new ArrayList<>(count);
 		try {
@@ -180,23 +159,17 @@ public final class UserLoginDao {
 	 * 
 	 * @param id The user id
 	 * @return The user login with the given id
-	 * @throws DatabaseException If an error occurs while retrieving the user login information
+	 * @throws DatabaseException If an error occurs while retrieving the user login
+	 *                           information
 	 */
 	public UserLogin select(int id) throws DatabaseException {
 		LOGGER.debug("Getting user login with user id " + id);
+		List<ResultSet> results = runner.runScript(USER_LOGIN_SELECT_SCRIPT, id);
 		ResultSet result;
-		try {
-			List<ResultSet> results = runner.runScript(USER_LOGIN_SELECT_SCRIPT, id);
-			if (results.isEmpty()) {
-				result = null;
-			} else {
-				result = results.getFirst();
-			}
-		} catch (SQLRunnerLoadException exception) {
-			throw new DataAccessException("There was an error while retrieving the user login information!", exception);
-		}
-		if (result == null) {
+		if (results.isEmpty()) {
 			throw new DataAccessException("The first statement in " + USER_LOGIN_SELECT_SCRIPT + " did not yeild results!");
+		} else {
+			result = results.getFirst();
 		}
 		try {
 			if (!result.next()) {
@@ -233,23 +206,17 @@ public final class UserLoginDao {
 	 * 
 	 * @param username The username
 	 * @return The user login with the given username
-	 * @throws DatabaseException If an error occurs while retrieving the user login information
+	 * @throws DatabaseException If an error occurs while retrieving the user login
+	 *                           information
 	 */
 	public UserLogin selectFromUsername(String username) throws DatabaseException {
 		LOGGER.debug("Getting user login with username " + username);
+		List<ResultSet> results = runner.runScript(USER_LOGIN_SELECT_USERNAME_SCRIPT, username);
 		ResultSet result;
-		try {
-			List<ResultSet> results = runner.runScript(USER_LOGIN_SELECT_USERNAME_SCRIPT, username);
-			if (results.isEmpty()) {
-				result = null;
-			} else {
-				result = results.getFirst();
-			}
-		} catch (SQLRunnerLoadException exception) {
-			throw new DataAccessException("There was an error while retrieving the user login information!", exception);
-		}
-		if (result == null) {
+		if (results.isEmpty()) {
 			throw new DataAccessException("The first statement in " + USER_LOGIN_SELECT_USERNAME_SCRIPT + " did not yeild results!");
+		} else {
+			result = results.getFirst();
 		}
 		try {
 			if (!result.next()) {
@@ -286,7 +253,8 @@ public final class UserLoginDao {
 	 * to select the correct entry.
 	 * 
 	 * @param userLogin The user login to update
-	 * @throws DatabaseException If an error occurs while updating the user login entry
+	 * @throws DatabaseException If an error occurs while updating the user login
+	 *                           entry
 	 */
 	public void update(UserLogin userLogin) throws DatabaseException {
 		LOGGER.debug("Updating user login with data " + userLogin);
@@ -296,11 +264,7 @@ public final class UserLoginDao {
 		byte[] passwordSalt = userLogin.getPasswordSalt();
 		String encodedHash = Utilities.encodeBase64(passwordHash);
 		String encodedSalt = Utilities.encodeBase64(passwordSalt);
-		try {
-			runner.runScript(USER_LOGIN_UPDATE_SCRIPT, username, encodedHash, encodedSalt, id);
-		} catch (SQLRunnerLoadException exception) {
-			throw new DataAccessException("There was an error while updating the user login entry!", exception);
-		}
+		runner.runScript(USER_LOGIN_UPDATE_SCRIPT, username, encodedHash, encodedSalt, id);
 	}
 
 }

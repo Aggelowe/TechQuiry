@@ -15,7 +15,6 @@ import com.aggelowe.techquiry.database.SQLRunner;
 import com.aggelowe.techquiry.database.entities.Observer;
 import com.aggelowe.techquiry.database.exceptions.DataAccessException;
 import com.aggelowe.techquiry.database.exceptions.DatabaseException;
-import com.aggelowe.techquiry.database.exceptions.SQLRunnerLoadException;
 
 /**
  * The {@link ObserverDao} interface provides methods to interact with the
@@ -25,7 +24,7 @@ import com.aggelowe.techquiry.database.exceptions.SQLRunnerLoadException;
  * @since 0.0.1
  */
 public final class ObserverDao {
-	
+
 	/**
 	 * The runner responsible for executing the SQL scripts.
 	 */
@@ -46,16 +45,13 @@ public final class ObserverDao {
 	 * application database.
 	 * 
 	 * @param observer The observer to delete
-	 * @throws DatabaseException If an error occurs while deleting the observer entry
+	 * @throws DatabaseException If an error occurs while deleting the observer
+	 *                           entry
 	 */
 	public void delete(Observer observer) throws DatabaseException {
 		int inquiryId = observer.getInquiryId();
 		int userId = observer.getUserId();
-		try {
-			runner.runScript(OBSERVER_DELETE_SCRIPT, inquiryId, userId);
-		} catch (SQLRunnerLoadException exception) {
-			throw new DataAccessException("There was an error while deleting the observer entry!", exception);
-		}
+		runner.runScript(OBSERVER_DELETE_SCRIPT, inquiryId, userId);
 	}
 
 	/**
@@ -63,17 +59,14 @@ public final class ObserverDao {
 	 * in the application database.
 	 * 
 	 * @param observer The observer to insert
-	 * @throws DatabaseException If an error occurs while inserting the observer entry
+	 * @throws DatabaseException If an error occurs while inserting the observer
+	 *                           entry
 	 */
 	public void insert(Observer observer) throws DatabaseException {
 		LOGGER.debug("Inserting observer with information " + observer);
 		int inquiryId = observer.getInquiryId();
 		int userId = observer.getUserId();
-		try {
-			runner.runScript(OBSERVER_INSERT_SCRIPT, inquiryId, userId);
-		} catch (SQLRunnerLoadException exception) {
-			throw new DataAccessException("There was an error while inserting the observer entry!", exception);
-		}
+		runner.runScript(OBSERVER_INSERT_SCRIPT, inquiryId, userId);
 	}
 
 	/**
@@ -82,23 +75,17 @@ public final class ObserverDao {
 	 * 
 	 * @param inquiryId The inquiry id
 	 * @return The observers with the given id
-	 * @throws DatabaseException If an error occurs while retrieving the observer information
+	 * @throws DatabaseException If an error occurs while retrieving the observer
+	 *                           information
 	 */
 	public List<Observer> selectFromInquiryId(int inquiryId) throws DatabaseException {
 		LOGGER.debug("Getting observers with inquiry id " + inquiryId);
+		List<ResultSet> results = runner.runScript(OBSERVER_SELECT_INQUIRY_ID_SCRIPT, inquiryId);
 		ResultSet result;
-		try {
-			List<ResultSet> results = runner.runScript(OBSERVER_SELECT_INQUIRY_ID_SCRIPT, inquiryId);
-			if (results.isEmpty()) {
-				result = null;
-			} else {
-				result = results.getFirst();
-			}
-		} catch (SQLRunnerLoadException exception) {
-			throw new DataAccessException("There was an error while retrieving the observer information!", exception);
-		}
-		if (result == null) {
+		if (results.isEmpty()) {
 			throw new DataAccessException("The first statement in " + OBSERVER_SELECT_INQUIRY_ID_SCRIPT + " did not yeild results!");
+		} else {
+			result = results.getFirst();
 		}
 		List<Observer> list = new ArrayList<>();
 		try {
@@ -124,23 +111,17 @@ public final class ObserverDao {
 	 * 
 	 * @param userId The user id
 	 * @return The observers with the given id
-	 * @throws DatabaseException If an error occurs while retrieving the observer information
+	 * @throws DatabaseException If an error occurs while retrieving the observer
+	 *                           information
 	 */
 	public List<Observer> selectFromUserId(int userId) throws DatabaseException {
 		LOGGER.debug("Getting observers with user id " + userId);
+		List<ResultSet> results = runner.runScript(OBSERVER_SELECT_USER_ID_SCRIPT, userId);
 		ResultSet result;
-		try {
-			List<ResultSet> results = runner.runScript(OBSERVER_SELECT_USER_ID_SCRIPT, userId);
-			if (results.isEmpty()) {
-				result = null;
-			} else {
-				result = results.getFirst();
-			}
-		} catch (SQLRunnerLoadException exception) {
-			throw new DataAccessException("There was an error while retrieving the observer information!", exception);
-		}
-		if (result == null) {
+		if (results.isEmpty()) {
 			throw new DataAccessException("The first statement in " + OBSERVER_SELECT_USER_ID_SCRIPT + " did not yeild results!");
+		} else {
+			result = results.getFirst();
 		}
 		List<Observer> list = new ArrayList<>();
 		try {

@@ -45,7 +45,6 @@ public final class UserDataDao {
 		this.runner = runner;
 	}
 
-
 	/**
 	 * This method returns the number of user data entries inside the application
 	 * database.
@@ -55,19 +54,12 @@ public final class UserDataDao {
 	 */
 	public int count() throws DatabaseException {
 		LOGGER.debug("Getting user data entry count");
+		List<ResultSet> results = runner.runScript(USER_DATA_COUNT_SCRIPT);
 		ResultSet result;
-		try {
-			List<ResultSet> results = runner.runScript(USER_DATA_COUNT_SCRIPT);
-			if (results.isEmpty()) {
-				result = null;
-			} else {
-				result = results.getFirst();
-			}
-		} catch (SQLRunnerLoadException exception) {
-			throw new DataAccessException("There was an error while retrieving the user count!", exception);
-		}
-		if (result == null) {
+		if (results.isEmpty()) {
 			throw new DataAccessException("The first statement in " + USER_DATA_COUNT_SCRIPT + " did not yeild a result!");
+		} else {
+			result = results.getFirst();
 		}
 		int count;
 		try {
@@ -83,7 +75,8 @@ public final class UserDataDao {
 	 * application database.
 	 * 
 	 * @param id The id of the user data entry
-	 * @throws DatabaseException If an error occurs while deleting the user data entry
+	 * @throws DatabaseException If an error occurs while deleting the user data
+	 *                           entry
 	 */
 	public void delete(int id) throws DatabaseException {
 		LOGGER.debug("Deleting user with id " + id);
@@ -99,7 +92,8 @@ public final class UserDataDao {
 	 * entry in the application database.
 	 * 
 	 * @param userData The user data to insert
-	 * @throws DatabaseException If an error occurs while inserting the user data entry
+	 * @throws DatabaseException If an error occurs while inserting the user data
+	 *                           entry
 	 */
 	public void insert(UserData userData) throws DatabaseException {
 		LOGGER.debug("Inserting user data with information " + userData);
@@ -107,11 +101,7 @@ public final class UserDataDao {
 		String firstName = userData.getFirstName();
 		String lastName = userData.getLastName();
 		byte[] icon = userData.getIcon();
-		try {
-			runner.runScript(USER_DATA_INSERT_SCRIPT, id, firstName, lastName, icon);
-		} catch (SQLRunnerLoadException exception) {
-			throw new DataAccessException("There was an error while inserting the user data entry!", exception);
-		}
+		runner.runScript(USER_DATA_INSERT_SCRIPT, id, firstName, lastName, icon);
 	}
 
 	/**
@@ -122,23 +112,17 @@ public final class UserDataDao {
 	 * @param count  The number of entries
 	 * @param offset The number of entries to skip
 	 * @return The selected range
-	 * @throws DatabaseException If an error occurs while retrieving the user data information
+	 * @throws DatabaseException If an error occurs while retrieving the user data
+	 *                           information
 	 */
 	public List<UserData> range(int count, int offset) throws DatabaseException {
 		LOGGER.debug("Getting " + count + " user data entries with offset " + offset);
+		List<ResultSet> results = runner.runScript(USER_DATA_RANGE_SCRIPT, offset, count);
 		ResultSet result;
-		try {
-			List<ResultSet> results = runner.runScript(USER_DATA_RANGE_SCRIPT, offset, count);
-			if (results.isEmpty()) {
-				result = null;
-			} else {
-				result = results.getFirst();
-			}
-		} catch (SQLRunnerLoadException exception) {
-			throw new DataAccessException("There was an error while retrieving the user data information!", exception);
-		}
-		if (result == null) {
+		if (results.isEmpty()) {
 			throw new DataAccessException("The first statement in " + USER_DATA_RANGE_SCRIPT + " did not yeild results!");
+		} else {
+			result = results.getFirst();
 		}
 		List<UserData> range = new ArrayList<>(count);
 		try {
@@ -171,23 +155,17 @@ public final class UserDataDao {
 	 * 
 	 * @param id The user id
 	 * @return The user data with the given id
-	 * @throws DatabaseException If an error occurs while retrieving the user data information
+	 * @throws DatabaseException If an error occurs while retrieving the user data
+	 *                           information
 	 */
 	public UserData select(int id) throws DatabaseException {
 		LOGGER.debug("Getting user data with user id " + id);
+		List<ResultSet> results = runner.runScript(USER_DATA_SELECT_SCRIPT, id);
 		ResultSet result;
-		try {
-			List<ResultSet> results = runner.runScript(USER_DATA_SELECT_SCRIPT, id);
-			if (results.isEmpty()) {
-				result = null;
-			} else {
-				result = results.getFirst();
-			}
-		} catch (SQLRunnerLoadException exception) {
-			throw new DataAccessException("There was an error while retrieving the user data information!", exception);
-		}
-		if (result == null) {
+		if (results.isEmpty()) {
 			throw new DataAccessException("The first statement in " + USER_DATA_SELECT_SCRIPT + " did not yeild results!");
+		} else {
+			result = results.getFirst();
 		}
 		try {
 			if (!result.next()) {
@@ -219,7 +197,8 @@ public final class UserDataDao {
 	 * 
 	 * @param userData The user data to update
 	 * @return The {@link SQLiteErrorCode}, if it exists
-	 * @throws DatabaseException If an error occurs while updating the user data entry
+	 * @throws DatabaseException If an error occurs while updating the user data
+	 *                           entry
 	 */
 	public void update(UserData userData) throws DatabaseException {
 		LOGGER.debug("Updating user data with data " + userData);
@@ -227,11 +206,7 @@ public final class UserDataDao {
 		String firstName = userData.getFirstName();
 		String lastName = userData.getLastName();
 		byte[] icon = userData.getIcon();
-		try {
-			runner.runScript(USER_DATA_UPDATE_SCRIPT, firstName, lastName, icon, id);
-		} catch (SQLRunnerLoadException exception) {
-			throw new DataAccessException("There was an error while updating the user data entry!", exception);
-		}
+		runner.runScript(USER_DATA_UPDATE_SCRIPT, firstName, lastName, icon, id);
 	}
 
 }
