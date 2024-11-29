@@ -191,6 +191,12 @@ public final class SQLRunner {
 				}
 				previous = character;
 			}
+			String command = commandBuilder.toString();
+			command = command.trim();
+			if (!command.isEmpty()) {
+				PreparedStatement statement = this.connection.prepareStatement(command);
+				statements.add(statement);
+			}
 		} catch (IOException exception) {
 			throw new SQLRunnerLoadException("An exception occured while reading the SQL script!", exception);
 		} catch (SQLException exception) {

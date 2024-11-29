@@ -15,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sqlite.SQLiteConfig;
@@ -24,6 +25,7 @@ import com.aggelowe.techquiry.database.exceptions.SQLRunnerLoadException;
 
 public class SQLRunnerTest {
 
+	Connection connection;
 	SQLRunner runner;
 
 	@BeforeEach
@@ -31,7 +33,7 @@ public class SQLRunnerTest {
 		String databaseUrl = "jdbc:sqlite::memory:";
 		SQLiteConfig config = new SQLiteConfig();
 		config.enforceForeignKeys(true);
-		Connection connection = assertDoesNotThrow(() -> DriverManager.getConnection(databaseUrl, config.toProperties()));
+		connection = assertDoesNotThrow(() -> DriverManager.getConnection(databaseUrl, config.toProperties()));
 		assertDoesNotThrow(() -> connection.setAutoCommit(false));
 		runner = new SQLRunner(connection);
 		assertDoesNotThrow(() -> {
@@ -41,6 +43,13 @@ public class SQLRunnerTest {
 			statement.execute("INSERT INTO test (id, username) VALUES (1, 'Bob')");
 			connection.commit();
 		});
+	}
+
+	@AfterEach
+	public void destroy() {
+		if (connection != null) {
+			assertDoesNotThrow(() -> connection.close());
+		}
 	}
 
 	@Test
@@ -64,7 +73,7 @@ public class SQLRunnerTest {
 
 	@Test
 	public void testRunScriptSuccess() {
-		String sql = "INSERT INTO test (id, username) VALUES (?, ?);\n SELECT * FROM test WHERE id = ?;";
+		String sql = "INSERT INTO test (id, username) /* Comment 1 */ VALUES (?, ?);\n SELECT * -- Comment 2 \n FROM test WHERE id = ?";
 		InputStream stream = new ByteArrayInputStream(sql.getBytes());
 		List<ResultSet> results = assertDoesNotThrow(() -> runner.runScript(stream, 2, "Charlie", 1));
 		assertEquals(2, results.size());
@@ -82,9 +91,7 @@ public class SQLRunnerTest {
 		assertThrows(SQLRunnerLoadException.class, () -> runner.runScript(stream0));
 		String false1 = "SELECT * FROM test; INSERT INTO test (id, username) VALUES (?, ?);";
 		InputStream stream1 = new ByteArrayInputStream(false1.getBytes());
-		assertThrows(SQLRunnerExecuteException.class, () -> {
-			runner.runScript(stream1, 1, "Charlie");
-		});
+		assertThrows(SQLRunnerExecuteException.class, () -> runner.runScript(stream1, 1, "Charlie"));
 	}
 
 }

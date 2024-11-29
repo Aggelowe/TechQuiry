@@ -24,7 +24,7 @@ import com.aggelowe.techquiry.database.entities.Response;
 import com.aggelowe.techquiry.database.entities.Upvote;
 import com.aggelowe.techquiry.database.entities.UserData;
 import com.aggelowe.techquiry.database.entities.UserLogin;
-import com.aggelowe.techquiry.database.exceptions.SQLRunnerException;
+import com.aggelowe.techquiry.database.exceptions.DatabaseException;
 
 /**
  * The {@link DatabaseManager} class is the one responsible for initializing the
@@ -34,6 +34,11 @@ import com.aggelowe.techquiry.database.exceptions.SQLRunnerException;
  * @since 0.0.1
  */
 public final class DatabaseManager {
+
+	/**
+	 * This object represents the connection with the SQLite database.
+	 */
+	private final Connection connection;
 
 	/**
 	 * This object is responsible for initializing and managing the database of the
@@ -91,6 +96,7 @@ public final class DatabaseManager {
 	 * @param connection The database connection
 	 */
 	public DatabaseManager(Connection connection) {
+		this.connection = connection;
 		this.runner = new SQLRunner(connection);
 		this.inquiryDao = new InquiryDao(runner);
 		this.observerDao = new ObserverDao(runner);
@@ -101,54 +107,27 @@ public final class DatabaseManager {
 	}
 
 	/**
-	 * The {@link #initialize()} method is responsible for initializing the database
-	 * used by the application. When invoked, the method connects to the database
-	 * file and performs the necessary initialization operations.
-	 */
-	public static void initialize() {
-		LOGGER.info("Establishing database connection");
-		Path databasePath = Environment.getWorkDirectory().toPath().resolve(DATABASE_FILENAME);
-		String databaseUrl = "jdbc:sqlite:" + databasePath;
-		LOGGER.debug("Database URL: " + databaseUrl);
-		SQLiteConfig config = new SQLiteConfig();
-		config.enforceForeignKeys(true);
-		Connection connection = null;
-		try {
-			connection = DriverManager.getConnection(databaseUrl, config.toProperties());
-			connection.setAutoCommit(false);
-		} catch (SQLException exception) {
-			LOGGER.error("An error occured while connecting to " + databaseUrl, exception);
-			System.exit(1);
-		}
-		manager = new DatabaseManager(connection);
-		if (Environment.getSetup()) {
-			manager.createSchema();
-		}
-	}
-
-	/**
 	 * This method applies the database schema to the database if the respective
-	 * environment variable is true. If the operation fails, the application will
-	 * exit.
+	 * environment variable is true.
+	 * 
+	 * @throws DatabaseException If an error occurs while creating the schema.
 	 */
-	public void createSchema() {
+	public void createSchema() throws DatabaseException {
 		LOGGER.debug("Applying database schema");
-		try {
-			runner.runScript(CREATE_SCHEMA_SCRIPT);
-		} catch (SQLRunnerException exception) {
-			LOGGER.error("An error occured while applying the database schema!", exception);
-			System.exit(1);
-		}
+		runner.runScript(CREATE_SCHEMA_SCRIPT);
 	}
 
 	/**
-	 * This method returns the {@link DatabaseManager} responsible for initializing
-	 * and managing the database of the application.
+	 * This method loses the connection with the application's database.
 	 * 
-	 * @return The application's {@link DatabaseManager}
+	 * @throws DatabaseException If an error occurs while closing the connection.
 	 */
-	public static DatabaseManager getManager() {
-		return manager;
+	public void closeConnection() throws DatabaseException {
+		try {
+			connection.close();
+		} catch (SQLException exception) {
+			throw new DatabaseException("An error occured while closing the database connection!", exception);
+		}
 	}
 
 	/**
@@ -219,6 +198,47 @@ public final class DatabaseManager {
 	 */
 	public UserLoginDao getUserLoginDao() {
 		return userLoginDao;
+	}
+
+	/**
+	 * The {@link #initialize()} method is responsible for initializing the database
+	 * used by the application. When invoked, the method connects to the database
+	 * file and performs the necessary initialization operations.
+	 */
+	public static void initialize() {
+		LOGGER.info("Establishing database connection");
+		Path databasePath = Environment.getWorkDirectory().toPath().resolve(DATABASE_FILENAME);
+		String databaseUrl = "jdbc:sqlite:" + databasePath;
+		LOGGER.debug("Database URL: " + databaseUrl);
+		SQLiteConfig config = new SQLiteConfig();
+		config.enforceForeignKeys(true);
+		Connection connection = null;
+		try {
+			connection = DriverManager.getConnection(databaseUrl, config.toProperties());
+			connection.setAutoCommit(false);
+		} catch (SQLException exception) {
+			LOGGER.error("An error occured while connecting to " + databaseUrl, exception);
+			System.exit(1);
+		}
+		manager = new DatabaseManager(connection);
+		if (Environment.getSetup()) {
+			try {
+				manager.createSchema();
+			} catch (DatabaseException exception) {
+				LOGGER.error("An error occured while applying the database schema!", exception);
+				System.exit(1);
+			}
+		}
+	}
+
+	/**
+	 * This method returns the {@link DatabaseManager} responsible for initializing
+	 * and managing the database of the application.
+	 * 
+	 * @return The application's {@link DatabaseManager}
+	 */
+	public static DatabaseManager getManager() {
+		return manager;
 	}
 
 }
