@@ -221,7 +221,7 @@ public final class InquiryDao {
 	 * @throws DatabaseException If an error occurs while updating the inquiry entry
 	 */
 	public void update(Inquiry inquiry) throws DatabaseException {
-		LOGGER.debug("rUpdating inquiry with data " + inquiry);
+		LOGGER.debug("Updating inquiry with data " + inquiry);
 		int id = inquiry.getId();
 		int userId = inquiry.getUserId();
 		String title = inquiry.getTitle();
