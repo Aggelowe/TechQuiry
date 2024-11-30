@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.aggelowe.techquiry.common.Constants;
 import com.aggelowe.techquiry.database.exceptions.SQLRunnerException;
 import com.aggelowe.techquiry.database.exceptions.SQLRunnerExecuteException;
 import com.aggelowe.techquiry.database.exceptions.SQLRunnerLoadException;
@@ -63,9 +62,8 @@ public final class SQLRunner {
 
 	/**
 	 * This method loads the SQL statements from the SQL script file with the given
-	 * path (defined in {@link Constants#SQL_DIRECTORY}), executes them on the
-	 * preset connection and returns the {@link List} containing the
-	 * {@link ResultSet} objects.
+	 * path, executes them on the preset connection and returns the {@link List}
+	 * containing the {@link ResultSet} objects.
 	 * 
 	 * @param stream     The stream reading the file containing the SQL statements
 	 * @param parameters The parameters for the statements

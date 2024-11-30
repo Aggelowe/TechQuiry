@@ -3,16 +3,19 @@ package com.aggelowe.techquiry.common;
 import static com.aggelowe.techquiry.common.Constants.LOGGER;
 import static com.aggelowe.techquiry.common.Constants.NAME;
 import static com.aggelowe.techquiry.common.Constants.VERSION;
+import static com.aggelowe.techquiry.database.DatabaseManager.getManager;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 
 import com.aggelowe.techquiry.database.DatabaseManager;
+import com.aggelowe.techquiry.database.exceptions.DatabaseException;
 
 /**
  * This is the main class of the TechQuiry application, it is responsible for
@@ -50,13 +53,25 @@ public class TechQuiry {
 	/**
 	 * This method is invoked when the application's context has been initialized
 	 * and is responsible for initializing the core application components.
-	 * 
-	 * @param event The object representing the event
 	 */
 	@EventListener(ContextRefreshedEvent.class)
-	public void start() {
+	void start() {
 		LOGGER.info("Starting core application components");
 		DatabaseManager.initialize();
 	}
+	
+    /**
+     * This method is invoked when the application's context is closed
+     * and is responsible for cleaning up core application components.
+     */
+    @EventListener(ContextClosedEvent.class)
+    void shutdown() {
+        LOGGER.info("Shutting down core application components");
+        try {
+			getManager().closeConnection();
+		} catch (DatabaseException exception) {
+			LOGGER.error(exception);
+		}
+    }
 
 }

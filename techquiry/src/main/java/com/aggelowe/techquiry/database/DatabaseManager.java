@@ -123,6 +123,7 @@ public final class DatabaseManager {
 	 * @throws DatabaseException If an error occurs while closing the connection.
 	 */
 	public void closeConnection() throws DatabaseException {
+		LOGGER.debug("Closing database connection");
 		try {
 			connection.close();
 		} catch (SQLException exception) {
