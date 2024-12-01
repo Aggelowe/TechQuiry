@@ -42,6 +42,17 @@ public final class InquiryDao {
 	public static final String INQUIRY_RANGE_SCRIPT = "/database/inquiry/range.sql";
 
 	/**
+	 * The path of the SQL script for selecting inquiry entries with a user id which
+	 * are non-anonymous.
+	 */
+	public static final String INQUIRY_SELECT_USER_ID_NON_ANONYMOUS_SCRIPT = "/database/inquiry/select_user_id_non_anonymous.sql";
+
+	/**
+	 * The path of the SQL script for selecting inquiry entries with a user id.
+	 */
+	public static final String INQUIRY_SELECT_USER_ID_SCRIPT = "/database/inquiry/select_user_id.sql";
+
+	/**
 	 * The path of the SQL script for selecting an inquiry entry.
 	 */
 	public static final String INQUIRY_SELECT_SCRIPT = "/database/inquiry/select.sql";
@@ -166,6 +177,88 @@ public final class InquiryDao {
 			throw new DataAccessException("A database error occured!", exception);
 		}
 		return range;
+	}
+
+	/**
+	 * This method returns and retrieves the list of non-anonymous {@link Inquiry}
+	 * objects with the given user id from the application database.
+	 * 
+	 * @param userId The user id
+	 * @return The non-anonymous inquiries with the given id
+	 * @throws DatabaseException If an error occurs while retrieving the inquiry
+	 *                           information
+	 */
+	public List<Inquiry> selectFromUserIdNonAnonymous(int userId) throws DatabaseException {
+		LOGGER.debug("Getting responses with user id " + userId);
+		List<ResultSet> results = runner.runScript(INQUIRY_SELECT_USER_ID_NON_ANONYMOUS_SCRIPT, userId);
+		ResultSet result;
+		if (results.isEmpty()) {
+			throw new DataAccessException("The first statement in " + INQUIRY_SELECT_USER_ID_NON_ANONYMOUS_SCRIPT + " did not yeild results!");
+		} else {
+			result = results.getFirst();
+		}
+		List<Inquiry> list = new ArrayList<>();
+		try {
+			while (result.next()) {
+				int id;
+				String title;
+				String content;
+				try {
+					id = result.getInt("inquiry_id");
+					title = result.getString("title");
+					content = result.getString("content");
+				} catch (SQLException exception) {
+					throw new DataAccessException("There was an error while retrieving the inquiry information", exception);
+				}
+				Inquiry inquiry = new Inquiry(id, userId, title, content, false);
+				list.add(inquiry);
+			}
+		} catch (SQLException exception) {
+			throw new DataAccessException("A database error occured!", exception);
+		}
+		return list;
+	}
+
+	/**
+	 * This method returns and retrieves the list of {@link Inquiry} objects with
+	 * the given user id from the application database.
+	 * 
+	 * @param userId The user id
+	 * @return The inquiries with the given id
+	 * @throws DatabaseException If an error occurs while retrieving the inquiry
+	 *                           information
+	 */
+	public List<Inquiry> selectFromUserId(int userId) throws DatabaseException {
+		LOGGER.debug("Getting responses with user id " + userId);
+		List<ResultSet> results = runner.runScript(INQUIRY_SELECT_USER_ID_SCRIPT, userId);
+		ResultSet result;
+		if (results.isEmpty()) {
+			throw new DataAccessException("The first statement in " + INQUIRY_SELECT_USER_ID_SCRIPT + " did not yeild results!");
+		} else {
+			result = results.getFirst();
+		}
+		List<Inquiry> list = new ArrayList<>();
+		try {
+			while (result.next()) {
+				int id;
+				String title;
+				String content;
+				boolean anonymous;
+				try {
+					id = result.getInt("inquiry_id");
+					title = result.getString("title");
+					content = result.getString("content");
+					anonymous = result.getBoolean("anonymous");
+				} catch (SQLException exception) {
+					throw new DataAccessException("There was an error while retrieving the inquiry information", exception);
+				}
+				Inquiry inquiry = new Inquiry(id, userId, title, content, anonymous);
+				list.add(inquiry);
+			}
+		} catch (SQLException exception) {
+			throw new DataAccessException("A database error occured!", exception);
+		}
+		return list;
 	}
 
 	/**

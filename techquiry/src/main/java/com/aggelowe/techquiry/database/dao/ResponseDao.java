@@ -22,6 +22,12 @@ import com.aggelowe.techquiry.database.exceptions.DatabaseException;
 public final class ResponseDao {
 
 	/**
+	 * The path of the SQL script for obtaining the count of response entries with
+	 * an inquiry id.
+	 */
+	public static final String RESPONSE_COUNT_INQUIRY_ID_SCRIPT = "/database/response/count_inquiry_id.sql";
+
+	/**
 	 * The path of the SQL script for deleting a response entry.
 	 */
 	public static final String RESPONSE_DELETE_SCRIPT = "/database/response/delete.sql";
@@ -32,7 +38,7 @@ public final class ResponseDao {
 	public static final String RESPONSE_INSERT_SCRIPT = "/database/response/insert.sql";
 
 	/**
-	 * The path of the SQL script for selecting a response entry with an inquiry id.
+	 * The path of the SQL script for selecting response entries with an inquiry id.
 	 */
 	public static final String RESPONSE_SELECT_INQUIRY_ID_SCRIPT = "/database/response/select_inquiry_id.sql";
 
@@ -59,6 +65,33 @@ public final class ResponseDao {
 	 */
 	public ResponseDao(SQLRunner runner) {
 		this.runner = runner;
+	}
+
+	/**
+	 * This method returns the number of response entries inside the application
+	 * database with the given inquiry id.
+	 * 
+	 * @param inquiryId the inquiry id
+	 * @return The number of inquiry entries in the database
+	 * @throws DatabaseException If an error occurs while retrieving the response
+	 *                           count
+	 */
+	public int countFromInquiryId(int inquiryId) throws DatabaseException {
+		LOGGER.debug("Getting inquiry entry count");
+		List<ResultSet> results = runner.runScript(RESPONSE_COUNT_INQUIRY_ID_SCRIPT, inquiryId);
+		ResultSet result;
+		if (results.isEmpty()) {
+			throw new DataAccessException("The first statement in " + RESPONSE_COUNT_INQUIRY_ID_SCRIPT + " did not yeild a result!");
+		} else {
+			result = results.getFirst();
+		}
+		int count;
+		try {
+			count = result.getInt("response_count");
+		} catch (SQLException exception) {
+			throw new DataAccessException("There was an error while retrieving the response count!", exception);
+		}
+		return count;
 	}
 
 	/**

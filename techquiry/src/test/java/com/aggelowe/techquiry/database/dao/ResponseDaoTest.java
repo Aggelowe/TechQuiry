@@ -86,6 +86,14 @@ public class ResponseDaoTest {
 	}
 
 	@Test
+	public void testCountFromInquiryIdSuccess() {
+		int count0 = assertDoesNotThrow(() -> responseDao.countFromInquiryId(1));
+		assertEquals(0, count0);
+		int count1 = assertDoesNotThrow(() -> responseDao.countFromInquiryId(2));
+		assertEquals(2, count1);
+	}
+	
+	@Test
 	public void testDeleteSuccess() {
 		assertDoesNotThrow(() -> responseDao.delete(1));
 		Statement statement = assertDoesNotThrow(() -> connection.createStatement());

@@ -37,28 +37,18 @@ public class InquiryDaoTest {
 		inquiryDao = new InquiryDao(new SQLRunner(connection));
 		assertDoesNotThrow(() -> {
 			Statement statement = connection.createStatement();
-			statement.execute("CREATE TABLE IF NOT EXISTS \"user_login\" (\n"
-							+ "	\"user_id\" INTEGER NOT NULL UNIQUE,\n"
-							+ "	\"username\" TEXT NOT NULL UNIQUE,\n"
-							+ "	\"password_hash\" TEXT NOT NULL,\n"
-							+ "	\"password_salt\" TEXT NOT NULL,\n"
-							+ "	PRIMARY KEY(\"user_id\")\n"
-							+ ");\n");
-			statement.execute("CREATE TABLE IF NOT EXISTS \"inquiry\" (\n"
-							+ "	\"inquiry_id\" INTEGER NOT NULL UNIQUE,\n"
-							+ "	\"user_id\" INTEGER NOT NULL,\n"
-							+ "	\"title\" TEXT NOT NULL,\n"
-							+ "	\"content\" TEXT NOT NULL,\n"
-							+ "	\"anonymous\" INTEGER NOT NULL,\n"
-							+ "	PRIMARY KEY(\"inquiry_id\"),\n"
-							+ "	FOREIGN KEY (\"user_id\") REFERENCES \"user_login\"(\"user_id\")\n"
-							+ "	ON UPDATE CASCADE ON DELETE CASCADE\n"
-							+ ");");
+			statement.execute(
+					"CREATE TABLE IF NOT EXISTS \"user_login\" (\n" + "	\"user_id\" INTEGER NOT NULL UNIQUE,\n" + "	\"username\" TEXT NOT NULL UNIQUE,\n"
+							+ "	\"password_hash\" TEXT NOT NULL,\n" + "	\"password_salt\" TEXT NOT NULL,\n" + "	PRIMARY KEY(\"user_id\")\n" + ");\n");
+			statement.execute("CREATE TABLE IF NOT EXISTS \"inquiry\" (\n" + "	\"inquiry_id\" INTEGER NOT NULL UNIQUE,\n" + "	\"user_id\" INTEGER NOT NULL,\n"
+					+ "	\"title\" TEXT NOT NULL,\n" + "	\"content\" TEXT NOT NULL,\n" + "	\"anonymous\" INTEGER NOT NULL,\n"
+					+ "	PRIMARY KEY(\"inquiry_id\"),\n" + "	FOREIGN KEY (\"user_id\") REFERENCES \"user_login\"(\"user_id\")\n"
+					+ "	ON UPDATE CASCADE ON DELETE CASCADE\n" + ");");
 			statement.execute("INSERT INTO user_login(user_id, username, password_hash, password_salt) VALUES(0, 'alice', 'MTIzNDU2Nzg=', 'MTIzNA==');");
 			statement.execute("INSERT INTO user_login(user_id, username, password_hash, password_salt) VALUES(1, 'bob', 'cGFzc3dvcmQ=', 'cGFzcw==');");
 			statement.execute("INSERT INTO inquiry(inquiry_id, user_id, title, content, anonymous) VALUES(0, 1, 'Test',	'Test Content', true);");
 			statement.execute("INSERT INTO inquiry(inquiry_id, user_id, title, content, anonymous) VALUES(1, 0, 'Example',	'Example Content', true);");
-			statement.execute("INSERT INTO inquiry(inquiry_id, user_id, title, content, anonymous) VALUES(2, 0, 'Instance',	'Instance Content', true);");
+			statement.execute("INSERT INTO inquiry(inquiry_id, user_id, title, content, anonymous) VALUES(2, 0, 'Instance',	'Instance Content', false);");
 			connection.commit();
 		});
 	}
@@ -121,6 +111,40 @@ public class InquiryDaoTest {
 		assertEquals(true, inquiry0.isAnonymous());
 		Inquiry inquiry1 = inquiries.get(1);
 		assertEquals(2, inquiry1.getId());
+	}
+
+	@Test
+	public void testSelectFromUserIdNonAnonymousSuccess() {
+		List<Inquiry> inquiries0 = assertDoesNotThrow(() -> inquiryDao.selectFromUserIdNonAnonymous(0));
+		assertEquals(1, inquiries0.size());
+		Inquiry inquiry = inquiries0.get(0);
+		assertEquals(2, inquiry.getId());
+		assertEquals(0, inquiry.getUserId());
+		assertEquals("Instance", inquiry.getTitle());
+		assertEquals("Instance Content", inquiry.getContent());
+		assertEquals(false, inquiry.isAnonymous());
+		List<Inquiry> inquiries1 = assertDoesNotThrow(() -> inquiryDao.selectFromUserIdNonAnonymous(1));
+		assertTrue(inquiries1.isEmpty());
+	}
+
+	@Test
+	public void testSelectFromUserIdSuccess() {
+		List<Inquiry> inquiries0 = assertDoesNotThrow(() -> inquiryDao.selectFromUserId(0));
+		assertEquals(2, inquiries0.size());
+		Inquiry inquiry0 = inquiries0.get(0);
+		assertEquals(1, inquiry0.getId());
+		assertEquals(0, inquiry0.getUserId());
+		assertEquals("Example", inquiry0.getTitle());
+		assertEquals("Example Content", inquiry0.getContent());
+		assertEquals(true, inquiry0.isAnonymous());
+		List<Inquiry> inquiries1 = assertDoesNotThrow(() -> inquiryDao.selectFromUserId(1));
+		assertEquals(1, inquiries1.size());
+		Inquiry inquiry1 = inquiries1.get(0);
+		assertEquals(0, inquiry1.getId());
+		assertEquals(1, inquiry1.getUserId());
+		assertEquals("Test", inquiry1.getTitle());
+		assertEquals("Test Content", inquiry1.getContent());
+		assertEquals(true, inquiry1.isAnonymous());
 	}
 
 	@Test
