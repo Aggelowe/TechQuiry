@@ -1,10 +1,6 @@
 package com.aggelowe.techquiry.database.dao;
 
 import static com.aggelowe.techquiry.common.Constants.LOGGER;
-import static com.aggelowe.techquiry.database.DatabaseConstants.OBSERVER_DELETE_SCRIPT;
-import static com.aggelowe.techquiry.database.DatabaseConstants.OBSERVER_INSERT_SCRIPT;
-import static com.aggelowe.techquiry.database.DatabaseConstants.OBSERVER_SELECT_INQUIRY_ID_SCRIPT;
-import static com.aggelowe.techquiry.database.DatabaseConstants.OBSERVER_SELECT_USER_ID_SCRIPT;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -24,6 +20,27 @@ import com.aggelowe.techquiry.database.exceptions.DatabaseException;
  * @since 0.0.1
  */
 public final class ObserverDao {
+
+	/**
+	 * The path of the SQL script for deleting an observer entry.
+	 */
+	public static final String OBSERVER_DELETE_SCRIPT = "/database/observer/delete.sql";
+
+	/**
+	 * The path of the SQL script for inserting an observer entry.
+	 */
+	public static final String OBSERVER_INSERT_SCRIPT = "/database/observer/insert.sql";
+
+	/**
+	 * The path of the SQL script for selecting an observer entry with an inquiry
+	 * id.
+	 */
+	public static final String OBSERVER_SELECT_INQUIRY_ID_SCRIPT = "/database/observer/select_inquiry_id.sql";
+
+	/**
+	 * The path of the SQL script for selecting an observer entry with a user id.
+	 */
+	public static final String OBSERVER_SELECT_USER_ID_SCRIPT = "/database/observer/select_user_id.sql";
 
 	/**
 	 * The runner responsible for executing the SQL scripts.

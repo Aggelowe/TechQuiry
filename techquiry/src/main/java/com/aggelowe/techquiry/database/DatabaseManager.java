@@ -2,7 +2,6 @@ package com.aggelowe.techquiry.database;
 
 import static com.aggelowe.techquiry.common.Constants.DATABASE_FILENAME;
 import static com.aggelowe.techquiry.common.Constants.LOGGER;
-import static com.aggelowe.techquiry.database.DatabaseConstants.CREATE_SCHEMA_SCRIPT;
 
 import java.nio.file.Path;
 import java.sql.Connection;
@@ -34,6 +33,11 @@ import com.aggelowe.techquiry.database.exceptions.DatabaseException;
  * @since 0.0.1
  */
 public final class DatabaseManager {
+
+	/**
+	 * The path of the SQL script for applying the database schema.
+	 */
+	public static final String CREATE_SCHEMA_SCRIPT = "/database/schema.sql";
 
 	/**
 	 * This object represents the connection with the SQLite database.

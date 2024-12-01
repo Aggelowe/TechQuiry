@@ -59,19 +59,19 @@ public class TechQuiry {
 		LOGGER.info("Starting core application components");
 		DatabaseManager.initialize();
 	}
-	
-    /**
-     * This method is invoked when the application's context is closed
-     * and is responsible for cleaning up core application components.
-     */
-    @EventListener(ContextClosedEvent.class)
-    void shutdown() {
-        LOGGER.info("Shutting down core application components");
-        try {
+
+	/**
+	 * This method is invoked when the application's context is closed and is
+	 * responsible for cleaning up core application components.
+	 */
+	@EventListener(ContextClosedEvent.class)
+	void shutdown() {
+		LOGGER.info("Shutting down core application components");
+		try {
 			getManager().closeConnection();
 		} catch (DatabaseException exception) {
 			LOGGER.error(exception);
 		}
-    }
+	}
 
 }

@@ -1,10 +1,6 @@
 package com.aggelowe.techquiry.database.dao;
 
 import static com.aggelowe.techquiry.common.Constants.LOGGER;
-import static com.aggelowe.techquiry.database.DatabaseConstants.UPVOTE_DELETE_SCRIPT;
-import static com.aggelowe.techquiry.database.DatabaseConstants.UPVOTE_INSERT_SCRIPT;
-import static com.aggelowe.techquiry.database.DatabaseConstants.UPVOTE_SELECT_RESPONSE_ID_SCRIPT;
-import static com.aggelowe.techquiry.database.DatabaseConstants.UPVOTE_SELECT_USER_ID_SCRIPT;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -24,6 +20,26 @@ import com.aggelowe.techquiry.database.exceptions.DatabaseException;
  * @since 0.0.1
  */
 public final class UpvoteDao {
+
+	/**
+	 * The path of the SQL script for deleting an upvote entry.
+	 */
+	public static final String UPVOTE_DELETE_SCRIPT = "/database/upvote/delete.sql";
+
+	/**
+	 * The path of the SQL script for inserting an upvote entry.
+	 */
+	public static final String UPVOTE_INSERT_SCRIPT = "/database/upvote/insert.sql";
+
+	/**
+	 * The path of the SQL script for selecting an upvote entry with a response id.
+	 */
+	public static final String UPVOTE_SELECT_RESPONSE_ID_SCRIPT = "/database/upvote/select_response_id.sql";
+
+	/**
+	 * The path of the SQL script for selecting an upvote entry with a user id.
+	 */
+	public static final String UPVOTE_SELECT_USER_ID_SCRIPT = "/database/upvote/select_user_id.sql";
 
 	/**
 	 * The runner responsible for executing the SQL scripts.

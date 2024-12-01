@@ -1,12 +1,6 @@
 package com.aggelowe.techquiry.database.dao;
 
 import static com.aggelowe.techquiry.common.Constants.LOGGER;
-import static com.aggelowe.techquiry.database.DatabaseConstants.USER_DATA_COUNT_SCRIPT;
-import static com.aggelowe.techquiry.database.DatabaseConstants.USER_DATA_DELETE_SCRIPT;
-import static com.aggelowe.techquiry.database.DatabaseConstants.USER_DATA_INSERT_SCRIPT;
-import static com.aggelowe.techquiry.database.DatabaseConstants.USER_DATA_RANGE_SCRIPT;
-import static com.aggelowe.techquiry.database.DatabaseConstants.USER_DATA_SELECT_SCRIPT;
-import static com.aggelowe.techquiry.database.DatabaseConstants.USER_DATA_UPDATE_SCRIPT;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -29,6 +23,36 @@ import com.aggelowe.techquiry.database.exceptions.SQLRunnerLoadException;
  * @since 0.0.1
  */
 public final class UserDataDao {
+
+	/**
+	 * The path of the SQL script for obtaining the count of user data entries.
+	 */
+	public static final String USER_DATA_COUNT_SCRIPT = "/database/user_data/count.sql";
+
+	/**
+	 * The path of the SQL script for deleting a user data entry.
+	 */
+	public static final String USER_DATA_DELETE_SCRIPT = "/database/user_data/delete.sql";
+
+	/**
+	 * The path of the SQL script for inserting a user data entry.
+	 */
+	public static final String USER_DATA_INSERT_SCRIPT = "/database/user_data/insert.sql";
+
+	/**
+	 * The path of the SQL script for selecting a user data entry range.
+	 */
+	public static final String USER_DATA_RANGE_SCRIPT = "/database/user_data/range.sql";
+
+	/**
+	 * The path of the SQL script for selecting a user data entry.
+	 */
+	public static final String USER_DATA_SELECT_SCRIPT = "/database/user_data/select.sql";
+
+	/**
+	 * The path of the SQL script for updating a user data entry.
+	 */
+	public static final String USER_DATA_UPDATE_SCRIPT = "/database/user_data/update.sql";
 
 	/**
 	 * The runner responsible for executing the SQL scripts.

@@ -1,13 +1,6 @@
 package com.aggelowe.techquiry.database.dao;
 
 import static com.aggelowe.techquiry.common.Constants.LOGGER;
-import static com.aggelowe.techquiry.database.DatabaseConstants.USER_LOGIN_COUNT_SCRIPT;
-import static com.aggelowe.techquiry.database.DatabaseConstants.USER_LOGIN_DELETE_SCRIPT;
-import static com.aggelowe.techquiry.database.DatabaseConstants.USER_LOGIN_INSERT_SCRIPT;
-import static com.aggelowe.techquiry.database.DatabaseConstants.USER_LOGIN_RANGE_SCRIPT;
-import static com.aggelowe.techquiry.database.DatabaseConstants.USER_LOGIN_SELECT_SCRIPT;
-import static com.aggelowe.techquiry.database.DatabaseConstants.USER_LOGIN_SELECT_USERNAME_SCRIPT;
-import static com.aggelowe.techquiry.database.DatabaseConstants.USER_LOGIN_UPDATE_SCRIPT;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,6 +21,41 @@ import com.aggelowe.techquiry.database.exceptions.DatabaseException;
  * @since 0.0.1
  */
 public final class UserLoginDao {
+
+	/**
+	 * The path of the SQL script for obtaining the count of user login entries.
+	 */
+	public static final String USER_LOGIN_COUNT_SCRIPT = "/database/user_login/count.sql";
+
+	/**
+	 * The path of the SQL script for deleting a user login entry.
+	 */
+	public static final String USER_LOGIN_DELETE_SCRIPT = "/database/user_login/delete.sql";
+
+	/**
+	 * The path of the SQL script for inserting a user login entry.
+	 */
+	public static final String USER_LOGIN_INSERT_SCRIPT = "/database/user_login/insert.sql";
+
+	/**
+	 * The path of the SQL script for selecting a user login entry range.
+	 */
+	public static final String USER_LOGIN_RANGE_SCRIPT = "/database/user_login/range.sql";
+
+	/**
+	 * The path of the SQL script for selecting a user login entry with an id.
+	 */
+	public static final String USER_LOGIN_SELECT_SCRIPT = "/database/user_login/select.sql";
+
+	/**
+	 * The path of the SQL script for selecting a user login entry with a username.
+	 */
+	public static final String USER_LOGIN_SELECT_USERNAME_SCRIPT = "/database/user_login/select_username.sql";
+
+	/**
+	 * The path of the SQL script for updating a user login entry.
+	 */
+	public static final String USER_LOGIN_UPDATE_SCRIPT = "/database/user_login/update.sql";
 
 	/**
 	 * The runner responsible for executing the SQL scripts.

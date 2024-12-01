@@ -1,11 +1,6 @@
 package com.aggelowe.techquiry.database.dao;
 
 import static com.aggelowe.techquiry.common.Constants.LOGGER;
-import static com.aggelowe.techquiry.database.DatabaseConstants.RESPONSE_DELETE_SCRIPT;
-import static com.aggelowe.techquiry.database.DatabaseConstants.RESPONSE_INSERT_SCRIPT;
-import static com.aggelowe.techquiry.database.DatabaseConstants.RESPONSE_SELECT_INQUIRY_ID_SCRIPT;
-import static com.aggelowe.techquiry.database.DatabaseConstants.RESPONSE_SELECT_SCRIPT;
-import static com.aggelowe.techquiry.database.DatabaseConstants.RESPONSE_UPDATE_SCRIPT;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,6 +20,31 @@ import com.aggelowe.techquiry.database.exceptions.DatabaseException;
  * @since 0.0.1
  */
 public final class ResponseDao {
+
+	/**
+	 * The path of the SQL script for deleting a response entry.
+	 */
+	public static final String RESPONSE_DELETE_SCRIPT = "/database/response/delete.sql";
+
+	/**
+	 * The path of the SQL script for inserting a response entry.
+	 */
+	public static final String RESPONSE_INSERT_SCRIPT = "/database/response/insert.sql";
+
+	/**
+	 * The path of the SQL script for selecting a response entry with an inquiry id.
+	 */
+	public static final String RESPONSE_SELECT_INQUIRY_ID_SCRIPT = "/database/response/select_inquiry_id.sql";
+
+	/**
+	 * The path of the SQL script for selecting a response entry.
+	 */
+	public static final String RESPONSE_SELECT_SCRIPT = "/database/response/select.sql";
+
+	/**
+	 * The path of the SQL script for updating a response entry.
+	 */
+	public static final String RESPONSE_UPDATE_SCRIPT = "/database/response/update.sql";
 
 	/**
 	 * The runner responsible for executing the SQL scripts.

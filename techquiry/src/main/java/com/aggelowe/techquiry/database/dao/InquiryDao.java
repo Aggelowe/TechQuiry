@@ -1,12 +1,6 @@
 package com.aggelowe.techquiry.database.dao;
 
 import static com.aggelowe.techquiry.common.Constants.LOGGER;
-import static com.aggelowe.techquiry.database.DatabaseConstants.INQUIRY_COUNT_SCRIPT;
-import static com.aggelowe.techquiry.database.DatabaseConstants.INQUIRY_DELETE_SCRIPT;
-import static com.aggelowe.techquiry.database.DatabaseConstants.INQUIRY_INSERT_SCRIPT;
-import static com.aggelowe.techquiry.database.DatabaseConstants.INQUIRY_RANGE_SCRIPT;
-import static com.aggelowe.techquiry.database.DatabaseConstants.INQUIRY_SELECT_SCRIPT;
-import static com.aggelowe.techquiry.database.DatabaseConstants.INQUIRY_UPDATE_SCRIPT;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -26,6 +20,36 @@ import com.aggelowe.techquiry.database.exceptions.DatabaseException;
  * @since 0.0.1
  */
 public final class InquiryDao {
+
+	/**
+	 * The path of the SQL script for obtaining the count of inquiry entries.
+	 */
+	public static final String INQUIRY_COUNT_SCRIPT = "/database/inquiry/count.sql";
+
+	/**
+	 * The path of the SQL script for deleting an inquiry entry.
+	 */
+	public static final String INQUIRY_DELETE_SCRIPT = "/database/inquiry/delete.sql";
+
+	/**
+	 * The path of the SQL script for inserting an inquiry entry.
+	 */
+	public static final String INQUIRY_INSERT_SCRIPT = "/database/inquiry/insert.sql";
+
+	/**
+	 * The path of the SQL script for selecting an inquiry entry range.
+	 */
+	public static final String INQUIRY_RANGE_SCRIPT = "/database/inquiry/range.sql";
+
+	/**
+	 * The path of the SQL script for selecting an inquiry entry.
+	 */
+	public static final String INQUIRY_SELECT_SCRIPT = "/database/inquiry/select.sql";
+
+	/**
+	 * The path of the SQL script for updating an inquiry entry.
+	 */
+	public static final String INQUIRY_UPDATE_SCRIPT = "/database/inquiry/update.sql";
 
 	/**
 	 * The runner responsible for executing the SQL scripts.
