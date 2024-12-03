@@ -83,6 +83,14 @@ public class ObserverDaoTest {
 	}
 
 	@Test
+	public void testCountFromInquiryIdSuccess() {
+		int count0 = assertDoesNotThrow(() -> observerDao.countFromInquiryId(0));
+		assertEquals(2, count0);
+		int count1 = assertDoesNotThrow(() -> observerDao.countFromInquiryId(2));
+		assertEquals(0, count1);
+	}
+
+	@Test
 	public void testDeleteSuccess() {
 		assertDoesNotThrow(() -> observerDao.delete(new Observer(1, 1)));
 		Statement statement = assertDoesNotThrow(() -> connection.createStatement());
@@ -91,7 +99,7 @@ public class ObserverDaoTest {
 		assertNotNull(result);
 		assertFalse(assertDoesNotThrow(() -> result.next()));
 	}
-	
+
 	@Test
 	public void testInsertSuccess() {
 		assertDoesNotThrow(() -> observerDao.insert(new Observer(2, 1)));
@@ -103,13 +111,13 @@ public class ObserverDaoTest {
 		assertEquals(2, assertDoesNotThrow(() -> result.getInt("inquiry_id")));
 		assertEquals(1, assertDoesNotThrow(() -> result.getInt("user_id")));
 	}
-	
+
 	@Test
 	public void testInsertException() {
 		assertThrows(SQLRunnerExecuteException.class, () -> observerDao.insert(new Observer(0, 0)));
 		assertThrows(SQLRunnerExecuteException.class, () -> observerDao.insert(new Observer(3, 2)));
 	}
-	
+
 	@Test
 	public void testSelectFromInquiryIdSuccess() {
 		List<Observer> observers = assertDoesNotThrow(() -> observerDao.selectFromInquiryId(1));
@@ -118,7 +126,7 @@ public class ObserverDaoTest {
 		assertEquals(1, observer.getInquiryId());
 		assertEquals(1, observer.getUserId());
 	}
-	
+
 	@Test
 	public void testSelectFromUserIdSuccess() {
 		List<Observer> observers = assertDoesNotThrow(() -> observerDao.selectFromUserId(1));
@@ -127,5 +135,5 @@ public class ObserverDaoTest {
 		assertEquals(0, observer.getInquiryId());
 		assertEquals(1, observer.getUserId());
 	}
-	
+
 }

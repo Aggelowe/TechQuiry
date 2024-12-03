@@ -22,6 +22,12 @@ import com.aggelowe.techquiry.database.exceptions.DatabaseException;
 public final class ObserverDao {
 
 	/**
+	 * The path of the SQL script for obtaining the count of observer entries with
+	 * an inquiry id.
+	 */
+	public static final String OBSERVER_COUNT_INQUIRY_ID_SCRIPT = "/database/observer/count_inquiry_id.sql";
+
+	/**
 	 * The path of the SQL script for deleting an observer entry.
 	 */
 	public static final String OBSERVER_DELETE_SCRIPT = "/database/observer/delete.sql";
@@ -55,6 +61,33 @@ public final class ObserverDao {
 	 */
 	public ObserverDao(SQLRunner runner) {
 		this.runner = runner;
+	}
+
+	/**
+	 * This method returns the number of observer entries inside the application
+	 * database with the given inquiry id.
+	 * 
+	 * @param inquiryId the inquiry id
+	 * @return The number of observer entries in the database
+	 * @throws DatabaseException If an error occurs while retrieving the observer
+	 *                           count
+	 */
+	public int countFromInquiryId(int inquiryId) throws DatabaseException {
+		LOGGER.debug("Getting observer entry count");
+		List<ResultSet> results = runner.runScript(OBSERVER_COUNT_INQUIRY_ID_SCRIPT, inquiryId);
+		ResultSet result;
+		if (results.isEmpty()) {
+			throw new DataAccessException("The first statement in " + OBSERVER_COUNT_INQUIRY_ID_SCRIPT + " did not yeild a result!");
+		} else {
+			result = results.getFirst();
+		}
+		int count;
+		try {
+			count = result.getInt("observer_count");
+		} catch (SQLException exception) {
+			throw new DataAccessException("There was an error while retrieving the observer count!", exception);
+		}
+		return count;
 	}
 
 	/**

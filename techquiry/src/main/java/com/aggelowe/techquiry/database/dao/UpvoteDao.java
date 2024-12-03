@@ -22,6 +22,12 @@ import com.aggelowe.techquiry.database.exceptions.DatabaseException;
 public final class UpvoteDao {
 
 	/**
+	 * The path of the SQL script for obtaining the count of upvote entries with a
+	 * response id.
+	 */
+	public static final String UPVOTE_COUNT_RESPONSE_ID_SCRIPT = "/database/upvote/count_response_id.sql";
+
+	/**
 	 * The path of the SQL script for deleting an upvote entry.
 	 */
 	public static final String UPVOTE_DELETE_SCRIPT = "/database/upvote/delete.sql";
@@ -56,6 +62,34 @@ public final class UpvoteDao {
 		this.runner = runner;
 	}
 
+	/**
+	 * This method returns the number of upvote entries inside the application
+	 * database with the given response id.
+	 * 
+	 * @param responseId the response id
+	 * @return The number of upvote entries in the database
+	 * @throws DatabaseException If an error occurs while retrieving the upvote
+	 *                           count
+	 */
+	public int countFromResponseId(int responseId) throws DatabaseException {
+		LOGGER.debug("Getting upvote entry count");
+		List<ResultSet> results = runner.runScript(UPVOTE_COUNT_RESPONSE_ID_SCRIPT, responseId);
+		ResultSet result;
+		if (results.isEmpty()) {
+			throw new DataAccessException("The first statement in " + UPVOTE_COUNT_RESPONSE_ID_SCRIPT + " did not yeild a result!");
+		} else {
+			result = results.getFirst();
+		}
+		int count;
+		try {
+			count = result.getInt("upvote_count");
+		} catch (SQLException exception) {
+			throw new DataAccessException("There was an error while retrieving the upvote count!", exception);
+		}
+		return count;
+	}
+
+	
 	/**
 	 * This method deletes the upvote with the provided information from the
 	 * application database.

@@ -98,6 +98,14 @@ public class UpvoteDaoTest {
 	}
 
 	@Test
+	public void testCountFromResponseIdSuccess() {
+		int count0 = assertDoesNotThrow(() -> upvoteDao.countFromResponseId(0));
+		assertEquals(1, count0);
+		int count1 = assertDoesNotThrow(() -> upvoteDao.countFromResponseId(2));
+		assertEquals(0, count1);
+	}
+
+	@Test
 	public void testDeleteSuccess() {
 		assertDoesNotThrow(() -> upvoteDao.delete(new Upvote(0, 0)));
 		Statement statement = assertDoesNotThrow(() -> connection.createStatement());
