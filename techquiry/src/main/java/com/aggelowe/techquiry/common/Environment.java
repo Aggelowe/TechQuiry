@@ -1,6 +1,7 @@
 package com.aggelowe.techquiry.common;
 
 import static com.aggelowe.techquiry.common.Constants.EXECUTION_DIRECTORY;
+import static com.aggelowe.techquiry.common.Constants.MAX_SALT_LENGTH;
 
 import java.io.File;
 import java.util.function.Function;
@@ -28,7 +29,7 @@ public final class Environment {
 		} catch (NumberFormatException exception) {
 			throw new InvalidEnvironmentVariableException("The given port is not an integer.", exception);
 		}
-		if (value <= 0 || value >= 65535) {
+		if (value <= 0 || value > 65535) {
 			throw new InvalidEnvironmentVariableException("The given port is not within the valid port range.");
 		}
 		return value;
@@ -52,6 +53,23 @@ public final class Environment {
 	 * The {@link Entry} containing whether to perform the initial setup.
 	 */
 	private static final Entry<Boolean> SETUP = new Entry<>("TQ_SETUP", false, Boolean::parseBoolean);
+
+	/**
+	 * The {@link Entry} containing the salt length for hashing the application
+	 * users' passwords.
+	 */
+	private static final Entry<Integer> SALT_LENGTH = new Entry<>("TQ_SALT_SIZE", 16, original -> {
+		int value;
+		try {
+			value = Integer.valueOf(original);
+		} catch (NumberFormatException exception) {
+			throw new InvalidEnvironmentVariableException("The given salt length is not an integer.", exception);
+		}
+		if (value <= 0 || value > MAX_SALT_LENGTH) {
+			throw new InvalidEnvironmentVariableException("The given salt length must be between 0 and " + MAX_SALT_LENGTH + ".");
+		}
+		return value;
+	});
 
 	/**
 	 * The {@link Entry} class is responsible for loading, converting and storing
@@ -166,6 +184,15 @@ public final class Environment {
 	 */
 	public static boolean getSetup() {
 		return SETUP.get();
+	}
+
+	/**
+	 * This method returns the salt length for the application users' passwords.
+	 * 
+	 * @return The password hashes' salt length
+	 */
+	public static Entry<Integer> getSaltLength() {
+		return SALT_LENGTH;
 	}
 
 }

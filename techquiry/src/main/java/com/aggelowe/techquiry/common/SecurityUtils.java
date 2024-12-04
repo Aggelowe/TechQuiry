@@ -8,22 +8,22 @@ import java.util.Base64.Encoder;
 import com.aggelowe.techquiry.common.exceptions.IllegalConstructionException;
 
 /**
- * The {@link Utilities} contains several utility methods that are important for
- * the functionality of the TechQuiry application.
+ * The {@link SecurityUtils} contains several security methods that are
+ * important for the functionality of the TechQuiry application.
  * 
  * @author Aggelowe
  * @since 0.0.1
  */
-public final class Utilities {
+public final class SecurityUtils {
 
 	/**
 	 * This constructor will throw an {@link IllegalConstructionException} whenever
-	 * invoked. {@link Utilities} objects should <b>not</b> be constructible.
+	 * invoked. {@link SecurityUtils} objects should <b>not</b> be constructible.
 	 * 
 	 * @throws IllegalConstructionException Will always be thrown when the
 	 *                                      constructor is invoked.
 	 */
-	private Utilities() throws IllegalConstructionException {
+	private SecurityUtils() throws IllegalConstructionException {
 		throw new IllegalConstructionException(getClass().getName() + " objects should not be constructed!");
 	}
 

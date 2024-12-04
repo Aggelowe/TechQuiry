@@ -15,11 +15,11 @@ import com.aggelowe.techquiry.common.exceptions.IllegalConstructionException;
 public final class Constants {
 
 	/**
-	 * This constructor will throw an {@link IllegalConstructionException} whenever invoked.
-	 * {@link Constants} objects should <b>not</b> be constructible.
+	 * This constructor will throw an {@link IllegalConstructionException} whenever
+	 * invoked. {@link Constants} objects should <b>not</b> be constructible.
 	 * 
-	 * @throws IllegalConstructionException Will always be thrown when the constructor is
-	 *                              invoked.
+	 * @throws IllegalConstructionException Will always be thrown when the
+	 *                                      constructor is invoked.
 	 */
 	private Constants() throws IllegalConstructionException {
 		throw new IllegalConstructionException(getClass().getName() + " objects should not be constructed!");
@@ -49,6 +49,12 @@ public final class Constants {
 	 * The filename of the application database file
 	 */
 	public static final String DATABASE_FILENAME = "techquiry.db";
+
+	/**
+	 * The maximum possible length of the salt for hashing the application users'
+	 * passwords.
+	 */
+	public static final int MAX_SALT_LENGTH = 64;
 
 	static {
 		LOGGER = LogManager.getLogger(TechQuiry.class);

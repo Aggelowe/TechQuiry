@@ -1,6 +1,6 @@
 package com.aggelowe.techquiry.database.entities;
 
-import com.aggelowe.techquiry.common.Utilities;
+import com.aggelowe.techquiry.common.SecurityUtils;
 
 /**
  * The {@link UserLogin} class represents a user login of the TechQuiry
@@ -118,8 +118,8 @@ public class UserLogin {
 	public String toString() {
 		return "[User ID: " + id +
 				", Username: " + username +
-				", Password Hash: " + Utilities.encodeBase64(passwordHash) +
-				", Password Salt: " + Utilities.encodeBase64(passwordSalt) + "]";
+				", Password Hash: " + SecurityUtils.encodeBase64(passwordHash) +
+				", Password Salt: " + SecurityUtils.encodeBase64(passwordSalt) + "]";
 	}
 
 }

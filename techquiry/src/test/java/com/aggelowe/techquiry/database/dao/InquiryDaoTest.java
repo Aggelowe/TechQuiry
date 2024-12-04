@@ -37,13 +37,23 @@ public class InquiryDaoTest {
 		inquiryDao = new InquiryDao(new SQLRunner(connection));
 		assertDoesNotThrow(() -> {
 			Statement statement = connection.createStatement();
-			statement.execute(
-					"CREATE TABLE IF NOT EXISTS \"user_login\" (\n" + "	\"user_id\" INTEGER NOT NULL UNIQUE,\n" + "	\"username\" TEXT NOT NULL UNIQUE,\n"
-							+ "	\"password_hash\" TEXT NOT NULL,\n" + "	\"password_salt\" TEXT NOT NULL,\n" + "	PRIMARY KEY(\"user_id\")\n" + ");\n");
-			statement.execute("CREATE TABLE IF NOT EXISTS \"inquiry\" (\n" + "	\"inquiry_id\" INTEGER NOT NULL UNIQUE,\n" + "	\"user_id\" INTEGER NOT NULL,\n"
-					+ "	\"title\" TEXT NOT NULL,\n" + "	\"content\" TEXT NOT NULL,\n" + "	\"anonymous\" INTEGER NOT NULL,\n"
-					+ "	PRIMARY KEY(\"inquiry_id\"),\n" + "	FOREIGN KEY (\"user_id\") REFERENCES \"user_login\"(\"user_id\")\n"
-					+ "	ON UPDATE CASCADE ON DELETE CASCADE\n" + ");");
+			statement.execute("CREATE TABLE IF NOT EXISTS \"user_login\" (\n"
+							+ "	\"user_id\" INTEGER NOT NULL UNIQUE,\n" 
+							+ "	\"username\" TEXT NOT NULL UNIQUE,\n"
+							+ "	\"password_hash\" TEXT NOT NULL,\n"
+							+ "	\"password_salt\" TEXT NOT NULL,\n"
+							+ "	PRIMARY KEY(\"user_id\")\n"
+							+ ");\n");
+			statement.execute("CREATE TABLE IF NOT EXISTS \"inquiry\" (\n" 
+							+ "	\"inquiry_id\" INTEGER NOT NULL UNIQUE,\n"
+							+ "	\"user_id\" INTEGER NOT NULL,\n"
+							+ "	\"title\" TEXT NOT NULL,\n"
+							+ "	\"content\" TEXT NOT NULL,\n"
+							+ "	\"anonymous\" INTEGER NOT NULL,\n"
+							+ "	PRIMARY KEY(\"inquiry_id\"),\n"
+							+ "	FOREIGN KEY (\"user_id\") REFERENCES \"user_login\"(\"user_id\")\n"
+							+ "	ON UPDATE CASCADE ON DELETE CASCADE\n"
+							+ ");");
 			statement.execute("INSERT INTO user_login(user_id, username, password_hash, password_salt) VALUES(0, 'alice', 'MTIzNDU2Nzg=', 'MTIzNA==');");
 			statement.execute("INSERT INTO user_login(user_id, username, password_hash, password_salt) VALUES(1, 'bob', 'cGFzc3dvcmQ=', 'cGFzcw==');");
 			statement.execute("INSERT INTO inquiry(inquiry_id, user_id, title, content, anonymous) VALUES(0, 1, 'Test',	'Test Content', true);");

@@ -19,7 +19,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sqlite.SQLiteConfig;
 
-import com.aggelowe.techquiry.common.Utilities;
+import com.aggelowe.techquiry.common.SecurityUtils;
 import com.aggelowe.techquiry.database.SQLRunner;
 import com.aggelowe.techquiry.database.entities.UserLogin;
 import com.aggelowe.techquiry.database.exceptions.SQLRunnerExecuteException;
@@ -86,8 +86,8 @@ public class UserLoginDaoTest {
 		assertTrue(assertDoesNotThrow(() -> result.next()));
 		assertEquals(3, assertDoesNotThrow(() -> result.getInt("user_id")));
 		assertEquals("david", assertDoesNotThrow(() -> result.getString("username")));
-		assertEquals(Utilities.encodeBase64(new byte[4]), assertDoesNotThrow(() -> result.getString("password_hash")));
-		assertEquals(Utilities.encodeBase64(new byte[2]), assertDoesNotThrow(() -> result.getString("password_salt")));
+		assertEquals(SecurityUtils.encodeBase64(new byte[4]), assertDoesNotThrow(() -> result.getString("password_hash")));
+		assertEquals(SecurityUtils.encodeBase64(new byte[2]), assertDoesNotThrow(() -> result.getString("password_salt")));
 		assertFalse(assertDoesNotThrow(() -> result.next()));
 	}
 
@@ -105,8 +105,8 @@ public class UserLoginDaoTest {
 		UserLogin userLogin0 = userLogins.get(0);
 		assertEquals(1, userLogin0.getId());
 		assertEquals("bob", userLogin0.getUsername());
-		assertArrayEquals(Utilities.decodeBase64("cGFzc3dvcmQ="), userLogin0.getPasswordHash());
-		assertArrayEquals(Utilities.decodeBase64("cGFzcw=="), userLogin0.getPasswordSalt());
+		assertArrayEquals(SecurityUtils.decodeBase64("cGFzc3dvcmQ="), userLogin0.getPasswordHash());
+		assertArrayEquals(SecurityUtils.decodeBase64("cGFzcw=="), userLogin0.getPasswordSalt());
 		UserLogin userLogin1 = userLogins.get(1);
 		assertEquals(2, userLogin1.getId());
 	}
@@ -116,8 +116,8 @@ public class UserLoginDaoTest {
 		UserLogin userLogin = assertDoesNotThrow(() -> userLoginDao.select(1));
 		assertEquals(1, userLogin.getId());
 		assertEquals("bob", userLogin.getUsername());
-		assertArrayEquals(Utilities.decodeBase64("cGFzc3dvcmQ="), userLogin.getPasswordHash());
-		assertArrayEquals(Utilities.decodeBase64("cGFzcw=="), userLogin.getPasswordSalt());
+		assertArrayEquals(SecurityUtils.decodeBase64("cGFzc3dvcmQ="), userLogin.getPasswordHash());
+		assertArrayEquals(SecurityUtils.decodeBase64("cGFzcw=="), userLogin.getPasswordSalt());
 	}
 
 	@Test
@@ -129,8 +129,8 @@ public class UserLoginDaoTest {
 		assertNotNull(result);
 		assertEquals(2, assertDoesNotThrow(() -> result.getInt("user_id")));
 		assertEquals("david", assertDoesNotThrow(() -> result.getString("username")));
-		assertEquals(Utilities.encodeBase64(new byte[4]), assertDoesNotThrow(() -> result.getString("password_hash")));
-		assertEquals(Utilities.encodeBase64(new byte[2]), assertDoesNotThrow(() -> result.getString("password_salt")));
+		assertEquals(SecurityUtils.encodeBase64(new byte[4]), assertDoesNotThrow(() -> result.getString("password_hash")));
+		assertEquals(SecurityUtils.encodeBase64(new byte[2]), assertDoesNotThrow(() -> result.getString("password_salt")));
 	}
 
 	@Test

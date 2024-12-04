@@ -1,6 +1,6 @@
 package com.aggelowe.techquiry.database.entities;
 
-import com.aggelowe.techquiry.common.Utilities;
+import com.aggelowe.techquiry.common.SecurityUtils;
 
 /**
  * The {@link UserData} class represents a user data entry of the TechQuiry
@@ -117,7 +117,7 @@ public class UserData {
 		return "[User ID: " + id +
 				", First Name: " + firstName +
 				", Last Name: " + lastName +
-				", Icon: " + (icon == null ? "NULL" : Utilities.encodeBase64(icon)) + "]";
+				", Icon: " + (icon == null ? "NULL" : SecurityUtils.encodeBase64(icon)) + "]";
 	}
 
 }

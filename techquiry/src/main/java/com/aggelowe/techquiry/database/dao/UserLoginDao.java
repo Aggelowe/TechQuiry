@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.aggelowe.techquiry.common.Utilities;
+import com.aggelowe.techquiry.common.SecurityUtils;
 import com.aggelowe.techquiry.database.SQLRunner;
 import com.aggelowe.techquiry.database.entities.UserLogin;
 import com.aggelowe.techquiry.database.exceptions.DataAccessException;
@@ -124,8 +124,8 @@ public final class UserLoginDao {
 		String username = userLogin.getUsername();
 		byte[] passwordHash = userLogin.getPasswordHash();
 		byte[] passwordSalt = userLogin.getPasswordSalt();
-		String encodedHash = Utilities.encodeBase64(passwordHash);
-		String encodedSalt = Utilities.encodeBase64(passwordSalt);
+		String encodedHash = SecurityUtils.encodeBase64(passwordHash);
+		String encodedSalt = SecurityUtils.encodeBase64(passwordSalt);
 		runner.runScript(USER_LOGIN_INSERT_SCRIPT, id, username, encodedHash, encodedSalt);
 	}
 
@@ -167,8 +167,8 @@ public final class UserLoginDao {
 				byte[] passwordHash;
 				byte[] passwordSalt;
 				try {
-					passwordHash = Utilities.decodeBase64(encodedHash);
-					passwordSalt = Utilities.decodeBase64(encodedSalt);
+					passwordHash = SecurityUtils.decodeBase64(encodedHash);
+					passwordSalt = SecurityUtils.decodeBase64(encodedSalt);
 				} catch (IllegalArgumentException exception) {
 					throw new DataAccessException("There was an error while retrieving the user login information!", exception);
 				}
@@ -219,8 +219,8 @@ public final class UserLoginDao {
 		byte[] passwordHash;
 		byte[] passwordSalt;
 		try {
-			passwordHash = Utilities.decodeBase64(encodedHash);
-			passwordSalt = Utilities.decodeBase64(encodedSalt);
+			passwordHash = SecurityUtils.decodeBase64(encodedHash);
+			passwordSalt = SecurityUtils.decodeBase64(encodedSalt);
 		} catch (IllegalArgumentException exception) {
 			throw new DataAccessException("There was an error while retrieving the user login information!", exception);
 		}
@@ -266,8 +266,8 @@ public final class UserLoginDao {
 		byte[] passwordHash;
 		byte[] passwordSalt;
 		try {
-			passwordHash = Utilities.decodeBase64(encodedHash);
-			passwordSalt = Utilities.decodeBase64(encodedSalt);
+			passwordHash = SecurityUtils.decodeBase64(encodedHash);
+			passwordSalt = SecurityUtils.decodeBase64(encodedSalt);
 		} catch (IllegalArgumentException exception) {
 			throw new DataAccessException("There was an error while retrieving the user login information!", exception);
 		}
@@ -290,8 +290,8 @@ public final class UserLoginDao {
 		String username = userLogin.getUsername();
 		byte[] passwordHash = userLogin.getPasswordHash();
 		byte[] passwordSalt = userLogin.getPasswordSalt();
-		String encodedHash = Utilities.encodeBase64(passwordHash);
-		String encodedSalt = Utilities.encodeBase64(passwordSalt);
+		String encodedHash = SecurityUtils.encodeBase64(passwordHash);
+		String encodedSalt = SecurityUtils.encodeBase64(passwordSalt);
 		runner.runScript(USER_LOGIN_UPDATE_SCRIPT, username, encodedHash, encodedSalt, id);
 	}
 
