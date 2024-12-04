@@ -222,7 +222,7 @@ public final class DatabaseManager {
 			connection = DriverManager.getConnection(databaseUrl, config.toProperties());
 			connection.setAutoCommit(false);
 		} catch (SQLException exception) {
-			LOGGER.error("An error occured while connecting to " + databaseUrl, exception);
+			LOGGER.fatal("An error occured while connecting to " + databaseUrl, exception);
 			System.exit(1);
 		}
 		manager = new DatabaseManager(connection);
@@ -230,7 +230,7 @@ public final class DatabaseManager {
 			try {
 				manager.createSchema();
 			} catch (DatabaseException exception) {
-				LOGGER.error("An error occured while applying the database schema!", exception);
+				LOGGER.fatal("An error occured while applying the database schema!", exception);
 				System.exit(1);
 			}
 		}

@@ -21,10 +21,10 @@ public final class Environment {
 	/**
 	 * The {@link Entry} containing the application's port.
 	 */
-	private static final Entry<Integer> PORT = new Entry<>("TQ_PORT", 9850, (orignal) -> {
+	private static final Entry<Integer> PORT = new Entry<>("TQ_PORT", 9850, original -> {
 		int value;
 		try {
-			value = Integer.valueOf(orignal);
+			value = Integer.valueOf(original);
 		} catch (NumberFormatException exception) {
 			throw new InvalidEnvironmentVariableException("The given port is not an integer.", exception);
 		}
@@ -37,7 +37,7 @@ public final class Environment {
 	/**
 	 * The {@link Entry} containing the work directory of the application.
 	 */
-	private static final Entry<File> WORK_DIRECTORY = new Entry<>("TQ_PATH", new File(EXECUTION_DIRECTORY), (original) -> {
+	private static final Entry<File> WORK_DIRECTORY = new Entry<>("TQ_PATH", new File(EXECUTION_DIRECTORY), original -> {
 		File file = new File(original);
 		if (!file.exists()) {
 			throw new InvalidEnvironmentVariableException("The given path does not exist.");
@@ -51,7 +51,7 @@ public final class Environment {
 	/**
 	 * The {@link Entry} containing whether to perform the initial setup.
 	 */
-	private static final Entry<Boolean> SETUP = new Entry<>("TQ_SETUP", false, (original) -> Boolean.parseBoolean(original));
+	private static final Entry<Boolean> SETUP = new Entry<>("TQ_SETUP", false, Boolean::parseBoolean);
 
 	/**
 	 * The {@link Entry} class is responsible for loading, converting and storing
@@ -71,8 +71,9 @@ public final class Environment {
 		/**
 		 * This constructor constructs a new {@link Entry} object. The value is obtained
 		 * from the environment variables using the given key. If the variable found, it
-		 * is converted to the {@link Output} type using the given converter. If it is
-		 * not found or the conversion fails, the given fallback value is used instead.
+		 * is converted to the {@link Output} type using the given converter. If the
+		 * conversion fails, the application will terminate. If the variable is not
+		 * found, the given fallback value is used instead.
 		 * 
 		 * @param key       The key of the environment variable
 		 * @param fallback  The value to use if the key is not found in the environment
@@ -85,8 +86,9 @@ public final class Environment {
 			if (original != null) {
 				try {
 					value = converter.convert(original);
-				} catch (Exception exception) {
-					Constants.LOGGER.error(exception);
+				} catch (InvalidEnvironmentVariableException exception) {
+					Constants.LOGGER.fatal(exception);
+					System.exit(1);
 				}
 			}
 			this.value = value;
@@ -118,18 +120,19 @@ public final class Environment {
 		 * 
 		 * @param original The string to convert to the target type
 		 * @return The converted value
-		 * @throws InvalidEnvironmentVariableException If an error occurs during the conversion
+		 * @throws InvalidEnvironmentVariableException If an error occurs during the
+		 *                                             conversion
 		 */
 		Output convert(String original) throws InvalidEnvironmentVariableException;
 
 	}
 
 	/**
-	 * This constructor will throw an {@link IllegalConstructionException} whenever invoked.
-	 * {@link Environment} objects should <b>not</b> be constructible.
+	 * This constructor will throw an {@link IllegalConstructionException} whenever
+	 * invoked. {@link Environment} objects should <b>not</b> be constructible.
 	 * 
-	 * @throws IllegalConstructionException Will always be thrown when the constructor is
-	 *                              invoked.
+	 * @throws IllegalConstructionException Will always be thrown when the
+	 *                                      constructor is invoked.
 	 */
 	private Environment() throws IllegalConstructionException {
 		throw new IllegalConstructionException(getClass().getName() + " objects should not be constructed!");
