@@ -191,8 +191,8 @@ public final class Environment {
 	 * 
 	 * @return The password hashes' salt length
 	 */
-	public static Entry<Integer> getSaltLength() {
-		return SALT_LENGTH;
+	public static int getSaltLength() {
+		return SALT_LENGTH.get();
 	}
 
 }

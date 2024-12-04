@@ -56,6 +56,11 @@ public final class Constants {
 	 */
 	public static final int MAX_SALT_LENGTH = 64;
 
+	/**
+	 * The hashing algorithm for generating the password hashes.
+	 */
+	public static final String HASHING_ALGORITHM = "SHA-256";
+
 	static {
 		LOGGER = LogManager.getLogger(TechQuiry.class);
 		EXECUTION_DIRECTORY = System.getProperty("user.dir");

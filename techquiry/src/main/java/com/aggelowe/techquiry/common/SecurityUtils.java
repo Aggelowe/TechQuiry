@@ -1,6 +1,12 @@
 package com.aggelowe.techquiry.common;
 
+import static com.aggelowe.techquiry.common.Constants.HASHING_ALGORITHM;
+import static com.aggelowe.techquiry.common.Constants.LOGGER;
+
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Base64.Decoder;
 import java.util.Base64.Encoder;
@@ -54,6 +60,55 @@ public final class SecurityUtils {
 		byte[] raw = encoded.getBytes(StandardCharsets.UTF_8);
 		byte[] decoded = decoder.decode(raw);
 		return decoded;
+	}
+
+	/**
+	 * This method generates a secure random salt of the length specified by the
+	 * respective environment variable.
+	 * 
+	 * @return The bytes containing the generated salt
+	 */
+	public static byte[] generateSalt() {
+		SecureRandom random = new SecureRandom();
+		int length = Environment.getSaltLength();
+		byte[] salt = new byte[length];
+		random.nextBytes(salt);
+		return salt;
+	}
+
+	/**
+	 * This method verifies the given password against the given hash using the
+	 * algorithm defined in {@link Constants} and the given salt.
+	 * 
+	 * @param password The plain password to verify
+	 * @param salt     The salt used in the hashing
+	 * @param hash     The hash to compare the password against
+	 * @return Whether the hashed password compares the given hash
+	 */
+	public static boolean verifyPassword(String password, byte[] salt, byte[] hash) {
+		byte[] attempt = hashPassword(password, salt);
+		return MessageDigest.isEqual(hash, attempt);
+	}
+
+	/**
+	 * This method hashes the given password using the algorithm defined in
+	 * {@link Constants} and the given salt.
+	 * 
+	 * @param password The password to hash
+	 * @param salt     The salt to use in the hashing
+	 * @return The hashed password bytes
+	 */
+	public static byte[] hashPassword(String password, byte[] salt) {
+		MessageDigest digest = null;
+		try {
+			digest = MessageDigest.getInstance(HASHING_ALGORITHM);
+		} catch (NoSuchAlgorithmException exception) {
+			LOGGER.fatal(exception);
+			System.exit(1);
+		}
+		byte[] bytes = password.getBytes(StandardCharsets.UTF_8);
+		digest.update(salt);
+		return digest.digest(bytes);
 	}
 
 }
