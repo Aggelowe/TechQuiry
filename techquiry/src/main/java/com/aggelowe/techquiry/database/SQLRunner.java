@@ -1,8 +1,8 @@
 package com.aggelowe.techquiry.database;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
@@ -118,13 +118,13 @@ public final class SQLRunner {
 	 */
 	private List<PreparedStatement> loadStatements(InputStream stream) throws SQLRunnerLoadException {
 		List<PreparedStatement> statements = new LinkedList<PreparedStatement>();
-		BufferedInputStream buffer = new BufferedInputStream(stream);
+		InputStreamReader reader = new InputStreamReader(stream);
 		StringBuilder commandBuilder = new StringBuilder();
 		int mode = 0;
 		char previous = (char) -1;
 		int code;
 		try {
-			while ((code = buffer.read()) != -1) {
+			while ((code = reader.read()) != -1) {
 				char character = (char) code;
 				switch (mode) {
 					case 0: {
@@ -201,7 +201,7 @@ public final class SQLRunner {
 			throw new SQLRunnerLoadException("The SQL statement could not be constructed!", exception);
 		} finally {
 			try {
-				buffer.close();
+				reader.close();
 			} catch (IOException exception) {
 				throw new SQLRunnerLoadException("The SQL script input stream could not be closed!", exception);
 			}
