@@ -40,9 +40,23 @@ public class UserData {
 	 * @param passwordHash The user's last name
 	 */
 	public UserData(int id, String firstName, String lastName) {
+		this(id, firstName, lastName, null);
+	}
+
+	/**
+	 * This constructor constructs a new {@link UserData} instance with the provided
+	 * parameters as the required user data information.
+	 * 
+	 * @param id           The unique user id
+	 * @param username     The user's first name
+	 * @param passwordHash The user's last name
+	 * @param icon         The user's icon
+	 */
+	public UserData(int id, String firstName, String lastName, byte[] icon) {
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
+		this.icon = icon;
 	}
 
 	/**

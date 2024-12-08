@@ -251,15 +251,16 @@ public final class SQLRunner {
 		List<ResultSet> results = new ArrayList<>(statements.size());
 		try {
 			for (PreparedStatement statement : statements) {
-				if (statement != null) {
-					int len = parameters.length;
-					ParameterMetaData meta = statement.getParameterMetaData();
-					int max = Math.min(meta.getParameterCount(), parameters.length);
-					Object[] passed = Arrays.copyOf(parameters, max);
-					parameters = Arrays.copyOfRange(parameters, max, len);
-					ResultSet result = executeStatement(statement, passed);
-					results.add(result);
+				if (statement == null) {
+					continue;
 				}
+				int len = parameters.length;
+				ParameterMetaData meta = statement.getParameterMetaData();
+				int max = Math.min(meta.getParameterCount(), parameters.length);
+				Object[] passed = Arrays.copyOf(parameters, max);
+				parameters = Arrays.copyOfRange(parameters, max, len);
+				ResultSet result = executeStatement(statement, passed);
+				results.add(result);	
 			}
 			connection.commit();
 		} catch (SQLException exception) {
