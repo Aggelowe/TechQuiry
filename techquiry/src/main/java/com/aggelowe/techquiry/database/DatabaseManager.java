@@ -40,15 +40,14 @@ public final class DatabaseManager {
 	public static final String CREATE_SCHEMA_SCRIPT = "/database/schema.sql";
 
 	/**
+	 * The instance of the {@link DatabaseManager} class.
+	 */
+	private static DatabaseManager instance;
+
+	/**
 	 * This object represents the connection with the SQLite database.
 	 */
 	private final Connection connection;
-
-	/**
-	 * This object is responsible for initializing and managing the database of the
-	 * application.
-	 */
-	private static DatabaseManager manager;
 
 	/**
 	 * This object is responsible for executing SQL scripts on the application
@@ -210,7 +209,7 @@ public final class DatabaseManager {
 	 * used by the application. When invoked, the method connects to the database
 	 * file and performs the necessary initialization operations.
 	 */
-	public static void initialize() {
+	public static DatabaseManager initialize() {
 		LOGGER.info("Establishing database connection");
 		Path databasePath = Environment.getWorkDirectory().toPath().resolve(DATABASE_FILENAME);
 		String databaseUrl = "jdbc:sqlite:" + databasePath;
@@ -225,15 +224,16 @@ public final class DatabaseManager {
 			LOGGER.fatal("An error occured while connecting to " + databaseUrl, exception);
 			System.exit(1);
 		}
-		manager = new DatabaseManager(connection);
+		instance = new DatabaseManager(connection);
 		if (Environment.getSetup()) {
 			try {
-				manager.createSchema();
+				instance.createSchema();
 			} catch (DatabaseException exception) {
 				LOGGER.fatal("An error occured while applying the database schema!", exception);
 				System.exit(1);
 			}
 		}
+		return instance;
 	}
 
 	/**
@@ -242,8 +242,8 @@ public final class DatabaseManager {
 	 * 
 	 * @return The application's {@link DatabaseManager}
 	 */
-	public static DatabaseManager getManager() {
-		return manager;
+	public static DatabaseManager getInstance() {
+		return instance;
 	}
 
 }

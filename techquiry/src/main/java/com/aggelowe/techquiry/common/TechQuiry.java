@@ -3,7 +3,6 @@ package com.aggelowe.techquiry.common;
 import static com.aggelowe.techquiry.common.Constants.LOGGER;
 import static com.aggelowe.techquiry.common.Constants.NAME;
 import static com.aggelowe.techquiry.common.Constants.VERSION;
-import static com.aggelowe.techquiry.database.DatabaseManager.getManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +15,7 @@ import org.springframework.context.event.EventListener;
 
 import com.aggelowe.techquiry.database.DatabaseManager;
 import com.aggelowe.techquiry.database.exceptions.DatabaseException;
+import com.aggelowe.techquiry.service.ServiceManager;
 
 /**
  * This is the main class of the TechQuiry application, it is responsible for
@@ -57,7 +57,8 @@ public class TechQuiry {
 	@EventListener(ContextRefreshedEvent.class)
 	void start() {
 		LOGGER.info("Starting core application components");
-		DatabaseManager.initialize();
+		DatabaseManager databaseManager = DatabaseManager.initialize();
+		ServiceManager.initialize(databaseManager);
 	}
 
 	/**
@@ -68,7 +69,7 @@ public class TechQuiry {
 	void shutdown() {
 		LOGGER.info("Shutting down core application components");
 		try {
-			getManager().closeConnection();
+			DatabaseManager.getInstance().closeConnection();
 		} catch (DatabaseException exception) {
 			LOGGER.error(exception);
 		}
