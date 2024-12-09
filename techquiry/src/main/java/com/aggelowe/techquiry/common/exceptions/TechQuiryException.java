@@ -8,7 +8,7 @@ package com.aggelowe.techquiry.common.exceptions;
  * @author Aggelowe
  * @since 0.0.1
  */
-public class TechQuiryException extends Exception {
+public abstract class TechQuiryException extends Exception {
 
 	/**
 	 * Constructs a new {@link TechQuiryException} with the given message. The
