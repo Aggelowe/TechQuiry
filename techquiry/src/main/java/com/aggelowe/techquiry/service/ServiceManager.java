@@ -32,7 +32,7 @@ public class ServiceManager {
 	 * @param databaseManager The database manager
 	 */
 	public ServiceManager(DatabaseManager databaseManager) {
-		this.userLoginService = new UserLoginService(databaseManager.getUserLoginDao());
+		this.userLoginService = new UserLoginService(databaseManager);
 	}
 
 	/**

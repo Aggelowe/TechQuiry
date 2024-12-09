@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import com.aggelowe.techquiry.common.SecurityUtils;
+import com.aggelowe.techquiry.database.DatabaseManager;
 import com.aggelowe.techquiry.database.dao.UserLoginDao;
 import com.aggelowe.techquiry.database.entities.UserLogin;
 import com.aggelowe.techquiry.database.exceptions.DatabaseException;
@@ -34,10 +35,10 @@ public class UserLoginService {
 	 * This constructor constructs a new {@link UserLoginService} instance that is
 	 * handling the user login operations of the application.
 	 * 
-	 * @param userLoginDao The {@link UserLogin} data access object
+	 * @param databaseManager The object managing the application database
 	 */
-	public UserLoginService(UserLoginDao userLoginDao) {
-		this.userLoginDao = userLoginDao;
+	public UserLoginService(DatabaseManager databaseManager) {
+		this.userLoginDao = databaseManager.getUserLoginDao();
 	}
 
 	/**
@@ -159,19 +160,19 @@ public class UserLoginService {
 	 * @param current The currently logged-in user
 	 * @return The service instance for making the personalized operations
 	 */
-	public UserLoginServicePersonalized asUser(UserLogin current) {
-		return new UserLoginServicePersonalized(current);
+	public PersonalizedUserLoginService asUser(UserLogin current) {
+		return new PersonalizedUserLoginService(current);
 	}
 
 	/**
-	 * The {@link UserLoginServicePersonalized} class is a subclass of
+	 * The {@link PersonalizedUserLoginService} class is a subclass of
 	 * {@link UserLoginService} whose methods provide different functionality for
 	 * different users.
 	 *
 	 * @author Aggelowe
 	 * @since 0.0.1
 	 */
-	class UserLoginServicePersonalized {
+	class PersonalizedUserLoginService {
 
 		/**
 		 * The {@link UserLogin} representing the user currently acting
@@ -179,13 +180,13 @@ public class UserLoginService {
 		private final UserLogin current;
 
 		/**
-		 * This constructor constructs a new {@link UserLoginServicePersonalized}
+		 * This constructor constructs a new {@link PersonalizedUserLoginService}
 		 * instance that is handling the personalized user login operations of the
 		 * application.
 		 * 
 		 * @param current The user initializing the operations
 		 */
-		public UserLoginServicePersonalized(UserLogin current) {
+		public PersonalizedUserLoginService(UserLogin current) {
 			this.current = current;
 		}
 
@@ -232,7 +233,7 @@ public class UserLoginService {
 		 *                                     deleting the user
 		 */
 		public void deleteLogin(int id) throws ServiceException {
-			if (current != null && current.getId() != id) {
+			if (current == null || current.getId() != id) {
 				throw new ForbiddenOperationException("The requested user deletion is forbidden!");
 			}
 			try {
@@ -262,7 +263,7 @@ public class UserLoginService {
 		 * 
 		 */
 		public void updateLogin(UserLogin login) throws ServiceException {
-			if (current != null && current.getId() != login.getId()) {
+			if (current == null || current.getId() != login.getId()) {
 				throw new ForbiddenOperationException("The requested user deletion is forbidden!");
 			}
 			String username = login.getUsername();
@@ -271,11 +272,15 @@ public class UserLoginService {
 				throw new InvalidRequestException("The given username does not abide by the requirements!");
 			}
 			try {
-				UserLogin userLogin = userLoginDao.select(login.getId());
-				if (userLogin == null) {
+				UserLogin idLogin = userLoginDao.select(login.getId());
+				if (idLogin == null) {
 					throw new EntityNotFoundException("The requested user does not exist!");
+				}		
+				UserLogin usernameLogin = userLoginDao.selectFromUsername(login.getUsername());
+				if (usernameLogin != null) {
+					throw new InvalidRequestException("The given username is not available!");
 				}
-				userLoginDao.update(userLogin);
+				userLoginDao.update(login);
 			} catch (DatabaseException exception) {
 				throw new InternalErrorException("An internal error occured while getting the user!", exception);
 			}
