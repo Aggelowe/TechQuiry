@@ -4,4 +4,4 @@
  * Author: Aggelowe 
  * Since: 0.0.1
  */
-INSERT INTO user_login(user_id, username, password_hash, password_salt) VALUES(?, ?, ?, ?);
+INSERT INTO user_login(username, password_hash, password_salt) VALUES(?, ?, ?);

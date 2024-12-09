@@ -92,7 +92,7 @@ public class ResponseDaoTest {
 		int count1 = assertDoesNotThrow(() -> responseDao.countFromInquiryId(2));
 		assertEquals(2, count1);
 	}
-	
+
 	@Test
 	public void testDeleteSuccess() {
 		assertDoesNotThrow(() -> responseDao.delete(1));
@@ -105,7 +105,7 @@ public class ResponseDaoTest {
 
 	@Test
 	public void testInsertSuccess() {
-		assertDoesNotThrow(() -> responseDao.insert(new Response(3, 1, 1, true, "Example Response")));
+		assertDoesNotThrow(() -> responseDao.insert(new Response(0, 1, 1, true, "Example Response")));
 		Statement statement = assertDoesNotThrow(() -> connection.createStatement());
 		assertDoesNotThrow(() -> statement.execute("SELECT * FROM response WHERE response_id = 3"));
 		ResultSet result = assertDoesNotThrow(() -> statement.getResultSet());
@@ -121,7 +121,6 @@ public class ResponseDaoTest {
 
 	@Test
 	public void testInsertException() {
-		assertThrows(SQLRunnerExecuteException.class, () -> responseDao.insert(new Response(2, 1, 1, true, "Example Respnse")));
 		assertThrows(SQLRunnerExecuteException.class, () -> responseDao.insert(new Response(2, 3, 1, true, "Example Respnse")));
 		assertThrows(SQLRunnerExecuteException.class, () -> responseDao.insert(new Response(3, 1, 1, true, null)));
 	}

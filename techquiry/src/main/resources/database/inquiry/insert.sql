@@ -4,4 +4,4 @@
  * Author: Aggelowe 
  * Since: 0.0.1
  */
-INSERT INTO inquiry(inquiry_id, user_id, title, content, anonymous) VALUES(?, ?, ?, ?, ?);
+INSERT INTO inquiry(user_id, title, content, anonymous) VALUES(?, ?, ?, ?);

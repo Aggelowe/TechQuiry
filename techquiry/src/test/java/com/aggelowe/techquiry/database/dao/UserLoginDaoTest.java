@@ -78,7 +78,7 @@ public class UserLoginDaoTest {
 
 	@Test
 	public void testInsertSuccess() {
-		assertDoesNotThrow(() -> userLoginDao.insert(new UserLogin(3, "david", new byte[4], new byte[2])));
+		assertDoesNotThrow(() -> userLoginDao.insert(new UserLogin(0, "david", new byte[4], new byte[2])));
 		Statement statement = assertDoesNotThrow(() -> connection.createStatement());
 		assertDoesNotThrow(() -> statement.execute("SELECT * FROM user_login WHERE user_id = 3"));
 		ResultSet result = assertDoesNotThrow(() -> statement.getResultSet());
@@ -93,7 +93,6 @@ public class UserLoginDaoTest {
 
 	@Test
 	public void testInsertException() {
-		assertThrows(SQLRunnerExecuteException.class, () -> userLoginDao.insert(new UserLogin(1, "david", new byte[4], new byte[2])));
 		assertThrows(SQLRunnerExecuteException.class, () -> userLoginDao.insert(new UserLogin(3, "charlie", new byte[4], new byte[2])));
 		assertThrows(SQLRunnerExecuteException.class, () -> userLoginDao.insert(new UserLogin(3, null, new byte[0], new byte[0])));
 	}

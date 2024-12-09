@@ -112,7 +112,8 @@ public final class UserLoginDao {
 
 	/**
 	 * This method inserts the given {@link UserLogin} object as a new user login
-	 * entry in the application database.
+	 * entry in the application database. The user id is not carried over to the
+	 * database.
 	 * 
 	 * @param userLogin The user login to insert
 	 * @throws DatabaseException If an error occurs while inserting the user login
@@ -120,13 +121,12 @@ public final class UserLoginDao {
 	 */
 	public void insert(UserLogin userLogin) throws DatabaseException {
 		LOGGER.debug("Inserting user login with information " + userLogin);
-		int id = userLogin.getId();
 		String username = userLogin.getUsername();
 		byte[] passwordHash = userLogin.getPasswordHash();
 		byte[] passwordSalt = userLogin.getPasswordSalt();
 		String encodedHash = SecurityUtils.encodeBase64(passwordHash);
 		String encodedSalt = SecurityUtils.encodeBase64(passwordSalt);
-		runner.runScript(USER_LOGIN_INSERT_SCRIPT, id, username, encodedHash, encodedSalt);
+		runner.runScript(USER_LOGIN_INSERT_SCRIPT, username, encodedHash, encodedSalt);
 	}
 
 	/**

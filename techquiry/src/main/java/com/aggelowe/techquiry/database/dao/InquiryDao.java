@@ -117,7 +117,8 @@ public final class InquiryDao {
 
 	/**
 	 * This method inserts the given {@link Inquiry} object as a new inquiry entry
-	 * in the application database.
+	 * in the application database. The inquiry id is not carried over to the
+	 * database.
 	 * 
 	 * @param inquiry The inquiry to insert
 	 * @throws DatabaseException If an error occurs while inserting the inquiry
@@ -125,12 +126,11 @@ public final class InquiryDao {
 	 */
 	public void insert(Inquiry inquiry) throws DatabaseException {
 		LOGGER.debug("Inserting inquiry with information " + inquiry);
-		int id = inquiry.getId();
 		int userId = inquiry.getUserId();
 		String title = inquiry.getTitle();
 		String content = inquiry.getContent();
 		boolean anonymous = inquiry.isAnonymous();
-		runner.runScript(INQUIRY_INSERT_SCRIPT, id, userId, title, content, anonymous);
+		runner.runScript(INQUIRY_INSERT_SCRIPT, userId, title, content, anonymous);
 	}
 
 	/**

@@ -109,7 +109,8 @@ public final class ResponseDao {
 
 	/**
 	 * This method inserts the given {@link Response} object as a new response entry
-	 * in the application database.
+	 * in the application database. The response id is not carried over to the
+	 * database.
 	 * 
 	 * @param response The response to insert
 	 * @throws DatabaseException If an error occurs while inserting the response
@@ -117,12 +118,11 @@ public final class ResponseDao {
 	 */
 	public void insert(Response response) throws DatabaseException {
 		LOGGER.debug("Inserting response with information " + response);
-		int id = response.getId();
 		int inquiryId = response.getInquiryId();
 		int userId = response.getUserId();
 		boolean anonymous = response.isAnonymous();
 		String content = response.getContent();
-		runner.runScript(RESPONSE_INSERT_SCRIPT, id, inquiryId, userId, anonymous, content);
+		runner.runScript(RESPONSE_INSERT_SCRIPT, inquiryId, userId, anonymous, content);
 	}
 
 	/**
