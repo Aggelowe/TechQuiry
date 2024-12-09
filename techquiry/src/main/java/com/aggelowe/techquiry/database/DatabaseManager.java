@@ -86,7 +86,7 @@ public final class DatabaseManager {
 	private final UserDataDao userDataDao;
 
 	/**
-	 * The responsible for handling the data access for {@link UserLoginDao}
+	 * The object responsible for handling the data access for {@link UserLogin}
 	 * objects.
 	 */
 	private final UserLoginDao userLoginDao;

@@ -3,6 +3,7 @@ package com.aggelowe.techquiry.service;
 import static com.aggelowe.techquiry.common.Constants.LOGGER;
 
 import com.aggelowe.techquiry.database.DatabaseManager;
+import com.aggelowe.techquiry.database.entities.UserLogin;
 
 /**
  * The {@link ServiceManager} class is the one responsible for initializing and
@@ -19,6 +20,11 @@ public class ServiceManager {
 	private static ServiceManager instance;
 
 	/**
+	 * The object responsible for managing the {@link UserLogin} operations.
+	 */
+	private final UserLoginService userLoginService;
+
+	/**
 	 * This constructor constructs a new {@link ServiceManager} instance with the
 	 * provided database manager as the interface between the application and the
 	 * database.
@@ -26,7 +32,17 @@ public class ServiceManager {
 	 * @param databaseManager The database manager
 	 */
 	public ServiceManager(DatabaseManager databaseManager) {
+		this.userLoginService = new UserLoginService(databaseManager.getUserLoginDao());
+	}
 
+	/**
+	 * This method returns the object responsible for managing the user login
+	 * operations.
+	 * 
+	 * @return The {@link UserLogin} service object
+	 */
+	public UserLoginService getUserLoginService() {
+		return userLoginService;
 	}
 
 	/**

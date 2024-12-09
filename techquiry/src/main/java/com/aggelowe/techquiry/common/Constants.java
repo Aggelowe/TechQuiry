@@ -57,6 +57,11 @@ public final class Constants {
 	public static final int MAX_SALT_LENGTH = 64;
 
 	/**
+	 * The regular expression defining the valid format for usernames.
+	 */
+	public static final String USERNAME_REGEX = "^[A-Za-z][A-Za-z0-9_]{2,14}$";
+
+	/**
 	 * The hashing algorithm for generating the password hashes.
 	 */
 	public static final String HASHING_ALGORITHM = "SHA-256";

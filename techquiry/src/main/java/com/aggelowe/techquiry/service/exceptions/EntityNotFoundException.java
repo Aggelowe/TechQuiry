@@ -7,7 +7,7 @@ package com.aggelowe.techquiry.service.exceptions;
  * @author Aggelowe
  * @since 0.0.1
  */
-public class EntityNotFoundException extends ServiceException {
+public class EntityNotFoundException extends InvalidRequestException {
 
 	/**
 	 * Constructs a new {@link EntityNotFoundException} with the given message.
