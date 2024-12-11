@@ -128,7 +128,7 @@ public class UserLoginServiceTest {
 	@Test
 	public void testCreateLoginSuccess() {
 		UserLogin target = new UserLogin(0, "david", "extra");
-		assertDoesNotThrow(() -> userLoginService.asUser(null).createLogin(target));
+		assertDoesNotThrow(() -> userLoginService.createActionService(null).createLogin(target));
 		Statement statement = assertDoesNotThrow(() -> connection.createStatement());
 		assertDoesNotThrow(() -> statement.execute("SELECT * FROM user_login WHERE user_id = 3"));
 		ResultSet result = assertDoesNotThrow(() -> statement.getResultSet());
@@ -146,21 +146,21 @@ public class UserLoginServiceTest {
 	public void testCreateLoginException() {
 		UserLogin current = new UserLogin(0, "david", "extra");
 		UserLogin target0 = new UserLogin(0, "emily", "password");
-		assertThrows(ForbiddenOperationException.class, () -> userLoginService.asUser(current).createLogin(target0));
+		assertThrows(ForbiddenOperationException.class, () -> userLoginService.createActionService(current).createLogin(target0));
 		UserLogin target1 = new UserLogin(0, "Εμιλία!", "password");
-		assertThrows(InvalidRequestException.class, () -> userLoginService.asUser(null).createLogin(target1));
+		assertThrows(InvalidRequestException.class, () -> userLoginService.createActionService(null).createLogin(target1));
 		UserLogin target2 = new UserLogin(0, "__xX__Emily__Xx__", "password");
-		assertThrows(InvalidRequestException.class, () -> userLoginService.asUser(null).createLogin(target2));
+		assertThrows(InvalidRequestException.class, () -> userLoginService.createActionService(null).createLogin(target2));
 		UserLogin target3 = new UserLogin(0, "em", "password");
-		assertThrows(InvalidRequestException.class, () -> userLoginService.asUser(null).createLogin(target3));
+		assertThrows(InvalidRequestException.class, () -> userLoginService.createActionService(null).createLogin(target3));
 		UserLogin target4 = new UserLogin(0, "alice", "password");
-		assertThrows(InvalidRequestException.class, () -> userLoginService.asUser(null).createLogin(target4));
+		assertThrows(InvalidRequestException.class, () -> userLoginService.createActionService(null).createLogin(target4));
 	}
 
 	@Test
 	public void testDeleteLoginSuccess() {
 		UserLogin login = new UserLogin(1, "bob", "pass");
-		assertDoesNotThrow(() -> userLoginService.asUser(login).deleteLogin(1));
+		assertDoesNotThrow(() -> userLoginService.createActionService(login).deleteLogin(1));
 		Statement statement = assertDoesNotThrow(() -> connection.createStatement());
 		assertDoesNotThrow(() -> statement.execute("SELECT * FROM user_login WHERE user_id = 1"));
 		ResultSet result = assertDoesNotThrow(() -> statement.getResultSet());
@@ -170,17 +170,17 @@ public class UserLoginServiceTest {
 
 	@Test
 	public void testDeleteLoginException() {
-		assertThrows(ForbiddenOperationException.class, () -> userLoginService.asUser(null).deleteLogin(1));
+		assertThrows(ForbiddenOperationException.class, () -> userLoginService.createActionService(null).deleteLogin(1));
 		UserLogin current0 = new UserLogin(1, "bob", "pass");
-		assertThrows(ForbiddenOperationException.class, () -> userLoginService.asUser(current0).deleteLogin(0));
+		assertThrows(ForbiddenOperationException.class, () -> userLoginService.createActionService(current0).deleteLogin(0));
 		UserLogin current1 = new UserLogin(3, "david", "extra");
-		assertThrows(EntityNotFoundException.class, () -> userLoginService.asUser(current1).deleteLogin(3));
+		assertThrows(EntityNotFoundException.class, () -> userLoginService.createActionService(current1).deleteLogin(3));
 	}
 
 	@Test
 	public void testUpdateLoginSuccess() {
 		UserLogin login = new UserLogin(2, "david", "extra");
-		assertDoesNotThrow(() -> userLoginService.asUser(login).updateLogin(login));
+		assertDoesNotThrow(() -> userLoginService.createActionService(login).updateLogin(login));
 		Statement statement = assertDoesNotThrow(() -> connection.createStatement());
 		assertDoesNotThrow(() -> statement.execute("SELECT * FROM user_login WHERE user_id = 2"));
 		ResultSet result = assertDoesNotThrow(() -> statement.getResultSet());
@@ -196,15 +196,15 @@ public class UserLoginServiceTest {
 	@Test
 	public void testUpdateLoginException() {
 		UserLogin target = new UserLogin(2, "david", "extra");
-		assertThrows(ForbiddenOperationException.class, () -> userLoginService.asUser(null).updateLogin(target));
+		assertThrows(ForbiddenOperationException.class, () -> userLoginService.createActionService(null).updateLogin(target));
 		UserLogin current = new UserLogin(1, "bob", "pass");
-		assertThrows(ForbiddenOperationException.class, () -> userLoginService.asUser(current).updateLogin(target));
+		assertThrows(ForbiddenOperationException.class, () -> userLoginService.createActionService(current).updateLogin(target));
 		UserLogin login0 = new UserLogin(3, "david", "extra");
-		assertThrows(EntityNotFoundException.class, () -> userLoginService.asUser(login0).updateLogin(login0));
+		assertThrows(EntityNotFoundException.class, () -> userLoginService.createActionService(login0).updateLogin(login0));
 		UserLogin login1 = new UserLogin(2, "em", "password");
-		assertThrows(InvalidRequestException.class, () -> userLoginService.asUser(login1).updateLogin(login1));
+		assertThrows(InvalidRequestException.class, () -> userLoginService.createActionService(login1).updateLogin(login1));
 		UserLogin login2 = new UserLogin(2, "alice", "password");
-		assertThrows(InvalidRequestException.class, () -> userLoginService.asUser(login2).updateLogin(login2));
+		assertThrows(InvalidRequestException.class, () -> userLoginService.createActionService(login2).updateLogin(login2));
 	}
 
 }
