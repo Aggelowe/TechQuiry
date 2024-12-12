@@ -140,7 +140,7 @@ public class Inquiry {
 	@Override
 	public String toString() {
 		return "[Inquiry ID: " + id +
-				", User ID: " + userId +
+				", User ID: " + (anonymous ? "REDACTED" : userId) +
 				", Title: " + title +
 				", Content: " + content +
 				", Anonymous: " + anonymous + "]";

@@ -142,7 +142,7 @@ public class Response {
 	public String toString() {
 		return "[Response ID: " + id
 				+ ", Inquiry ID: " + inquiryId
-				+ ", User ID: " + userId
+				+ ", User ID: " + (anonymous ? "REDACTED" : userId)
 				+ ", Anonymous: " + anonymous
 				+ ", Content: " + content + "]";
 	}
