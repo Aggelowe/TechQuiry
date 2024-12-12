@@ -123,7 +123,7 @@ public class UserLoginActionService {
 	 */
 	public void updateLogin(UserLogin login) throws ServiceException {
 		if (current == null || current.getId() != login.getId()) {
-			throw new ForbiddenOperationException("The requested user deletion is forbidden!");
+			throw new ForbiddenOperationException("The requested user update is forbidden!");
 		}
 		String username = login.getUsername();
 		Pattern pattern = Pattern.compile(USERNAME_REGEX);
