@@ -161,14 +161,14 @@ public final class SQLRunner {
 						break;
 					}
 					case 1: {
-						if (character == '"') {
+						if (character == '"' && previous != '\\') {
 							mode = 0;
 						}
 						commandBuilder.append(character);
 						break;
 					}
 					case 2: {
-						if (character == '\'') {
+						if (character == '\'' && previous != '\\') {
 							mode = 0;
 						}
 						commandBuilder.append(character);
