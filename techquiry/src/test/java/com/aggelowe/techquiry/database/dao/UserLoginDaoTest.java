@@ -78,7 +78,8 @@ public class UserLoginDaoTest {
 
 	@Test
 	public void testInsertSuccess() {
-		assertDoesNotThrow(() -> userLoginDao.insert(new UserLogin(0, "david", new byte[4], new byte[2])));
+		int id = assertDoesNotThrow(() -> userLoginDao.insert(new UserLogin(0, "david", new byte[4], new byte[2])));
+		assertEquals(3, id);
 		Statement statement = assertDoesNotThrow(() -> connection.createStatement());
 		assertDoesNotThrow(() -> statement.execute("SELECT * FROM user_login WHERE user_id = 3"));
 		ResultSet result = assertDoesNotThrow(() -> statement.getResultSet());

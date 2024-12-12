@@ -88,11 +88,12 @@ public final class InquiryDao {
 	public int count() throws DatabaseException {
 		LOGGER.debug("Getting inquiry entry count");
 		List<ResultSet> results = runner.runScript(INQUIRY_COUNT_SCRIPT);
-		ResultSet result;
 		if (results.isEmpty()) {
-			throw new DataAccessException("The first statement in " + INQUIRY_COUNT_SCRIPT + " did not yeild a result!");
-		} else {
-			result = results.getFirst();
+			throw new DataAccessException("The script " + INQUIRY_COUNT_SCRIPT + " did not yeild results!");
+		}
+		ResultSet result = results.getFirst();
+		if (result == null) {
+			throw new DataAccessException("The first statement in " + INQUIRY_COUNT_SCRIPT + " did not yeild results!");
 		}
 		int count;
 		try {
@@ -121,16 +122,31 @@ public final class InquiryDao {
 	 * database.
 	 * 
 	 * @param inquiry The inquiry to insert
+	 * @return The id of the inserted inquiry
 	 * @throws DatabaseException If an error occurs while inserting the inquiry
 	 *                           entry
 	 */
-	public void insert(Inquiry inquiry) throws DatabaseException {
+	public int insert(Inquiry inquiry) throws DatabaseException {
 		LOGGER.debug("Inserting inquiry with information " + inquiry);
 		int userId = inquiry.getUserId();
 		String title = inquiry.getTitle();
 		String content = inquiry.getContent();
 		boolean anonymous = inquiry.isAnonymous();
-		runner.runScript(INQUIRY_INSERT_SCRIPT, userId, title, content, anonymous);
+		List<ResultSet> results = runner.runScript(INQUIRY_INSERT_SCRIPT, userId, title, content, anonymous);
+		if (results.size() < 2) {
+			throw new DataAccessException("The script " + INQUIRY_INSERT_SCRIPT + " did not yeild at least two results!");
+		}
+		ResultSet result = results.get(1);
+		if (result == null) {
+			throw new DataAccessException("The first statement in " + INQUIRY_INSERT_SCRIPT + " did not yeild results!");
+		}
+		int id;
+		try {
+			id = result.getInt("inquiry_id");
+		} catch (SQLException exception) {
+			throw new DataAccessException("There was an error while retrieving the inserted inquiry id!", exception);
+		}
+		return id;
 	}
 
 	/**
@@ -147,11 +163,12 @@ public final class InquiryDao {
 	public List<Inquiry> range(int count, int offset) throws DatabaseException {
 		LOGGER.debug("Getting " + count + " inquiry entries with offset " + offset);
 		List<ResultSet> results = runner.runScript(INQUIRY_RANGE_SCRIPT, offset, count);
-		ResultSet result;
 		if (results.isEmpty()) {
-			throw new DataAccessException("The first statement in " + INQUIRY_RANGE_SCRIPT + " did not yeild a result!");
-		} else {
-			result = results.getFirst();
+			throw new DataAccessException("The script " + INQUIRY_RANGE_SCRIPT + " did not yeild results!");
+		}
+		ResultSet result = results.getFirst();
+		if (result == null) {
+			throw new DataAccessException("The first statement in " + INQUIRY_RANGE_SCRIPT + " did not yeild results!");
 		}
 		List<Inquiry> range = new ArrayList<>(count);
 		try {
@@ -191,11 +208,12 @@ public final class InquiryDao {
 	public List<Inquiry> selectFromUserIdNonAnonymous(int userId) throws DatabaseException {
 		LOGGER.debug("Getting responses with user id " + userId);
 		List<ResultSet> results = runner.runScript(INQUIRY_SELECT_USER_ID_NON_ANONYMOUS_SCRIPT, userId);
-		ResultSet result;
 		if (results.isEmpty()) {
+			throw new DataAccessException("The script " + INQUIRY_SELECT_USER_ID_NON_ANONYMOUS_SCRIPT + " did not yeild results!");
+		}
+		ResultSet result = results.getFirst();
+		if (result == null) {
 			throw new DataAccessException("The first statement in " + INQUIRY_SELECT_USER_ID_NON_ANONYMOUS_SCRIPT + " did not yeild results!");
-		} else {
-			result = results.getFirst();
 		}
 		List<Inquiry> list = new ArrayList<>();
 		try {
@@ -231,11 +249,12 @@ public final class InquiryDao {
 	public List<Inquiry> selectFromUserId(int userId) throws DatabaseException {
 		LOGGER.debug("Getting responses with user id " + userId);
 		List<ResultSet> results = runner.runScript(INQUIRY_SELECT_USER_ID_SCRIPT, userId);
-		ResultSet result;
 		if (results.isEmpty()) {
+			throw new DataAccessException("The script " + INQUIRY_SELECT_USER_ID_SCRIPT + " did not yeild results!");
+		}
+		ResultSet result = results.getFirst();
+		if (result == null) {
 			throw new DataAccessException("The first statement in " + INQUIRY_SELECT_USER_ID_SCRIPT + " did not yeild results!");
-		} else {
-			result = results.getFirst();
 		}
 		List<Inquiry> list = new ArrayList<>();
 		try {
@@ -273,11 +292,12 @@ public final class InquiryDao {
 	public Inquiry select(int id) throws DatabaseException {
 		LOGGER.debug("Getting inquiry with inquiry id " + id);
 		List<ResultSet> results = runner.runScript(INQUIRY_SELECT_SCRIPT, id);
-		ResultSet result;
 		if (results.isEmpty()) {
+			throw new DataAccessException("The script " + INQUIRY_SELECT_SCRIPT + " did not yeild results!");
+		}
+		ResultSet result = results.getFirst();
+		if (result == null) {
 			throw new DataAccessException("The first statement in " + INQUIRY_SELECT_SCRIPT + " did not yeild results!");
-		} else {
-			result = results.getFirst();
 		}
 		try {
 			if (!result.next()) {

@@ -82,11 +82,12 @@ public final class UserLoginDao {
 	public int count() throws DatabaseException {
 		LOGGER.debug("Getting user login entry count");
 		List<ResultSet> results = runner.runScript(USER_LOGIN_COUNT_SCRIPT);
-		ResultSet result;
 		if (results.isEmpty()) {
-			throw new DataAccessException("The first statement in " + USER_LOGIN_COUNT_SCRIPT + " did not yeild a result!");
-		} else {
-			result = results.getFirst();
+			throw new DataAccessException("The script " + USER_LOGIN_COUNT_SCRIPT + " did not yeild results!");
+		}
+		ResultSet result = results.getFirst();
+		if (result == null) {
+			throw new DataAccessException("The first statement in " + USER_LOGIN_COUNT_SCRIPT + " did not yeild results!");
 		}
 		int count;
 		try {
@@ -116,17 +117,32 @@ public final class UserLoginDao {
 	 * database.
 	 * 
 	 * @param userLogin The user login to insert
+	 * @return The id of the inserted user
 	 * @throws DatabaseException If an error occurs while inserting the user login
 	 *                           entry
 	 */
-	public void insert(UserLogin userLogin) throws DatabaseException {
+	public int insert(UserLogin userLogin) throws DatabaseException {
 		LOGGER.debug("Inserting user login with information " + userLogin);
 		String username = userLogin.getUsername();
 		byte[] passwordHash = userLogin.getPasswordHash();
 		byte[] passwordSalt = userLogin.getPasswordSalt();
 		String encodedHash = SecurityUtils.encodeBase64(passwordHash);
 		String encodedSalt = SecurityUtils.encodeBase64(passwordSalt);
-		runner.runScript(USER_LOGIN_INSERT_SCRIPT, username, encodedHash, encodedSalt);
+		List<ResultSet> results = runner.runScript(USER_LOGIN_INSERT_SCRIPT, username, encodedHash, encodedSalt);
+		if (results.size() < 2) {
+			throw new DataAccessException("The script " + USER_LOGIN_INSERT_SCRIPT + " did not yeild at least two results!");
+		}
+		ResultSet result = results.get(1);
+		if (result == null) {
+			throw new DataAccessException("The first statement in " + USER_LOGIN_INSERT_SCRIPT + " did not yeild results!");
+		}
+		int id;
+		try {
+			id = result.getInt("user_id");
+		} catch (SQLException exception) {
+			throw new DataAccessException("There was an error while retrieving the inserted user id!", exception);
+		}
+		return id;
 	}
 
 	/**
@@ -143,11 +159,12 @@ public final class UserLoginDao {
 	public List<UserLogin> range(int count, int offset) throws DatabaseException {
 		LOGGER.debug("Getting " + count + " user login entries with offset " + offset);
 		List<ResultSet> results = runner.runScript(USER_LOGIN_RANGE_SCRIPT, offset, count);
-		ResultSet result;
 		if (results.isEmpty()) {
+			throw new DataAccessException("The script " + USER_LOGIN_RANGE_SCRIPT + " did not yeild results!");
+		}
+		ResultSet result = results.getFirst();
+		if (result == null) {
 			throw new DataAccessException("The first statement in " + USER_LOGIN_RANGE_SCRIPT + " did not yeild results!");
-		} else {
-			result = results.getFirst();
 		}
 		List<UserLogin> range = new ArrayList<>(count);
 		try {
@@ -193,11 +210,12 @@ public final class UserLoginDao {
 	public UserLogin select(int id) throws DatabaseException {
 		LOGGER.debug("Getting user login with user id " + id);
 		List<ResultSet> results = runner.runScript(USER_LOGIN_SELECT_SCRIPT, id);
-		ResultSet result;
 		if (results.isEmpty()) {
+			throw new DataAccessException("The script " + USER_LOGIN_SELECT_SCRIPT + " did not yeild results!");
+		}
+		ResultSet result = results.getFirst();
+		if (result == null) {
 			throw new DataAccessException("The first statement in " + USER_LOGIN_SELECT_SCRIPT + " did not yeild results!");
-		} else {
-			result = results.getFirst();
 		}
 		try {
 			if (!result.next()) {
@@ -240,11 +258,12 @@ public final class UserLoginDao {
 	public UserLogin selectFromUsername(String username) throws DatabaseException {
 		LOGGER.debug("Getting user login with username " + username);
 		List<ResultSet> results = runner.runScript(USER_LOGIN_SELECT_USERNAME_SCRIPT, username);
-		ResultSet result;
 		if (results.isEmpty()) {
+			throw new DataAccessException("The script " + USER_LOGIN_SELECT_USERNAME_SCRIPT + " did not yeild results!");
+		}
+		ResultSet result = results.getFirst();
+		if (result == null) {
 			throw new DataAccessException("The first statement in " + USER_LOGIN_SELECT_USERNAME_SCRIPT + " did not yeild results!");
-		} else {
-			result = results.getFirst();
 		}
 		try {
 			if (!result.next()) {

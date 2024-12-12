@@ -128,7 +128,8 @@ public class UserLoginServiceTest {
 	@Test
 	public void testCreateLoginSuccess() {
 		UserLogin target = new UserLogin(0, "david", "extra");
-		assertDoesNotThrow(() -> userLoginService.createActionService(null).createLogin(target));
+		int id = assertDoesNotThrow(() -> userLoginService.createActionService(null).createLogin(target));
+		assertEquals(3, id);
 		Statement statement = assertDoesNotThrow(() -> connection.createStatement());
 		assertDoesNotThrow(() -> statement.execute("SELECT * FROM user_login WHERE user_id = 3"));
 		ResultSet result = assertDoesNotThrow(() -> statement.getResultSet());

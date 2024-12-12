@@ -105,7 +105,8 @@ public class ResponseDaoTest {
 
 	@Test
 	public void testInsertSuccess() {
-		assertDoesNotThrow(() -> responseDao.insert(new Response(0, 1, 1, true, "Example Response")));
+		int id = assertDoesNotThrow(() -> responseDao.insert(new Response(0, 1, 1, true, "Example Response")));
+		assertEquals(3, id);
 		Statement statement = assertDoesNotThrow(() -> connection.createStatement());
 		assertDoesNotThrow(() -> statement.execute("SELECT * FROM response WHERE response_id = 3"));
 		ResultSet result = assertDoesNotThrow(() -> statement.getResultSet());

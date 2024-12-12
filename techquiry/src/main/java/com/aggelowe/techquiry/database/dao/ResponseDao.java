@@ -79,11 +79,12 @@ public final class ResponseDao {
 	public int countFromInquiryId(int inquiryId) throws DatabaseException {
 		LOGGER.debug("Getting inquiry entry count");
 		List<ResultSet> results = runner.runScript(RESPONSE_COUNT_INQUIRY_ID_SCRIPT, inquiryId);
-		ResultSet result;
 		if (results.isEmpty()) {
-			throw new DataAccessException("The first statement in " + RESPONSE_COUNT_INQUIRY_ID_SCRIPT + " did not yeild a result!");
-		} else {
-			result = results.getFirst();
+			throw new DataAccessException("The script " + RESPONSE_COUNT_INQUIRY_ID_SCRIPT + " did not yeild results!");
+		}
+		ResultSet result = results.getFirst();
+		if (result == null) {
+			throw new DataAccessException("The first statement in " + RESPONSE_COUNT_INQUIRY_ID_SCRIPT + " did not yeild results!");
 		}
 		int count;
 		try {
@@ -113,16 +114,31 @@ public final class ResponseDao {
 	 * database.
 	 * 
 	 * @param response The response to insert
+	 * @return The id of the inserted response
 	 * @throws DatabaseException If an error occurs while inserting the response
 	 *                           entry
 	 */
-	public void insert(Response response) throws DatabaseException {
+	public int insert(Response response) throws DatabaseException {
 		LOGGER.debug("Inserting response with information " + response);
 		int inquiryId = response.getInquiryId();
 		int userId = response.getUserId();
 		boolean anonymous = response.isAnonymous();
 		String content = response.getContent();
-		runner.runScript(RESPONSE_INSERT_SCRIPT, inquiryId, userId, anonymous, content);
+		List<ResultSet> results = runner.runScript(RESPONSE_INSERT_SCRIPT, inquiryId, userId, anonymous, content);
+		if (results.size() < 2) {
+			throw new DataAccessException("The script " + RESPONSE_INSERT_SCRIPT + " did not yeild at least two results!");
+		}
+		ResultSet result = results.get(1);
+		if (result == null) {
+			throw new DataAccessException("The first statement in " + RESPONSE_INSERT_SCRIPT + " did not yeild results!");
+		}
+		int id;
+		try {
+			id = result.getInt("response_id");
+		} catch (SQLException exception) {
+			throw new DataAccessException("There was an error while retrieving the inserted response id!", exception);
+		}
+		return id;
 	}
 
 	/**
@@ -137,11 +153,12 @@ public final class ResponseDao {
 	public List<Response> selectFromInquiryId(int inquiryId) throws DatabaseException {
 		LOGGER.debug("Getting responses with inquiry id " + inquiryId);
 		List<ResultSet> results = runner.runScript(RESPONSE_SELECT_INQUIRY_ID_SCRIPT, inquiryId);
-		ResultSet result;
 		if (results.isEmpty()) {
+			throw new DataAccessException("The script " + RESPONSE_SELECT_INQUIRY_ID_SCRIPT + " did not yeild results!");
+		}
+		ResultSet result = results.getFirst();
+		if (result == null) {
 			throw new DataAccessException("The first statement in " + RESPONSE_SELECT_INQUIRY_ID_SCRIPT + " did not yeild results!");
-		} else {
-			result = results.getFirst();
 		}
 		List<Response> list = new ArrayList<>();
 		try {
@@ -179,11 +196,12 @@ public final class ResponseDao {
 	public Response select(int id) throws DatabaseException {
 		LOGGER.debug("Getting response with response id " + id);
 		List<ResultSet> results = runner.runScript(RESPONSE_SELECT_SCRIPT, id);
-		ResultSet result;
 		if (results.isEmpty()) {
+			throw new DataAccessException("The script " + RESPONSE_SELECT_SCRIPT + " did not yeild results!");
+		}
+		ResultSet result = results.getFirst();
+		if (result == null) {
 			throw new DataAccessException("The first statement in " + RESPONSE_SELECT_SCRIPT + " did not yeild results!");
-		} else {
-			result = results.getFirst();
 		}
 		try {
 			if (!result.next()) {

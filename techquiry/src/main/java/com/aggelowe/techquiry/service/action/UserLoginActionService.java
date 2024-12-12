@@ -52,6 +52,7 @@ public class UserLoginActionService {
 	 * This method inserts the given {@link UserLogin} object in the database
 	 *
 	 * @param login The user login object to create
+	 * @return The id of the created {@link UserLogin}
 	 * @throws ForbiddenOperationException If the user is logged-in
 	 * @throws InvalidRequestException     If the given username does not abide by
 	 *                                     the requirements
@@ -60,7 +61,7 @@ public class UserLoginActionService {
 	 *                                     creating the user
 	 * 
 	 */
-	public void createLogin(UserLogin login) throws ServiceException {
+	public int createLogin(UserLogin login) throws ServiceException {
 		if (current != null) {
 			throw new ForbiddenOperationException("Creating users while logged-in is forbidden!");
 		}
@@ -74,7 +75,7 @@ public class UserLoginActionService {
 			if (userLogin != null) {
 				throw new InvalidRequestException("The given username is not available!");
 			}
-			userLoginDao.insert(login);
+			return userLoginDao.insert(login);
 		} catch (DatabaseException exception) {
 			throw new InternalErrorException("An internal error occured while creating the user!", exception);
 		}

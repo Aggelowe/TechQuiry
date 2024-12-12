@@ -88,7 +88,8 @@ public class InquiryDaoTest {
 
 	@Test
 	public void testInsertSuccess() {
-		assertDoesNotThrow(() -> inquiryDao.insert(new Inquiry(0, 0, "Success", "Success Content", false)));
+		int id = assertDoesNotThrow(() -> inquiryDao.insert(new Inquiry(0, 0, "Success", "Success Content", false)));
+		assertEquals(3, id);
 		Statement statement = assertDoesNotThrow(() -> connection.createStatement());
 		assertDoesNotThrow(() -> statement.execute("SELECT * FROM inquiry WHERE inquiry_id = 3"));
 		ResultSet result = assertDoesNotThrow(() -> statement.getResultSet());
