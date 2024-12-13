@@ -155,20 +155,22 @@ public final class SQLRunner {
 							String command = commandBuilder.toString();
 							command = command.trim();
 							commandBuilder = new StringBuilder();
-							PreparedStatement statement = this.connection.prepareStatement(command);
-							statements.add(statement);
+							if (!command.isEmpty() && !command.equals(";")) {
+								PreparedStatement statement = this.connection.prepareStatement(command);
+								statements.add(statement);
+							}
 						}
 						break;
 					}
 					case 1: {
-						if (character == '"' && previous != '\\') {
+						if (character == '"') {
 							mode = 0;
 						}
 						commandBuilder.append(character);
 						break;
 					}
 					case 2: {
-						if (character == '\'' && previous != '\\') {
+						if (character == '\'' && previous != '\'') {
 							mode = 0;
 						}
 						commandBuilder.append(character);

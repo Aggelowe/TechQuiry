@@ -73,7 +73,7 @@ public class SQLRunnerTest {
 
 	@Test
 	public void testRunScriptSuccess() {
-		String sql = "INSERT INTO test (id, username) /* Comment 1 */ VALUES (?, ?);\n SELECT * -- Comment 2 \n FROM test WHERE id = ?";
+		String sql = "INSERT INTO test (id, username) /* Comment 1 */ VALUES (?, ?);;\n SELECT * -- Comment 2 \n FROM test WHERE id = ?";
 		InputStream stream = new ByteArrayInputStream(sql.getBytes());
 		List<ResultSet> results = assertDoesNotThrow(() -> runner.runScript(stream, 2, "Charlie", 1));
 		assertEquals(2, results.size());
