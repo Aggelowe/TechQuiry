@@ -1,6 +1,5 @@
 package com.aggelowe.techquiry.database.dao;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -13,7 +12,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -72,12 +70,6 @@ public class UserDataDaoTest {
 	}
 
 	@Test
-	public void testCountSuccess() {
-		int count = assertDoesNotThrow(() -> userDataDao.count());
-		assertEquals(2, count);
-	}
-
-	@Test
 	public void testDeleteSuccess() {
 		assertDoesNotThrow(() -> userDataDao.delete(1));
 		Statement statement = assertDoesNotThrow(() -> connection.createStatement());
@@ -107,19 +99,6 @@ public class UserDataDaoTest {
 		assertThrows(SQLRunnerExecuteException.class, () -> userDataDao.insert(new UserData(1, "Charlie", "Brown")));
 		assertThrows(SQLRunnerExecuteException.class, () -> userDataDao.insert(new UserData(3, "Charlie", "Brown")));
 		assertThrows(SQLRunnerExecuteException.class, () -> userDataDao.insert(new UserData(2, null, null)));
-	}
-
-	@Test
-	public void testRangeSuccess() {
-		List<UserData> userDatas = assertDoesNotThrow(() -> userDataDao.range(2, 0));
-		assertEquals(2, userDatas.size());
-		UserData userData0 = userDatas.get(0);
-		assertEquals(0, userData0.getId());
-		assertEquals("Alice", userData0.getFirstName());
-		assertEquals("Smith", userData0.getLastName());
-		assertArrayEquals(new byte[2], userData0.getIcon());
-		UserData userData1 = userDatas.get(1);
-		assertEquals(1, userData1.getId());
 	}
 
 	@Test

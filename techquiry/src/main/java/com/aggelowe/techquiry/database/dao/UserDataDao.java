@@ -4,7 +4,6 @@ import static com.aggelowe.techquiry.common.Constants.LOGGER;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.sqlite.SQLiteErrorCode;
@@ -25,11 +24,6 @@ import com.aggelowe.techquiry.database.exceptions.SQLRunnerLoadException;
 public final class UserDataDao {
 
 	/**
-	 * The path of the SQL script for obtaining the count of user data entries.
-	 */
-	public static final String USER_DATA_COUNT_SCRIPT = "/database/user_data/count.sql";
-
-	/**
 	 * The path of the SQL script for deleting a user data entry.
 	 */
 	public static final String USER_DATA_DELETE_SCRIPT = "/database/user_data/delete.sql";
@@ -38,11 +32,6 @@ public final class UserDataDao {
 	 * The path of the SQL script for inserting a user data entry.
 	 */
 	public static final String USER_DATA_INSERT_SCRIPT = "/database/user_data/insert.sql";
-
-	/**
-	 * The path of the SQL script for selecting a user data entry range.
-	 */
-	public static final String USER_DATA_RANGE_SCRIPT = "/database/user_data/range.sql";
 
 	/**
 	 * The path of the SQL script for selecting a user data entry.
@@ -67,31 +56,6 @@ public final class UserDataDao {
 	 */
 	public UserDataDao(SQLRunner runner) {
 		this.runner = runner;
-	}
-
-	/**
-	 * This method returns the number of user data entries inside the application
-	 * database.
-	 * 
-	 * @return The number of user data entries in the database
-	 * @throws DatabaseException If an error occurs while retrieving the user count
-	 */
-	public int count() throws DatabaseException {
-		LOGGER.debug("Getting user data entry count");
-		List<ResultSet> results = runner.runScript(USER_DATA_COUNT_SCRIPT);
-		ResultSet result;
-		if (results.isEmpty()) {
-			throw new DataAccessException("The first statement in " + USER_DATA_COUNT_SCRIPT + " did not yeild a result!");
-		} else {
-			result = results.getFirst();
-		}
-		int count;
-		try {
-			count = result.getInt("users_count");
-		} catch (SQLException exception) {
-			throw new DataAccessException("There was an error while retrieving the user count!", exception);
-		}
-		return count;
 	}
 
 	/**
@@ -126,51 +90,6 @@ public final class UserDataDao {
 		String lastName = userData.getLastName();
 		byte[] icon = userData.getIcon();
 		runner.runScript(USER_DATA_INSERT_SCRIPT, id, firstName, lastName, icon);
-	}
-
-	/**
-	 * This method returns and retrieves a list of {@link UserData} objects from the
-	 * application database, that has the given size and starts with the given
-	 * offset.
-	 * 
-	 * @param count  The number of entries
-	 * @param offset The number of entries to skip
-	 * @return The selected range
-	 * @throws DatabaseException If an error occurs while retrieving the user data
-	 *                           information
-	 */
-	public List<UserData> range(int count, int offset) throws DatabaseException {
-		LOGGER.debug("Getting " + count + " user data entries with offset " + offset);
-		List<ResultSet> results = runner.runScript(USER_DATA_RANGE_SCRIPT, offset, count);
-		ResultSet result;
-		if (results.isEmpty()) {
-			throw new DataAccessException("The first statement in " + USER_DATA_RANGE_SCRIPT + " did not yeild results!");
-		} else {
-			result = results.getFirst();
-		}
-		List<UserData> range = new ArrayList<>(count);
-		try {
-			while (result.next()) {
-				int id;
-				String firstName;
-				String lastName;
-				byte[] icon;
-				try {
-					id = result.getInt("user_id");
-					firstName = result.getString("first_name");
-					lastName = result.getString("last_name");
-					icon = result.getBytes("icon");
-				} catch (SQLException exception) {
-					throw new DataAccessException("There was an error while retrieving the user data information", exception);
-				}
-				UserData userData = new UserData(id, firstName, lastName);
-				userData.setIcon(icon);
-				range.add(userData);
-			}
-		} catch (SQLException exception) {
-			throw new DataAccessException("A database error occured!", exception);
-		}
-		return range;
 	}
 
 	/**

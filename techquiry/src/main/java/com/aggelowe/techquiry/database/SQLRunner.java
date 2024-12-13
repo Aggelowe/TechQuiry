@@ -155,7 +155,7 @@ public final class SQLRunner {
 							String command = commandBuilder.toString();
 							command = command.trim();
 							commandBuilder = new StringBuilder();
-							if (!command.isEmpty() && !command.equals(";")) {
+							if (command.length() != 1) {
 								PreparedStatement statement = this.connection.prepareStatement(command);
 								statements.add(statement);
 							}
@@ -262,7 +262,7 @@ public final class SQLRunner {
 				Object[] passed = Arrays.copyOf(parameters, max);
 				parameters = Arrays.copyOfRange(parameters, max, len);
 				ResultSet result = executeStatement(statement, passed);
-				results.add(result);	
+				results.add(result);
 			}
 			connection.commit();
 		} catch (SQLException exception) {
