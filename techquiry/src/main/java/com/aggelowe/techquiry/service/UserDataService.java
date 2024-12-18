@@ -26,12 +26,18 @@ public class UserDataService {
 	private final UserDataDao userDataDao;
 
 	/**
+	 * The object responsible for managing the database of the application.
+	 */
+	private final DatabaseManager databaseManager;
+
+	/**
 	 * This constructor constructs a new {@link UserDataDao} instance that is
 	 * handling the user data operations of the application.
 	 * 
 	 * @param databaseManager The object managing the application database
 	 */
 	public UserDataService(DatabaseManager manager) {
+		this.databaseManager = manager;
 		this.userDataDao = manager.getUserDataDao();
 	}
 
@@ -65,7 +71,7 @@ public class UserDataService {
 	 * @return The service instance for making the personalized operations
 	 */
 	public UserDataActionService createActionService(UserLogin current) {
-		return new UserDataActionService(userDataDao, current);
+		return new UserDataActionService(databaseManager, current);
 	}
 
 }

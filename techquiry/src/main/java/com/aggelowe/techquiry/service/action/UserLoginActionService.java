@@ -4,6 +4,7 @@ import static com.aggelowe.techquiry.common.Constants.USERNAME_REGEX;
 
 import java.util.regex.Pattern;
 
+import com.aggelowe.techquiry.database.DatabaseManager;
 import com.aggelowe.techquiry.database.dao.UserLoginDao;
 import com.aggelowe.techquiry.database.entities.UserLogin;
 import com.aggelowe.techquiry.database.exceptions.DatabaseException;
@@ -25,7 +26,7 @@ import com.aggelowe.techquiry.service.exceptions.ServiceException;
 public class UserLoginActionService {
 
 	/**
-	 * The object responsible for handling the data access for {@link UserLogin }
+	 * The object responsible for handling the data access for {@link UserLogin}
 	 * objects.
 	 */
 	private final UserLoginDao userLoginDao;
@@ -39,11 +40,11 @@ public class UserLoginActionService {
 	 * This constructor constructs a new {@link UserLoginActionService} instance
 	 * that is handling the personalized user login operations of the application.
 	 * 
-	 * @param inquiryDao The data access object for user logins
-	 * @param current    The user initializing the operations
+	 * @param databaseManager The object managing the application database
+	 * @param current         The user initializing the operations
 	 */
-	public UserLoginActionService(UserLoginDao userLoginDao, UserLogin current) {
-		this.userLoginDao = userLoginDao;
+	public UserLoginActionService(DatabaseManager databaseManager, UserLogin current) {
+		this.userLoginDao = databaseManager.getUserLoginDao();
 		this.current = current;
 	}
 
@@ -86,7 +87,7 @@ public class UserLoginActionService {
 	 * @param id The user id
 	 * @throws ForbiddenOperationException If the current user does not have the
 	 *                                     given id
-	 * @throws EntityNotFoundException     If the requested user does not exits
+	 * @throws EntityNotFoundException     If the requested user does not exist
 	 * @throws InternalErrorException      If an internal error occurred while
 	 *                                     deleting the user
 	 */

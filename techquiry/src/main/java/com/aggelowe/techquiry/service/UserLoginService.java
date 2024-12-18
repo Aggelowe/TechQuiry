@@ -29,12 +29,18 @@ public class UserLoginService {
 	private final UserLoginDao userLoginDao;
 
 	/**
+	 * The object responsible for managing the database of the application.
+	 */
+	private final DatabaseManager databaseManager;
+
+	/**
 	 * This constructor constructs a new {@link UserLoginService} instance that is
 	 * handling the user login operations of the application.
 	 * 
 	 * @param databaseManager The object managing the application database
 	 */
 	public UserLoginService(DatabaseManager databaseManager) {
+		this.databaseManager = databaseManager;
 		this.userLoginDao = databaseManager.getUserLoginDao();
 	}
 
@@ -158,7 +164,7 @@ public class UserLoginService {
 	 * @return The service instance for making the personalized operations
 	 */
 	public UserLoginActionService createActionService(UserLogin current) {
-		return new UserLoginActionService(userLoginDao, current);
+		return new UserLoginActionService(databaseManager, current);
 	}
 
 }
