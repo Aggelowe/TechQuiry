@@ -69,7 +69,7 @@ public class UserDataActionService {
 	 */
 	public void createData(UserData data) throws ServiceException {
 		if (current == null || current.getId() != data.getId()) {
-			throw new ForbiddenOperationException("The requested user data update is forbidden!");
+			throw new ForbiddenOperationException("The requested user data creation is forbidden!");
 		}
 		int id = data.getId();
 		String firstName = data.getFirstName();

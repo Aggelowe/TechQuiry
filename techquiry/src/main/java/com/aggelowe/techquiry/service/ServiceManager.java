@@ -3,6 +3,7 @@ package com.aggelowe.techquiry.service;
 import static com.aggelowe.techquiry.common.Constants.LOGGER;
 
 import com.aggelowe.techquiry.database.DatabaseManager;
+import com.aggelowe.techquiry.database.entities.Inquiry;
 import com.aggelowe.techquiry.database.entities.UserData;
 import com.aggelowe.techquiry.database.entities.UserLogin;
 
@@ -21,14 +22,19 @@ public class ServiceManager {
 	private static ServiceManager instance;
 
 	/**
-	 * The object responsible for managing the {@link UserLogin} operations.
+	 * The object responsible for managing the {@link Inquiry} operations.
 	 */
-	private final UserLoginService userLoginService;
+	private final InquiryService inquiryService;
 
 	/**
 	 * The object responsible for managing the {@link UserData} operations.
 	 */
-	private final UserDataService inquiryService;
+	private final UserDataService userDataService;
+
+	/**
+	 * The object responsible for managing the {@link UserLogin} operations.
+	 */
+	private final UserLoginService userLoginService;
 
 	/**
 	 * This constructor constructs a new {@link ServiceManager} instance with the
@@ -38,8 +44,29 @@ public class ServiceManager {
 	 * @param databaseManager The database manager
 	 */
 	public ServiceManager(DatabaseManager databaseManager) {
+		this.inquiryService = new InquiryService(databaseManager);
+		this.userDataService = new UserDataService(databaseManager);
 		this.userLoginService = new UserLoginService(databaseManager);
-		this.inquiryService = new UserDataService(databaseManager);
+	}
+
+	/**
+	 * This method returns the object responsible for managing the inquiry
+	 * operations.
+	 * 
+	 * @return The {@link Inquiry} service object
+	 */
+	public InquiryService getInquiryService() {
+		return inquiryService;
+	}
+
+	/**
+	 * This method returns the object responsible for managing the user data
+	 * operations.
+	 * 
+	 * @return The {@link UserData} service object
+	 */
+	public UserDataService getDataService() {
+		return userDataService;
 	}
 
 	/**
@@ -50,16 +77,6 @@ public class ServiceManager {
 	 */
 	public UserLoginService getUserLoginService() {
 		return userLoginService;
-	}
-
-	/**
-	 * This method returns the object responsible for managing the user data
-	 * operations.
-	 * 
-	 * @return The {@link UserData} service object
-	 */
-	public UserDataService getInquiryService() {
-		return inquiryService;
 	}
 
 	/**
