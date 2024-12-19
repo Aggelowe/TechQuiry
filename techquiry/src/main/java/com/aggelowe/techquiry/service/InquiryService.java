@@ -60,23 +60,23 @@ public class InquiryService {
 	}
 
 	/**
-	 * This method returns the range of inquiries based on the given count and
-	 * offset.
+	 * This method returns the range of inquiries based on the given count of
+	 * inquiries per page and the page number.
 	 *
-	 * @param count  The number of inquiries
-	 * @param offset The number of inquiries to offset
-	 * @return The requested range of inquiries
-	 * @throws InvalidRequestException If the count/offset is smaller than 0
+	 * @param count The number of inquiries per page
+	 * @param page  The page number of inquiries to return
+	 * @return The requested page of inquiries
+	 * @throws InvalidRequestException If the count/page is smaller than 0
 	 * @throws InternalErrorException  If an internal error occurs while retrieving
 	 *                                 the inquiries
 	 */
-	public List<Inquiry> getInquiryRange(int count, int offset) throws ServiceException {
-		if (count < 0 || offset < 0) {
-			throw new InvalidRequestException("The given count/offset must be larger than 0!");
+	public List<Inquiry> getInquiryRange(int count, int page) throws ServiceException {
+		if (count < 0 || page < 0) {
+			throw new InvalidRequestException("The given count/page must be larger than 0!");
 		}
 		List<Inquiry> range;
 		try {
-			range = inquiryDao.range(count, offset);
+			range = inquiryDao.range(count, count * page);
 		} catch (DatabaseException exception) {
 			throw new InternalErrorException("An internal error occured while getting the inquiries!", exception);
 		}

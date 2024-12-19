@@ -72,14 +72,12 @@ public class UserLoginServiceTest {
 	@Test
 	public void testGetLoginRangeSuccess() {
 		List<UserLogin> userLogins = assertDoesNotThrow(() -> userLoginService.getLoginRange(2, 1));
-		assertEquals(2, userLogins.size());
-		UserLogin userLogin0 = userLogins.get(0);
-		assertEquals(1, userLogin0.getId());
-		assertEquals("bob", userLogin0.getUsername());
-		assertArrayEquals(SecurityUtils.decodeBase64("ptp5i/V5DHjaOsFQfCo7NseUflYX45loc9DTSPrl+NU="), userLogin0.getPasswordHash());
-		assertArrayEquals(SecurityUtils.decodeBase64("Fw7zNLq9p0L1bT68ifEz9g=="), userLogin0.getPasswordSalt());
-		UserLogin userLogin1 = userLogins.get(1);
-		assertEquals(2, userLogin1.getId());
+		assertEquals(1, userLogins.size());
+		UserLogin userLogin = userLogins.get(0);
+		assertEquals(2, userLogin.getId());
+		assertEquals("charlie", userLogin.getUsername());
+		assertArrayEquals(SecurityUtils.decodeBase64("dm2H/fl9TtxWBKW5dN5nh9MRUNTbWuFM3xquxwQ+VC4="), userLogin.getPasswordHash());
+		assertArrayEquals(SecurityUtils.decodeBase64("jgKZJ7psArGnRao9N464eg=="), userLogin.getPasswordSalt());
 	}
 
 	@Test
