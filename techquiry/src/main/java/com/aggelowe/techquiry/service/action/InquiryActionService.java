@@ -99,13 +99,13 @@ public class InquiryActionService {
 	 *                                     deleting the inquiry
 	 */
 	public void deleteInquiry(int id) throws ServiceException {
-		if (current == null || current.getId() != id) {
-			throw new ForbiddenOperationException("The requested inquiry deletion is forbidden!");
-		}
 		try {
 			Inquiry inquiry = inquiryDao.select(id);
 			if (inquiry == null) {
 				throw new EntityNotFoundException("The requested inquiry does not exist!");
+			}
+			if (current == null || current.getId() != inquiry.getUserId()) {
+				throw new ForbiddenOperationException("The requested inquiry deletion is forbidden!");
 			}
 			inquiryDao.delete(id);
 		} catch (DatabaseException exception) {
@@ -119,17 +119,17 @@ public class InquiryActionService {
 	 * 
 	 * @param inquiry The inquiry object
 	 * @throws ForbiddenOperationException If the current user does not have the
-	 *                                     given user id
+	 *                                     user id contained in the given inquiry or
+	 *                                     the inquiry contained in the database
 	 * @throws EntityNotFoundException     If the given id does not correspond to an
-	 *                                     inquiry id or the user id does not
-	 *                                     correspond to a user login
+	 *                                     inquiry id
 	 * @throws InvalidRequestException     If the given title or content are empty
 	 * @throws InternalErrorException      If an internal error occurred while
 	 *                                     updating the inquiry
 	 */
 	public void updateInquiry(Inquiry inquiry) throws ServiceException {
 		if (current == null || current.getId() != inquiry.getUserId()) {
-			throw new ForbiddenOperationException("The requested inquiry deletion is forbidden!");
+			throw new ForbiddenOperationException("The requested inquiry update is forbidden!");
 		}
 		String title = inquiry.getTitle();
 		String content = inquiry.getContent();
@@ -141,9 +141,8 @@ public class InquiryActionService {
 			if (idInquiry == null) {
 				throw new EntityNotFoundException("The requested inquiry does not exist!");
 			}
-			UserLogin userLogin = userLoginDao.select(inquiry.getUserId());
-			if (userLogin == null) {
-				throw new EntityNotFoundException("The given user id does not have a corresponding login!");
+			if (current.getId() != idInquiry.getUserId()) {
+				throw new ForbiddenOperationException("The requested inquiry update is forbidden!");
 			}
 			inquiryDao.update(inquiry);
 		} catch (DatabaseException exception) {
@@ -163,7 +162,7 @@ public class InquiryActionService {
 	 * @throws InternalErrorException  If an internal error occurs while retrieving
 	 *                                 the inquiry
 	 */
-	public List<Inquiry> findInquiryListByUserId(int id) throws ServiceException {
+	public List<Inquiry> getInquiryListByUserId(int id) throws ServiceException {
 		List<Inquiry> inquiries;
 		try {
 			UserLogin userLogin = userLoginDao.select(id);
