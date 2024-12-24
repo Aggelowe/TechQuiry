@@ -7,6 +7,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.aggelowe.techquiry.database.SQLRunner;
 import com.aggelowe.techquiry.database.entities.Upvote;
 import com.aggelowe.techquiry.database.exceptions.DataAccessException;
@@ -19,6 +22,7 @@ import com.aggelowe.techquiry.database.exceptions.DatabaseException;
  * @author Aggelowe
  * @since 0.0.1
  */
+@Component
 public final class UpvoteDao {
 
 	/**
@@ -58,7 +62,8 @@ public final class UpvoteDao {
 	 * 
 	 * @param runner The SQL script runner
 	 */
-	public UpvoteDao(SQLRunner runner) {
+	@Autowired
+	public UpvoteDao(final SQLRunner runner) {
 		this.runner = runner;
 	}
 

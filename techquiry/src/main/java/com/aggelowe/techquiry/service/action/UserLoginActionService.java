@@ -1,19 +1,19 @@
 package com.aggelowe.techquiry.service.action;
 
-import static com.aggelowe.techquiry.common.Constants.USERNAME_REGEX;
+import static com.aggelowe.techquiry.common.Constants.*;
 
 import java.util.regex.Pattern;
 
-import com.aggelowe.techquiry.database.DatabaseManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.aggelowe.techquiry.database.dao.UserLoginDao;
 import com.aggelowe.techquiry.database.entities.UserLogin;
 import com.aggelowe.techquiry.database.exceptions.DatabaseException;
+import com.aggelowe.techquiry.helper.UserSessionHelper;
+import com.aggelowe.techquiry.service.Authentication;
 import com.aggelowe.techquiry.service.UserLoginService;
-import com.aggelowe.techquiry.service.exceptions.EntityNotFoundException;
-import com.aggelowe.techquiry.service.exceptions.ForbiddenOperationException;
-import com.aggelowe.techquiry.service.exceptions.InternalErrorException;
-import com.aggelowe.techquiry.service.exceptions.InvalidRequestException;
-import com.aggelowe.techquiry.service.exceptions.ServiceException;
+import com.aggelowe.techquiry.service.exceptions.*;
 
 /**
  * The {@link UserLoginActionService} class is a dependency of
@@ -23,18 +23,18 @@ import com.aggelowe.techquiry.service.exceptions.ServiceException;
  * @author Aggelowe
  * @since 0.0.1
  */
+@Service
 public class UserLoginActionService {
 
+    
+    private UserSessionHelper userSessionHelper; 
+    
+    
 	/**
 	 * The object responsible for handling the data access for {@link UserLogin}
 	 * objects.
 	 */
 	private final UserLoginDao userLoginDao;
-
-	/**
-	 * The {@link UserLogin} representing the user currently acting
-	 */
-	private final UserLogin current;
 
 	/**
 	 * This constructor constructs a new {@link UserLoginActionService} instance
@@ -43,9 +43,10 @@ public class UserLoginActionService {
 	 * @param databaseManager The object managing the application database
 	 * @param current         The user initializing the operations
 	 */
-	public UserLoginActionService(DatabaseManager databaseManager, UserLogin current) {
-		this.userLoginDao = databaseManager.getUserLoginDao();
-		this.current = current;
+	@Autowired
+	public UserLoginActionService(final UserLoginDao userLoginDao, UserSessionHelper userSessionHelper) {
+		this.userLoginDao = userLoginDao;
+		this.userSessionHelper = userSessionHelper;
 	}
 
 	/**
@@ -62,6 +63,7 @@ public class UserLoginActionService {
 	 * 
 	 */
 	public int createLogin(UserLogin login) throws ServiceException {
+        Authentication current =  userSessionHelper.getAuthentication();
 		if (current != null) {
 			throw new ForbiddenOperationException("Creating users while logged-in is forbidden!");
 		}
@@ -92,6 +94,7 @@ public class UserLoginActionService {
 	 *                                     deleting the user
 	 */
 	public void deleteLogin(int id) throws ServiceException {
+        Authentication current =  userSessionHelper.getAuthentication();
 		if (current == null || current.getId() != id) {
 			throw new ForbiddenOperationException("The requested user deletion is forbidden!");
 		}
@@ -122,6 +125,7 @@ public class UserLoginActionService {
 	 * 
 	 */
 	public void updateLogin(UserLogin login) throws ServiceException {
+        Authentication current =  userSessionHelper.getAuthentication();
 		if (current == null || current.getId() != login.getId()) {
 			throw new ForbiddenOperationException("The requested user update is forbidden!");
 		}

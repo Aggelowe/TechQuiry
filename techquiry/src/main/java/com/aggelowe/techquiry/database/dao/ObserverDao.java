@@ -7,6 +7,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.aggelowe.techquiry.database.SQLRunner;
 import com.aggelowe.techquiry.database.entities.Observer;
 import com.aggelowe.techquiry.database.exceptions.DataAccessException;
@@ -19,6 +22,7 @@ import com.aggelowe.techquiry.database.exceptions.DatabaseException;
  * @author Aggelowe
  * @since 0.0.1
  */
+@Component
 public final class ObserverDao {
 
 	/**
@@ -59,7 +63,8 @@ public final class ObserverDao {
 	 * 
 	 * @param runner The SQL script runner
 	 */
-	public ObserverDao(SQLRunner runner) {
+	@Autowired
+	public ObserverDao(final SQLRunner runner) {
 		this.runner = runner;
 	}
 

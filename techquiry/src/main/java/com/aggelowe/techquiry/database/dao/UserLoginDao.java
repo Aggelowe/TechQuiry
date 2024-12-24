@@ -7,6 +7,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.aggelowe.techquiry.common.SecurityUtils;
 import com.aggelowe.techquiry.database.SQLRunner;
 import com.aggelowe.techquiry.database.entities.UserLogin;
@@ -20,6 +23,7 @@ import com.aggelowe.techquiry.database.exceptions.DatabaseException;
  * @author Aggelowe
  * @since 0.0.1
  */
+@Component
 public final class UserLoginDao {
 
 	/**
@@ -68,6 +72,7 @@ public final class UserLoginDao {
 	 * 
 	 * @param runner The SQL script runner
 	 */
+	@Autowired
 	public UserLoginDao(SQLRunner runner) {
 		this.runner = runner;
 	}

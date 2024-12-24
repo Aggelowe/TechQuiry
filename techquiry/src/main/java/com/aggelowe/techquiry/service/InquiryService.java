@@ -2,12 +2,12 @@ package com.aggelowe.techquiry.service;
 
 import java.util.List;
 
-import com.aggelowe.techquiry.database.DatabaseManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.aggelowe.techquiry.database.dao.InquiryDao;
 import com.aggelowe.techquiry.database.entities.Inquiry;
-import com.aggelowe.techquiry.database.entities.UserLogin;
 import com.aggelowe.techquiry.database.exceptions.DatabaseException;
-import com.aggelowe.techquiry.service.action.InquiryActionService;
 import com.aggelowe.techquiry.service.exceptions.EntityNotFoundException;
 import com.aggelowe.techquiry.service.exceptions.InternalErrorException;
 import com.aggelowe.techquiry.service.exceptions.InvalidRequestException;
@@ -20,6 +20,7 @@ import com.aggelowe.techquiry.service.exceptions.ServiceException;
  * @author Aggelowe
  * @since 0.0.1
  */
+@Service
 public class InquiryService {
 
 	/**
@@ -29,19 +30,14 @@ public class InquiryService {
 	private final InquiryDao inquiryDao;
 
 	/**
-	 * The object responsible for managing the database of the application.
-	 */
-	private final DatabaseManager databaseManager;
-
-	/**
 	 * This constructor constructs a new {@link InquiryService} instance that is
 	 * handling the inquiry operations of the application.
 	 * 
 	 * @param databaseManager The object managing the application database
 	 */
-	public InquiryService(DatabaseManager databaseManager) {
-		this.databaseManager = databaseManager;
-		this.inquiryDao = databaseManager.getInquiryDao();
+	@Autowired
+	public InquiryService(final InquiryDao inquiryDao) {
+		this.inquiryDao = inquiryDao;
 	}
 
 	/**
@@ -103,17 +99,6 @@ public class InquiryService {
 			throw new EntityNotFoundException("The requested inquiry does not exist!");
 		}
 		return inquiry;
-	}
-
-	/**
-	 * This method constructs and returns the personalized service for the given
-	 * user.
-	 *
-	 * @param current The currently logged-in user
-	 * @return The service instance for making the personalized operations
-	 */
-	public InquiryActionService createActionService(UserLogin current) {
-		return new InquiryActionService(databaseManager, current);
 	}
 
 }

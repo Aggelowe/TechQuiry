@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.sqlite.SQLiteErrorCode;
 
 import com.aggelowe.techquiry.database.SQLRunner;
@@ -21,6 +23,7 @@ import com.aggelowe.techquiry.database.exceptions.SQLRunnerLoadException;
  * @author Aggelowe
  * @since 0.0.1
  */
+@Component
 public final class UserDataDao {
 
 	/**
@@ -54,7 +57,8 @@ public final class UserDataDao {
 	 * 
 	 * @param runner The SQL script runner
 	 */
-	public UserDataDao(SQLRunner runner) {
+	@Autowired
+	public UserDataDao(final SQLRunner runner) {
 		this.runner = runner;
 	}
 

@@ -2,18 +2,18 @@ package com.aggelowe.techquiry.service.action;
 
 import java.util.List;
 
-import com.aggelowe.techquiry.database.DatabaseManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.aggelowe.techquiry.database.dao.InquiryDao;
 import com.aggelowe.techquiry.database.dao.UserLoginDao;
 import com.aggelowe.techquiry.database.entities.Inquiry;
 import com.aggelowe.techquiry.database.entities.UserLogin;
 import com.aggelowe.techquiry.database.exceptions.DatabaseException;
+import com.aggelowe.techquiry.helper.UserSessionHelper;
+import com.aggelowe.techquiry.service.Authentication;
 import com.aggelowe.techquiry.service.InquiryService;
-import com.aggelowe.techquiry.service.exceptions.EntityNotFoundException;
-import com.aggelowe.techquiry.service.exceptions.ForbiddenOperationException;
-import com.aggelowe.techquiry.service.exceptions.InternalErrorException;
-import com.aggelowe.techquiry.service.exceptions.InvalidRequestException;
-import com.aggelowe.techquiry.service.exceptions.ServiceException;
+import com.aggelowe.techquiry.service.exceptions.*;
 
 /**
  * The {@link InquiryActionService} class is a dependency of
@@ -23,9 +23,12 @@ import com.aggelowe.techquiry.service.exceptions.ServiceException;
  * @author Aggelowe
  * @since 0.0.1
  */
+@Component
 public class InquiryActionService {
 
-	/**
+    private final UserSessionHelper userSessionHelper; 
+
+    /**
 	 * The object responsible for handling the data access for {@link Inquiry}
 	 * objects.
 	 */
@@ -37,10 +40,6 @@ public class InquiryActionService {
 	 */
 	private final UserLoginDao userLoginDao;
 
-	/**
-	 * The {@link UserLogin} representing the user currently acting
-	 */
-	private final UserLogin current;
 
 	/**
 	 * This constructor constructs a new {@link InquiryActionService} instance that
@@ -49,11 +48,14 @@ public class InquiryActionService {
 	 * @param databaseManager The object managing the application database
 	 * @param current         The user initializing the operations
 	 */
-	public InquiryActionService(DatabaseManager databaseManager, UserLogin current) {
-		this.inquiryDao = databaseManager.getInquiryDao();
-		this.userLoginDao = databaseManager.getUserLoginDao();
-		this.current = current;
-	}
+	@Autowired
+    public InquiryActionService(final UserSessionHelper userSessionHelper, final InquiryDao inquiryDao, final UserLoginDao userLoginDao) {
+        super();
+        this.userSessionHelper = userSessionHelper;
+        this.inquiryDao = inquiryDao;
+        this.userLoginDao = userLoginDao;
+    }
+
 
 	/**
 	 * This method inserts the given {@link Inquiry} object in the database
@@ -69,6 +71,7 @@ public class InquiryActionService {
 	 * 
 	 */
 	public int createInquiry(Inquiry inquiry) throws ServiceException {
+        Authentication current =  userSessionHelper.getAuthentication();
 		if (current == null || current.getId() != inquiry.getUserId()) {
 			throw new ForbiddenOperationException("The requested inquiry creation is forbidden!");
 		}
@@ -88,7 +91,7 @@ public class InquiryActionService {
 		}
 	}
 
-	/**
+    /**
 	 * This method deletes the inquiry with the specified inquiry id.
 	 *
 	 * @param id The inquiry id
@@ -99,6 +102,7 @@ public class InquiryActionService {
 	 *                                     deleting the inquiry
 	 */
 	public void deleteInquiry(int id) throws ServiceException {
+        Authentication current =  userSessionHelper.getAuthentication();
 		try {
 			Inquiry inquiry = inquiryDao.select(id);
 			if (inquiry == null) {
@@ -128,6 +132,7 @@ public class InquiryActionService {
 	 *                                     updating the inquiry
 	 */
 	public void updateInquiry(Inquiry inquiry) throws ServiceException {
+        Authentication current =  userSessionHelper.getAuthentication();
 		if (current == null || current.getId() != inquiry.getUserId()) {
 			throw new ForbiddenOperationException("The requested inquiry update is forbidden!");
 		}
@@ -163,6 +168,7 @@ public class InquiryActionService {
 	 *                                 the inquiry
 	 */
 	public List<Inquiry> getInquiryListByUserId(int id) throws ServiceException {
+        Authentication current =  userSessionHelper.getAuthentication();
 		List<Inquiry> inquiries;
 		try {
 			UserLogin userLogin = userLoginDao.select(id);
