@@ -23,12 +23,12 @@ public class TestSQLiteHikariConfig {
         log.info("Creating Datasource...");
         HikariConfig config = new HikariConfig();
 
-//        SQLiteConfig sqLiteConfig = new SQLiteConfig();
-//        sqLiteConfig.enforceForeignKeys(true);
-//        config.setDataSourceProperties(sqLiteConfig.toProperties());
-//        
+        SQLiteConfig sqLiteConfig = new SQLiteConfig();
+        sqLiteConfig.enforceForeignKeys(true);
+        config.setDataSourceProperties(sqLiteConfig.toProperties());
+        
         // Set SQLite JDBC URL (Replace with your SQLite database path)
-        config.setJdbcUrl("jdbc:sqlite:/workspace/Sources/Family/TechQuiry/techquiry/run/test.db");
+        config.setJdbcUrl("jdbc:sqlite:file:memdb1?mode=memory&cache=shared");
 
         // SQLite doesn't require username and password, but they must be set for HikariCP
         config.setUsername("");

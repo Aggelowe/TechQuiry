@@ -21,6 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.aggelowe.techquiry.config.TestAppConfiguration;
+import com.aggelowe.techquiry.database.SQLRunner.LocalResult;
 import com.aggelowe.techquiry.database.exceptions.SQLRunnerExecuteException;
 import com.aggelowe.techquiry.database.exceptions.SQLRunnerLoadException;
 
@@ -103,10 +104,10 @@ class SQLRunnerTest {
     @Test
     void testRunStatementSuccess() {
         String sql = "SELECT * FROM test WHERE id = ?";
-        List<Map<String, Object>> result = assertDoesNotThrow(() -> runner.runStatement(sql, 0));
+        LocalResult result = assertDoesNotThrow(() -> runner.runStatement(sql, 0));
         assertNotNull(result);
-        assertTrue(assertDoesNotThrow(() -> result.size() == 1));
-        assertEquals("Alice", result.get(0).get("username"));
+        assertTrue(assertDoesNotThrow(() -> result.getR().size() == 1));
+        assertEquals("Alice", result.getR().get(0). get("username"));
     }
 
     @Test
@@ -123,10 +124,10 @@ class SQLRunnerTest {
     void testRunScriptSuccess() {
         String sql = "INSERT INTO test (id, username) /* Comment 1 */ VALUES (?, ?);;\n SELECT * -- Comment 2 \n FROM test WHERE id = ?";
         InputStream stream = new ByteArrayInputStream(sql.getBytes());
-        List<List<Map<String, Object>>> results = assertDoesNotThrow(() -> runner.runScript(stream, 2, "Charlie", 1));
+        List<LocalResult> results = assertDoesNotThrow(() -> runner.runScript(stream, 2, "Charlie", 1));
         assertEquals(2, results.size());
         assertNull(results.get(0));
-        List<Map<String, Object>> result = results.get(1);
+        List<Map<String, Object>> result = results.get(1).getR();
         assertNotNull(result);
         assertTrue(assertDoesNotThrow(() -> result.size() == 1));
         assertEquals("Bob", assertDoesNotThrow(() -> result.get(0).get("username")));
