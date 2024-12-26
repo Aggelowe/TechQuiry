@@ -2,12 +2,12 @@ package com.aggelowe.techquiry.database.dao;
 
 import static com.aggelowe.techquiry.common.Constants.LOGGER;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.aggelowe.techquiry.common.SecurityUtils;
+import com.aggelowe.techquiry.database.LocalResult;
 import com.aggelowe.techquiry.database.SQLRunner;
 import com.aggelowe.techquiry.database.entities.UserLogin;
 import com.aggelowe.techquiry.database.exceptions.DataAccessException;
@@ -81,21 +81,20 @@ public final class UserLoginDao {
 	 */
 	public int count() throws DatabaseException {
 		LOGGER.debug("Getting user login entry count");
-		List<ResultSet> results = runner.runScript(USER_LOGIN_COUNT_SCRIPT);
+		List<LocalResult> results = runner.runScript(USER_LOGIN_COUNT_SCRIPT);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + USER_LOGIN_COUNT_SCRIPT + " did not yeild results!");
 		}
-		ResultSet result = results.getFirst();
+		LocalResult result = results.getFirst();
 		if (result == null) {
 			throw new DataAccessException("The first statement in " + USER_LOGIN_COUNT_SCRIPT + " did not yeild results!");
 		}
-		int count;
-		try {
-			count = result.getInt("users_count");
-		} catch (SQLException exception) {
-			throw new DataAccessException("There was an error while retrieving the user count!", exception);
+		List<Map<String, Object>> list = result.list();
+		if (list.size() == 0) {
+			throw new DataAccessException("The first statement in " + USER_LOGIN_COUNT_SCRIPT + " did not yeild a user count!");
 		}
-		return count;
+		Map<String, Object> row = list.getFirst();
+		return (int) row.get("users_count");
 	}
 
 	/**
@@ -128,21 +127,20 @@ public final class UserLoginDao {
 		byte[] passwordSalt = userLogin.getPasswordSalt();
 		String encodedHash = SecurityUtils.encodeBase64(passwordHash);
 		String encodedSalt = SecurityUtils.encodeBase64(passwordSalt);
-		List<ResultSet> results = runner.runScript(USER_LOGIN_INSERT_SCRIPT, username, encodedHash, encodedSalt);
+		List<LocalResult> results = runner.runScript(USER_LOGIN_INSERT_SCRIPT, username, encodedHash, encodedSalt);
 		if (results.size() < 2) {
 			throw new DataAccessException("The script " + USER_LOGIN_INSERT_SCRIPT + " did not yeild at least two results!");
 		}
-		ResultSet result = results.get(1);
+		LocalResult result = results.get(1);
 		if (result == null) {
 			throw new DataAccessException("The first statement in " + USER_LOGIN_INSERT_SCRIPT + " did not yeild results!");
 		}
-		int id;
-		try {
-			id = result.getInt("user_id");
-		} catch (SQLException exception) {
-			throw new DataAccessException("There was an error while retrieving the inserted user id!", exception);
+		List<Map<String, Object>> list = result.list();
+		if (list.size() == 0) {
+			throw new DataAccessException("The first statement in " + USER_LOGIN_INSERT_SCRIPT + " did not yeild a user id!");
 		}
-		return id;
+		Map<String, Object> row = list.getFirst();
+		return (int) row.get("user_id");
 	}
 
 	/**
@@ -158,42 +156,30 @@ public final class UserLoginDao {
 	 */
 	public List<UserLogin> range(int count, int offset) throws DatabaseException {
 		LOGGER.debug("Getting " + count + " user login entries with offset " + offset);
-		List<ResultSet> results = runner.runScript(USER_LOGIN_RANGE_SCRIPT, offset, count);
+		List<LocalResult> results = runner.runScript(USER_LOGIN_RANGE_SCRIPT, offset, count);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + USER_LOGIN_RANGE_SCRIPT + " did not yeild results!");
 		}
-		ResultSet result = results.getFirst();
+		LocalResult result = results.getFirst();
 		if (result == null) {
 			throw new DataAccessException("The first statement in " + USER_LOGIN_RANGE_SCRIPT + " did not yeild results!");
 		}
 		List<UserLogin> range = new ArrayList<>(count);
-		try {
-			while (result.next()) {
-				int id;
-				String username;
-				String encodedHash;
-				String encodedSalt;
-				try {
-					id = result.getInt("user_id");
-					username = result.getString("username");
-					encodedHash = result.getString("password_hash");
-					encodedSalt = result.getString("password_salt");
-				} catch (SQLException exception) {
-					throw new DataAccessException("There was an error while retrieving the user login information", exception);
-				}
-				byte[] passwordHash;
-				byte[] passwordSalt;
-				try {
-					passwordHash = SecurityUtils.decodeBase64(encodedHash);
-					passwordSalt = SecurityUtils.decodeBase64(encodedSalt);
-				} catch (IllegalArgumentException exception) {
-					throw new DataAccessException("There was an error while retrieving the user login information!", exception);
-				}
-				UserLogin userLogin = new UserLogin(id, username, passwordHash, passwordSalt);
-				range.add(userLogin);
+		for (Map<String, Object> row : result) {
+			int id = (int) row.get("user_id");
+			String username = (String) row.get("username");
+			String encodedHash = (String) row.get("password_hash");
+			String encodedSalt = (String) row.get("password_salt");
+			byte[] passwordHash;
+			byte[] passwordSalt;
+			try {
+				passwordHash = SecurityUtils.decodeBase64(encodedHash);
+				passwordSalt = SecurityUtils.decodeBase64(encodedSalt);
+			} catch (IllegalArgumentException exception) {
+				throw new DataAccessException("There was an error while retrieving the user login information!", exception);
 			}
-		} catch (SQLException exception) {
-			throw new DataAccessException("A database error occured!", exception);
+			UserLogin userLogin = new UserLogin(id, username, passwordHash, passwordSalt);
+			range.add(userLogin);
 		}
 		return range;
 	}
@@ -209,31 +195,22 @@ public final class UserLoginDao {
 	 */
 	public UserLogin select(int id) throws DatabaseException {
 		LOGGER.debug("Getting user login with user id " + id);
-		List<ResultSet> results = runner.runScript(USER_LOGIN_SELECT_SCRIPT, id);
+		List<LocalResult> results = runner.runScript(USER_LOGIN_SELECT_SCRIPT, id);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + USER_LOGIN_SELECT_SCRIPT + " did not yeild results!");
 		}
-		ResultSet result = results.getFirst();
+		LocalResult result = results.getFirst();
 		if (result == null) {
 			throw new DataAccessException("The first statement in " + USER_LOGIN_SELECT_SCRIPT + " did not yeild results!");
 		}
-		try {
-			if (!result.next()) {
-				return null;
-			}
-		} catch (SQLException exception) {
-			throw new DataAccessException("A database error occured!", exception);
+		List<Map<String, Object>> list = result.list();
+		if (list.size() == 0) {
+			return null;
 		}
-		String username;
-		String encodedHash;
-		String encodedSalt;
-		try {
-			username = result.getString("username");
-			encodedHash = result.getString("password_hash");
-			encodedSalt = result.getString("password_salt");
-		} catch (SQLException exception) {
-			throw new DataAccessException("There was an error while retrieving the user login information", exception);
-		}
+		Map<String, Object> row = list.getFirst();
+		String username = (String) row.get("username");
+		String encodedHash = (String) row.get("password_hash");
+		String encodedSalt = (String) row.get("password_salt");
 		byte[] passwordHash;
 		byte[] passwordSalt;
 		try {
@@ -257,31 +234,22 @@ public final class UserLoginDao {
 	 */
 	public UserLogin selectFromUsername(String username) throws DatabaseException {
 		LOGGER.debug("Getting user login with username " + username);
-		List<ResultSet> results = runner.runScript(USER_LOGIN_SELECT_USERNAME_SCRIPT, username);
+		List<LocalResult> results = runner.runScript(USER_LOGIN_SELECT_USERNAME_SCRIPT, username);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + USER_LOGIN_SELECT_USERNAME_SCRIPT + " did not yeild results!");
 		}
-		ResultSet result = results.getFirst();
+		LocalResult result = results.getFirst();
 		if (result == null) {
 			throw new DataAccessException("The first statement in " + USER_LOGIN_SELECT_USERNAME_SCRIPT + " did not yeild results!");
 		}
-		try {
-			if (!result.next()) {
-				return null;
-			}
-		} catch (SQLException exception) {
-			throw new DataAccessException("A database error occured!", exception);
+		List<Map<String, Object>> list = result.list();
+		if (list.size() == 0) {
+			return null;
 		}
-		int id;
-		String encodedHash;
-		String encodedSalt;
-		try {
-			id = result.getInt("user_id");
-			encodedHash = result.getString("password_hash");
-			encodedSalt = result.getString("password_salt");
-		} catch (SQLException exception) {
-			throw new DataAccessException("There was an error while retrieving the user login information", exception);
-		}
+		Map<String, Object> row = list.getFirst();
+		int id = (int) row.get("user_id");
+		String encodedHash = (String) row.get("password_hash");
+		String encodedSalt = (String) row.get("password_salt");
 		byte[] passwordHash;
 		byte[] passwordSalt;
 		try {

@@ -2,12 +2,12 @@ package com.aggelowe.techquiry.database.dao;
 
 import static com.aggelowe.techquiry.common.Constants.LOGGER;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import org.sqlite.SQLiteErrorCode;
 
+import com.aggelowe.techquiry.database.LocalResult;
 import com.aggelowe.techquiry.database.SQLRunner;
 import com.aggelowe.techquiry.database.entities.UserData;
 import com.aggelowe.techquiry.database.exceptions.DataAccessException;
@@ -103,33 +103,23 @@ public final class UserDataDao {
 	 */
 	public UserData select(int id) throws DatabaseException {
 		LOGGER.debug("Getting user data with user id " + id);
-		List<ResultSet> results = runner.runScript(USER_DATA_SELECT_SCRIPT, id);
-		ResultSet result;
+		List<LocalResult> results = runner.runScript(USER_DATA_SELECT_SCRIPT, id);
 		if (results.isEmpty()) {
+			throw new DataAccessException("The script " + USER_DATA_SELECT_SCRIPT + " did not yeild results!");
+		}
+		LocalResult result = results.getFirst();
+		if (result == null) {
 			throw new DataAccessException("The first statement in " + USER_DATA_SELECT_SCRIPT + " did not yeild results!");
-		} else {
-			result = results.getFirst();
 		}
-		try {
-			if (!result.next()) {
-				return null;
-			}
-		} catch (SQLException exception) {
-			throw new DataAccessException("A database error occured!", exception);
+		List<Map<String, Object>> list = result.list();
+		if (list.size() == 0) {
+			return null;
 		}
-		String firstName;
-		String lastName;
-		byte[] icon;
-		try {
-			id = result.getInt("user_id");
-			firstName = result.getString("first_name");
-			lastName = result.getString("last_name");
-			icon = result.getBytes("icon");
-		} catch (SQLException exception) {
-			throw new DataAccessException("There was an error while retrieving the user data information", exception);
-		}
-		UserData userData = new UserData(id, firstName, lastName);
-		userData.setIcon(icon);
+		Map<String, Object> row = list.getFirst();
+		String firstName = (String) row.get("first_name");
+		String lastName = (String) row.get("last_name");
+		byte[] icon = (byte[]) row.get("icon");
+		UserData userData = new UserData(id, firstName, lastName, icon);
 		return userData;
 	}
 

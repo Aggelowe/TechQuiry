@@ -2,11 +2,11 @@ package com.aggelowe.techquiry.database.dao;
 
 import static com.aggelowe.techquiry.common.Constants.LOGGER;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import com.aggelowe.techquiry.database.LocalResult;
 import com.aggelowe.techquiry.database.SQLRunner;
 import com.aggelowe.techquiry.database.entities.Upvote;
 import com.aggelowe.techquiry.database.exceptions.DataAccessException;
@@ -73,23 +73,22 @@ public final class UpvoteDao {
 	 */
 	public int countFromResponseId(int responseId) throws DatabaseException {
 		LOGGER.debug("Getting upvote entry count");
-		List<ResultSet> results = runner.runScript(UPVOTE_COUNT_RESPONSE_ID_SCRIPT, responseId);
-		ResultSet result;
+		List<LocalResult> results = runner.runScript(UPVOTE_COUNT_RESPONSE_ID_SCRIPT, responseId);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The first statement in " + UPVOTE_COUNT_RESPONSE_ID_SCRIPT + " did not yeild a result!");
-		} else {
-			result = results.getFirst();
 		}
-		int count;
-		try {
-			count = result.getInt("upvote_count");
-		} catch (SQLException exception) {
-			throw new DataAccessException("There was an error while retrieving the upvote count!", exception);
+		LocalResult result = results.getFirst();
+		if (result == null) {
+			throw new DataAccessException("The first statement in " + UPVOTE_COUNT_RESPONSE_ID_SCRIPT + " did not yeild results!");
 		}
-		return count;
+		List<Map<String, Object>> list = result.list();
+		if (list.size() == 0) {
+			throw new DataAccessException("The first statement in " + UPVOTE_COUNT_RESPONSE_ID_SCRIPT + " did not yeild an upvote count!");
+		}
+		Map<String, Object> row = list.getFirst();
+		return (int) row.get("upvote_count");
 	}
 
-	
 	/**
 	 * This method deletes the upvote with the provided information from the
 	 * application database.
@@ -129,27 +128,19 @@ public final class UpvoteDao {
 	 */
 	public List<Upvote> selectFromResponseId(int responseId) throws DatabaseException {
 		LOGGER.debug("Getting upvotes with response id " + responseId);
-		List<ResultSet> results = runner.runScript(UPVOTE_SELECT_RESPONSE_ID_SCRIPT, responseId);
-		ResultSet result;
+		List<LocalResult> results = runner.runScript(UPVOTE_SELECT_RESPONSE_ID_SCRIPT, responseId);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The first statement in " + UPVOTE_SELECT_RESPONSE_ID_SCRIPT + " did not yeild results!");
-		} else {
-			result = results.getFirst();
+		}
+		LocalResult result = results.getFirst();
+		if (result == null) {
+			throw new DataAccessException("The first statement in " + UPVOTE_SELECT_RESPONSE_ID_SCRIPT + " did not yeild results!");
 		}
 		List<Upvote> list = new ArrayList<>();
-		try {
-			while (result.next()) {
-				int userId;
-				try {
-					userId = result.getInt("user_id");
-				} catch (SQLException exception) {
-					throw new DataAccessException("There was an error while retrieving the upvote information", exception);
-				}
-				Upvote upvote = new Upvote(responseId, userId);
-				list.add(upvote);
-			}
-		} catch (SQLException exception) {
-			throw new DataAccessException("A database error occured!", exception);
+		for (Map<String, Object> row : result) {
+			int userId = (int) row.get("user_id");
+			Upvote upvote = new Upvote(responseId, userId);
+			list.add(upvote);
 		}
 		return list;
 	}
@@ -165,27 +156,19 @@ public final class UpvoteDao {
 	 */
 	public List<Upvote> selectFromUserId(int userId) throws DatabaseException {
 		LOGGER.debug("Getting upvotes with user id " + userId);
-		List<ResultSet> results = runner.runScript(UPVOTE_SELECT_USER_ID_SCRIPT, userId);
-		ResultSet result;
+		List<LocalResult> results = runner.runScript(UPVOTE_SELECT_USER_ID_SCRIPT, userId);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The first statement in " + UPVOTE_SELECT_USER_ID_SCRIPT + " did not yeild results!");
-		} else {
-			result = results.getFirst();
+		}
+		LocalResult result = results.getFirst();
+		if (result == null) {
+			throw new DataAccessException("The first statement in " + UPVOTE_SELECT_USER_ID_SCRIPT + " did not yeild results!");
 		}
 		List<Upvote> list = new ArrayList<>();
-		try {
-			while (result.next()) {
-				int responseId;
-				try {
-					responseId = result.getInt("response_id");
-				} catch (SQLException exception) {
-					throw new DataAccessException("There was an error while retrieving the upvote information", exception);
-				}
-				Upvote response = new Upvote(responseId, userId);
-				list.add(response);
-			}
-		} catch (SQLException exception) {
-			throw new DataAccessException("A database error occured!", exception);
+		for (Map<String, Object> row : result) {
+			int responseId = (int) row.get("response_id");
+			Upvote upvote = new Upvote(responseId, userId);
+			list.add(upvote);
 		}
 		return list;
 	}

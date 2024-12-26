@@ -45,15 +45,15 @@ public final class SQLRunner {
 	/**
 	 * This method loads the SQL statements from the provided {@link InputStream}
 	 * pointing to the SQL script file, executes them on the preset connection and
-	 * returns the {@link List} containing the {@link ResultSet} objects.
+	 * returns the {@link List} containing the {@link LocalResult} objects.
 	 * 
 	 * @param stream     The stream reading the file containing the SQL statements
 	 * @param parameters The parameters for the statements
-	 * @return The list of {@link ResultSet} objects
+	 * @return The list of {@link LocalResult} objects
 	 * @throws SQLRunnerException If an error occurs while loading or running the
 	 *                            script
 	 */
-	public List<ResultSet> runScript(InputStream stream, Object... parameters) throws SQLRunnerException {
+	public List<LocalResult> runScript(InputStream stream, Object... parameters) throws SQLRunnerException {
 		synchronized (connection) {
 			List<PreparedStatement> statements = loadStatements(stream);
 			return executeStatements(statements, parameters);
@@ -63,22 +63,22 @@ public final class SQLRunner {
 	/**
 	 * This method loads the SQL statements from the SQL script file with the given
 	 * path, executes them on the preset connection and returns the {@link List}
-	 * containing the {@link ResultSet} objects.
+	 * containing the {@link LocalResult} objects.
 	 * 
 	 * @param stream     The stream reading the file containing the SQL statements
 	 * @param parameters The parameters for the statements
-	 * @return The list of {@link ResultSet} objects
+	 * @return The list of {@link LocalResult} objects
 	 * @throws SQLRunnerException If an error occurs while loading or running the
 	 *                            script
 	 */
-	public List<ResultSet> runScript(String path, Object... parameters) throws SQLRunnerException {
+	public List<LocalResult> runScript(String path, Object... parameters) throws SQLRunnerException {
 		InputStream stream = SQLRunner.class.getResourceAsStream(path);
 		return runScript(stream, parameters);
 	}
 
 	/**
 	 * This method prepares the given statement, executes it on the preset
-	 * connection and returns the output {@link ResultSet} object.
+	 * connection and returns the output {@link LocalResult} object.
 	 * 
 	 * @param statement  The statement to execute
 	 * @param parameters The parameters of the statement
@@ -86,9 +86,9 @@ public final class SQLRunner {
 	 * @throws SQLRunnerException If an error occurs while loading or running the
 	 *                            script
 	 */
-	public ResultSet runStatement(String statement, Object... parameters) throws SQLRunnerException {
+	public LocalResult runStatement(String statement, Object... parameters) throws SQLRunnerException {
 		synchronized (connection) {
-			ResultSet result;
+			LocalResult result;
 			try {
 				PreparedStatement prepared = this.connection.prepareStatement(statement);
 				result = executeStatement(prepared, parameters);
@@ -213,8 +213,8 @@ public final class SQLRunner {
 
 	/**
 	 * This method executes the given SQL statement with the provided parameters in
-	 * the TechQuiry database and then returns the {@link ResultSet} containing the
-	 * results of the executed statement.
+	 * the TechQuiry database and then returns the {@link LocalResult} containing
+	 * the results of the executed statement.
 	 * 
 	 * @param statement  The {@link PreparedStatement} to execute
 	 * @param parameters The parameters for the statement
@@ -222,8 +222,9 @@ public final class SQLRunner {
 	 * @throws SQLRunnerExecuteException If an error occurs while executing the
 	 *                                   statement
 	 */
-	private ResultSet executeStatement(PreparedStatement statement, Object... parameters) throws SQLRunnerExecuteException {
-		ResultSet result;
+	private LocalResult executeStatement(PreparedStatement statement, Object... parameters) throws SQLRunnerExecuteException {
+		ResultSet result = null;
+		LocalResult local;
 		try {
 			int index = 1;
 			for (Object parameter : parameters) {
@@ -232,10 +233,20 @@ public final class SQLRunner {
 			}
 			statement.execute();
 			result = statement.getResultSet();
+			local = LocalResult.of(result);
 		} catch (SQLException exception) {
 			throw new SQLRunnerExecuteException("An error occured while executing the given statement!", exception);
+		} finally {
+			try {
+				statement.close();
+				if (result != null) {
+					result.close();
+				}
+			} catch (SQLException exception) {
+				throw new SQLRunnerExecuteException("An error occured while closing the database resources!", exception);
+			}
 		}
-		return result;
+		return local;
 	}
 
 	/**
@@ -249,8 +260,8 @@ public final class SQLRunner {
 	 * @throws SQLRunnerExecuteException If an error occurs while executing the
 	 *                                   statements
 	 */
-	private List<ResultSet> executeStatements(List<PreparedStatement> statements, Object... parameters) throws SQLRunnerExecuteException {
-		List<ResultSet> results = new ArrayList<>(statements.size());
+	private List<LocalResult> executeStatements(List<PreparedStatement> statements, Object... parameters) throws SQLRunnerExecuteException {
+		List<LocalResult> results = new ArrayList<>(statements.size());
 		try {
 			for (PreparedStatement statement : statements) {
 				if (statement == null) {
@@ -261,7 +272,7 @@ public final class SQLRunner {
 				int max = Math.min(meta.getParameterCount(), parameters.length);
 				Object[] passed = Arrays.copyOf(parameters, max);
 				parameters = Arrays.copyOfRange(parameters, max, len);
-				ResultSet result = executeStatement(statement, passed);
+				LocalResult result = executeStatement(statement, passed);
 				results.add(result);
 			}
 			connection.commit();

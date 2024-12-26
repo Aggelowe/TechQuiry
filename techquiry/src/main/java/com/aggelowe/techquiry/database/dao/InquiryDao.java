@@ -2,11 +2,11 @@ package com.aggelowe.techquiry.database.dao;
 
 import static com.aggelowe.techquiry.common.Constants.LOGGER;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import com.aggelowe.techquiry.database.LocalResult;
 import com.aggelowe.techquiry.database.SQLRunner;
 import com.aggelowe.techquiry.database.entities.Inquiry;
 import com.aggelowe.techquiry.database.exceptions.DataAccessException;
@@ -87,21 +87,20 @@ public final class InquiryDao {
 	 */
 	public int count() throws DatabaseException {
 		LOGGER.debug("Getting inquiry entry count");
-		List<ResultSet> results = runner.runScript(INQUIRY_COUNT_SCRIPT);
+		List<LocalResult> results = runner.runScript(INQUIRY_COUNT_SCRIPT);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + INQUIRY_COUNT_SCRIPT + " did not yeild results!");
 		}
-		ResultSet result = results.getFirst();
+		LocalResult result = results.getFirst();
 		if (result == null) {
 			throw new DataAccessException("The first statement in " + INQUIRY_COUNT_SCRIPT + " did not yeild results!");
 		}
-		int count;
-		try {
-			count = result.getInt("inquiry_count");
-		} catch (SQLException exception) {
-			throw new DataAccessException("There was an error while retrieving the inquiry count!", exception);
+		List<Map<String, Object>> list = result.list();
+		if (list.size() == 0) {
+			throw new DataAccessException("The first statement in " + INQUIRY_COUNT_SCRIPT + " did not yeild an inquiry count!");
 		}
-		return count;
+		Map<String, Object> row = list.getFirst();
+		return (int) row.get("inquiry_count");
 	}
 
 	/**
@@ -132,21 +131,20 @@ public final class InquiryDao {
 		String title = inquiry.getTitle();
 		String content = inquiry.getContent();
 		boolean anonymous = inquiry.isAnonymous();
-		List<ResultSet> results = runner.runScript(INQUIRY_INSERT_SCRIPT, userId, title, content, anonymous);
+		List<LocalResult> results = runner.runScript(INQUIRY_INSERT_SCRIPT, userId, title, content, anonymous);
 		if (results.size() < 2) {
 			throw new DataAccessException("The script " + INQUIRY_INSERT_SCRIPT + " did not yeild at least two results!");
 		}
-		ResultSet result = results.get(1);
+		LocalResult result = results.get(1);
 		if (result == null) {
 			throw new DataAccessException("The first statement in " + INQUIRY_INSERT_SCRIPT + " did not yeild results!");
 		}
-		int id;
-		try {
-			id = result.getInt("inquiry_id");
-		} catch (SQLException exception) {
-			throw new DataAccessException("There was an error while retrieving the inserted inquiry id!", exception);
+		List<Map<String, Object>> list = result.list();
+		if (list.size() == 0) {
+			throw new DataAccessException("The first statement in " + INQUIRY_INSERT_SCRIPT + " did not yeild an inquiry id!");
 		}
-		return id;
+		Map<String, Object> row = list.getFirst();
+		return (int) row.get("inquiry_id");
 	}
 
 	/**
@@ -162,36 +160,23 @@ public final class InquiryDao {
 	 */
 	public List<Inquiry> range(int count, int offset) throws DatabaseException {
 		LOGGER.debug("Getting " + count + " inquiry entries with offset " + offset);
-		List<ResultSet> results = runner.runScript(INQUIRY_RANGE_SCRIPT, offset, count);
+		List<LocalResult> results = runner.runScript(INQUIRY_RANGE_SCRIPT, offset, count);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + INQUIRY_RANGE_SCRIPT + " did not yeild results!");
 		}
-		ResultSet result = results.getFirst();
+		LocalResult result = results.getFirst();
 		if (result == null) {
 			throw new DataAccessException("The first statement in " + INQUIRY_RANGE_SCRIPT + " did not yeild results!");
 		}
 		List<Inquiry> range = new ArrayList<>(count);
-		try {
-			while (result.next()) {
-				int id;
-				int userId;
-				String title;
-				String content;
-				boolean anonymous;
-				try {
-					id = result.getInt("inquiry_id");
-					userId = result.getInt("user_id");
-					title = result.getString("title");
-					content = result.getString("content");
-					anonymous = result.getBoolean("anonymous");
-				} catch (SQLException exception) {
-					throw new DataAccessException("There was an error while retrieving the inquiry information", exception);
-				}
-				Inquiry inquiry = new Inquiry(id, userId, title, content, anonymous);
-				range.add(inquiry);
-			}
-		} catch (SQLException exception) {
-			throw new DataAccessException("A database error occured!", exception);
+		for (Map<String, Object> row : result) {
+			int id = (int) row.get("inquiry_id");
+			int userId = (int) row.get("user_id");
+			String title = (String) row.get("title");
+			String content = (String) row.get("content");
+			boolean anonymous = (int) row.get("anonymous") == 1;
+			Inquiry inquiry = new Inquiry(id, userId, title, content, anonymous);
+			range.add(inquiry);
 		}
 		return range;
 	}
@@ -207,32 +192,22 @@ public final class InquiryDao {
 	 */
 	public List<Inquiry> selectFromUserIdNonAnonymous(int userId) throws DatabaseException {
 		LOGGER.debug("Getting responses with user id " + userId);
-		List<ResultSet> results = runner.runScript(INQUIRY_SELECT_USER_ID_NON_ANONYMOUS_SCRIPT, userId);
+		List<LocalResult> results = runner.runScript(INQUIRY_SELECT_USER_ID_NON_ANONYMOUS_SCRIPT, userId);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + INQUIRY_SELECT_USER_ID_NON_ANONYMOUS_SCRIPT + " did not yeild results!");
 		}
-		ResultSet result = results.getFirst();
+		LocalResult result = results.getFirst();
 		if (result == null) {
 			throw new DataAccessException("The first statement in " + INQUIRY_SELECT_USER_ID_NON_ANONYMOUS_SCRIPT + " did not yeild results!");
 		}
 		List<Inquiry> list = new ArrayList<>();
-		try {
-			while (result.next()) {
-				int id;
-				String title;
-				String content;
-				try {
-					id = result.getInt("inquiry_id");
-					title = result.getString("title");
-					content = result.getString("content");
-				} catch (SQLException exception) {
-					throw new DataAccessException("There was an error while retrieving the inquiry information", exception);
-				}
-				Inquiry inquiry = new Inquiry(id, userId, title, content, false);
-				list.add(inquiry);
-			}
-		} catch (SQLException exception) {
-			throw new DataAccessException("A database error occured!", exception);
+		for (Map<String, Object> row : result) {
+			int id = (int) row.get("inquiry_id");
+			String title = (String) row.get("title");
+			String content = (String) row.get("content");
+			boolean anonymous = (int) row.get("anonymous") == 1;
+			Inquiry inquiry = new Inquiry(id, userId, title, content, anonymous);
+			list.add(inquiry);
 		}
 		return list;
 	}
@@ -248,34 +223,22 @@ public final class InquiryDao {
 	 */
 	public List<Inquiry> selectFromUserId(int userId) throws DatabaseException {
 		LOGGER.debug("Getting responses with user id " + userId);
-		List<ResultSet> results = runner.runScript(INQUIRY_SELECT_USER_ID_SCRIPT, userId);
+		List<LocalResult> results = runner.runScript(INQUIRY_SELECT_USER_ID_SCRIPT, userId);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + INQUIRY_SELECT_USER_ID_SCRIPT + " did not yeild results!");
 		}
-		ResultSet result = results.getFirst();
+		LocalResult result = results.getFirst();
 		if (result == null) {
 			throw new DataAccessException("The first statement in " + INQUIRY_SELECT_USER_ID_SCRIPT + " did not yeild results!");
 		}
 		List<Inquiry> list = new ArrayList<>();
-		try {
-			while (result.next()) {
-				int id;
-				String title;
-				String content;
-				boolean anonymous;
-				try {
-					id = result.getInt("inquiry_id");
-					title = result.getString("title");
-					content = result.getString("content");
-					anonymous = result.getBoolean("anonymous");
-				} catch (SQLException exception) {
-					throw new DataAccessException("There was an error while retrieving the inquiry information", exception);
-				}
-				Inquiry inquiry = new Inquiry(id, userId, title, content, anonymous);
-				list.add(inquiry);
-			}
-		} catch (SQLException exception) {
-			throw new DataAccessException("A database error occured!", exception);
+		for (Map<String, Object> row : result) {
+			int id = (int) row.get("inquiry_id");
+			String title = (String) row.get("title");
+			String content = (String) row.get("content");
+			boolean anonymous = (int) row.get("anonymous") == 1;
+			Inquiry inquiry = new Inquiry(id, userId, title, content, anonymous);
+			list.add(inquiry);
 		}
 		return list;
 	}
@@ -291,33 +254,23 @@ public final class InquiryDao {
 	 */
 	public Inquiry select(int id) throws DatabaseException {
 		LOGGER.debug("Getting inquiry with inquiry id " + id);
-		List<ResultSet> results = runner.runScript(INQUIRY_SELECT_SCRIPT, id);
+		List<LocalResult> results = runner.runScript(INQUIRY_SELECT_SCRIPT, id);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + INQUIRY_SELECT_SCRIPT + " did not yeild results!");
 		}
-		ResultSet result = results.getFirst();
+		LocalResult result = results.getFirst();
 		if (result == null) {
 			throw new DataAccessException("The first statement in " + INQUIRY_SELECT_SCRIPT + " did not yeild results!");
 		}
-		try {
-			if (!result.next()) {
-				return null;
-			}
-		} catch (SQLException exception) {
-			throw new DataAccessException("A database error occured!", exception);
+		List<Map<String, Object>> list = result.list();
+		if (list.size() == 0) {
+			return null;
 		}
-		int userId;
-		String title;
-		String content;
-		boolean anonymous;
-		try {
-			userId = result.getInt("user_id");
-			title = result.getString("title");
-			content = result.getString("content");
-			anonymous = result.getBoolean("anonymous");
-		} catch (SQLException exception) {
-			throw new DataAccessException("There was an error while retrieving the inquiry information", exception);
-		}
+		Map<String, Object> row = list.getFirst();
+		int userId = (int) row.get("user_id");
+		String title = (String) row.get("title");
+		String content = (String) row.get("content");
+		boolean anonymous = (int) row.get("anonymous") == 1;
 		Inquiry inquiry = new Inquiry(id, userId, title, content, anonymous);
 		return inquiry;
 	}

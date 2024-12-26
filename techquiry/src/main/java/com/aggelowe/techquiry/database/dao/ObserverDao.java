@@ -2,11 +2,11 @@ package com.aggelowe.techquiry.database.dao;
 
 import static com.aggelowe.techquiry.common.Constants.LOGGER;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import com.aggelowe.techquiry.database.LocalResult;
 import com.aggelowe.techquiry.database.SQLRunner;
 import com.aggelowe.techquiry.database.entities.Observer;
 import com.aggelowe.techquiry.database.exceptions.DataAccessException;
@@ -74,20 +74,20 @@ public final class ObserverDao {
 	 */
 	public int countFromInquiryId(int inquiryId) throws DatabaseException {
 		LOGGER.debug("Getting observer entry count");
-		List<ResultSet> results = runner.runScript(OBSERVER_COUNT_INQUIRY_ID_SCRIPT, inquiryId);
-		ResultSet result;
+		List<LocalResult> results = runner.runScript(OBSERVER_COUNT_INQUIRY_ID_SCRIPT, inquiryId);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The first statement in " + OBSERVER_COUNT_INQUIRY_ID_SCRIPT + " did not yeild a result!");
-		} else {
-			result = results.getFirst();
 		}
-		int count;
-		try {
-			count = result.getInt("observer_count");
-		} catch (SQLException exception) {
-			throw new DataAccessException("There was an error while retrieving the observer count!", exception);
+		LocalResult result = results.getFirst();
+		if (result == null) {
+			throw new DataAccessException("The first statement in " + OBSERVER_COUNT_INQUIRY_ID_SCRIPT + " did not yeild results!");
 		}
-		return count;
+		List<Map<String, Object>> list = result.list();
+		if (list.size() == 0) {
+			throw new DataAccessException("The first statement in " + OBSERVER_COUNT_INQUIRY_ID_SCRIPT + " did not yeild an observer count!");
+		}
+		Map<String, Object> row = list.getFirst();
+		return (int) row.get("observer_count");
 	}
 
 	/**
@@ -130,27 +130,19 @@ public final class ObserverDao {
 	 */
 	public List<Observer> selectFromInquiryId(int inquiryId) throws DatabaseException {
 		LOGGER.debug("Getting observers with inquiry id " + inquiryId);
-		List<ResultSet> results = runner.runScript(OBSERVER_SELECT_INQUIRY_ID_SCRIPT, inquiryId);
-		ResultSet result;
+		List<LocalResult> results = runner.runScript(OBSERVER_SELECT_INQUIRY_ID_SCRIPT, inquiryId);
 		if (results.isEmpty()) {
+			throw new DataAccessException("The script " + OBSERVER_SELECT_INQUIRY_ID_SCRIPT + " did not yeild results!");
+		}
+		LocalResult result = results.getFirst();
+		if (result == null) {
 			throw new DataAccessException("The first statement in " + OBSERVER_SELECT_INQUIRY_ID_SCRIPT + " did not yeild results!");
-		} else {
-			result = results.getFirst();
 		}
 		List<Observer> list = new ArrayList<>();
-		try {
-			while (result.next()) {
-				int userId;
-				try {
-					userId = result.getInt("user_id");
-				} catch (SQLException exception) {
-					throw new DataAccessException("There was an error while retrieving the observer information", exception);
-				}
-				Observer observer = new Observer(inquiryId, userId);
-				list.add(observer);
-			}
-		} catch (SQLException exception) {
-			throw new DataAccessException("A database error occured!", exception);
+		for (Map<String, Object> row : result) {
+			int userId = (int) row.get("user_id");
+			Observer observer = new Observer(inquiryId, userId);
+			list.add(observer);
 		}
 		return list;
 	}
@@ -166,27 +158,19 @@ public final class ObserverDao {
 	 */
 	public List<Observer> selectFromUserId(int userId) throws DatabaseException {
 		LOGGER.debug("Getting observers with user id " + userId);
-		List<ResultSet> results = runner.runScript(OBSERVER_SELECT_USER_ID_SCRIPT, userId);
-		ResultSet result;
+		List<LocalResult> results = runner.runScript(OBSERVER_SELECT_USER_ID_SCRIPT, userId);
+		if (results.isEmpty()) {
+			throw new DataAccessException("The script " + OBSERVER_SELECT_USER_ID_SCRIPT + " did not yeild results!");
+		}
 		if (results.isEmpty()) {
 			throw new DataAccessException("The first statement in " + OBSERVER_SELECT_USER_ID_SCRIPT + " did not yeild results!");
-		} else {
-			result = results.getFirst();
 		}
+		LocalResult result = results.getFirst();
 		List<Observer> list = new ArrayList<>();
-		try {
-			while (result.next()) {
-				int inquiryId;
-				try {
-					inquiryId = result.getInt("inquiry_id");
-				} catch (SQLException exception) {
-					throw new DataAccessException("There was an error while retrieving the observer information", exception);
-				}
-				Observer observer = new Observer(inquiryId, userId);
-				list.add(observer);
-			}
-		} catch (SQLException exception) {
-			throw new DataAccessException("A database error occured!", exception);
+		for (Map<String, Object> row : result) {
+			int inquiryId = (int) row.get("inquiry_id");
+			Observer observer = new Observer(inquiryId, userId);
+			list.add(observer);
 		}
 		return list;
 	}

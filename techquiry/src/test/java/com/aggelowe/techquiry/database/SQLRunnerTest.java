@@ -11,9 +11,10 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,10 +56,11 @@ public class SQLRunnerTest {
 	@Test
 	public void testRunStatementSuccess() {
 		String sql = "SELECT * FROM test WHERE id = ?";
-		ResultSet result = assertDoesNotThrow(() -> runner.runStatement(sql, 0));
+		LocalResult result = assertDoesNotThrow(() -> runner.runStatement(sql, 0));
 		assertNotNull(result);
-		assertTrue(assertDoesNotThrow(() -> result.next()));
-		assertEquals("Alice", assertDoesNotThrow(() -> result.getString("username")));
+		Iterator<Map<String, Object>> iterator = result.iterator();
+		assertTrue(assertDoesNotThrow(() -> iterator.hasNext()));
+		assertEquals("Alice", assertDoesNotThrow(() -> iterator.next().get("username")));
 	}
 
 	@Test
@@ -75,13 +77,14 @@ public class SQLRunnerTest {
 	public void testRunScriptSuccess() {
 		String sql = "INSERT INTO test (id, username) /* Comment 1 */ VALUES (?, ?);;\n SELECT * -- Comment 2 \n FROM test WHERE id = ?";
 		InputStream stream = new ByteArrayInputStream(sql.getBytes());
-		List<ResultSet> results = assertDoesNotThrow(() -> runner.runScript(stream, 2, "Charlie", 1));
+		List<LocalResult> results = assertDoesNotThrow(() -> runner.runScript(stream, 2, "Charlie", 1));
 		assertEquals(2, results.size());
 		assertNull(results.get(0));
-		ResultSet result = results.get(1);
+		LocalResult result = results.get(1);
 		assertNotNull(result);
-		assertTrue(assertDoesNotThrow(() -> result.next()));
-		assertEquals("Bob", assertDoesNotThrow(() -> result.getString("username")));
+		Iterator<Map<String, Object>> iterator = result.iterator();
+		assertTrue(assertDoesNotThrow(() -> iterator.hasNext()));
+		assertEquals("Bob", assertDoesNotThrow(() -> iterator.next().get("username")));
 	}
 
 	@Test

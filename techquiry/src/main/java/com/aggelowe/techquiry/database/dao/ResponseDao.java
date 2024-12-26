@@ -2,11 +2,11 @@ package com.aggelowe.techquiry.database.dao;
 
 import static com.aggelowe.techquiry.common.Constants.LOGGER;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import com.aggelowe.techquiry.database.LocalResult;
 import com.aggelowe.techquiry.database.SQLRunner;
 import com.aggelowe.techquiry.database.entities.Response;
 import com.aggelowe.techquiry.database.exceptions.DataAccessException;
@@ -78,21 +78,20 @@ public final class ResponseDao {
 	 */
 	public int countFromInquiryId(int inquiryId) throws DatabaseException {
 		LOGGER.debug("Getting inquiry entry count");
-		List<ResultSet> results = runner.runScript(RESPONSE_COUNT_INQUIRY_ID_SCRIPT, inquiryId);
+		List<LocalResult> results = runner.runScript(RESPONSE_COUNT_INQUIRY_ID_SCRIPT, inquiryId);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + RESPONSE_COUNT_INQUIRY_ID_SCRIPT + " did not yeild results!");
 		}
-		ResultSet result = results.getFirst();
+		LocalResult result = results.getFirst();
 		if (result == null) {
 			throw new DataAccessException("The first statement in " + RESPONSE_COUNT_INQUIRY_ID_SCRIPT + " did not yeild results!");
 		}
-		int count;
-		try {
-			count = result.getInt("response_count");
-		} catch (SQLException exception) {
-			throw new DataAccessException("There was an error while retrieving the response count!", exception);
+		List<Map<String, Object>> list = result.list();
+		if (list.size() == 0) {
+			throw new DataAccessException("The first statement in " + RESPONSE_COUNT_INQUIRY_ID_SCRIPT + " did not yeild a response count!");
 		}
-		return count;
+		Map<String, Object> row = list.getFirst();
+		return (int) row.get("response_count");
 	}
 
 	/**
@@ -124,21 +123,20 @@ public final class ResponseDao {
 		int userId = response.getUserId();
 		boolean anonymous = response.isAnonymous();
 		String content = response.getContent();
-		List<ResultSet> results = runner.runScript(RESPONSE_INSERT_SCRIPT, inquiryId, userId, anonymous, content);
+		List<LocalResult> results = runner.runScript(RESPONSE_INSERT_SCRIPT, inquiryId, userId, anonymous, content);
 		if (results.size() < 2) {
 			throw new DataAccessException("The script " + RESPONSE_INSERT_SCRIPT + " did not yeild at least two results!");
 		}
-		ResultSet result = results.get(1);
+		LocalResult result = results.get(1);
 		if (result == null) {
 			throw new DataAccessException("The first statement in " + RESPONSE_INSERT_SCRIPT + " did not yeild results!");
 		}
-		int id;
-		try {
-			id = result.getInt("response_id");
-		} catch (SQLException exception) {
-			throw new DataAccessException("There was an error while retrieving the inserted response id!", exception);
+		List<Map<String, Object>> list = result.list();
+		if (list.size() == 0) {
+			throw new DataAccessException("The first statement in " + RESPONSE_INSERT_SCRIPT + " did not yeild a response id!");
 		}
-		return id;
+		Map<String, Object> row = list.getFirst();
+		return (int) row.get("response_id");
 	}
 
 	/**
@@ -152,34 +150,22 @@ public final class ResponseDao {
 	 */
 	public List<Response> selectFromInquiryId(int inquiryId) throws DatabaseException {
 		LOGGER.debug("Getting responses with inquiry id " + inquiryId);
-		List<ResultSet> results = runner.runScript(RESPONSE_SELECT_INQUIRY_ID_SCRIPT, inquiryId);
+		List<LocalResult> results = runner.runScript(RESPONSE_SELECT_INQUIRY_ID_SCRIPT, inquiryId);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + RESPONSE_SELECT_INQUIRY_ID_SCRIPT + " did not yeild results!");
 		}
-		ResultSet result = results.getFirst();
+		LocalResult result = results.getFirst();
 		if (result == null) {
 			throw new DataAccessException("The first statement in " + RESPONSE_SELECT_INQUIRY_ID_SCRIPT + " did not yeild results!");
 		}
 		List<Response> list = new ArrayList<>();
-		try {
-			while (result.next()) {
-				int id;
-				int userId;
-				boolean anonymous;
-				String content;
-				try {
-					id = result.getInt("response_id");
-					userId = result.getInt("user_id");
-					anonymous = result.getBoolean("anonymous");
-					content = result.getString("content");
-				} catch (SQLException exception) {
-					throw new DataAccessException("There was an error while retrieving the response information", exception);
-				}
-				Response response = new Response(id, inquiryId, userId, anonymous, content);
-				list.add(response);
-			}
-		} catch (SQLException exception) {
-			throw new DataAccessException("A database error occured!", exception);
+		for (Map<String, Object> row : result) {
+			int id = (int) row.get("response_id");
+			int userId = (int) row.get("user_id");
+			boolean anonymous = (int) row.get("anonymous") == 1;
+			String content = (String) row.get("content");
+			Response response = new Response(id, inquiryId, userId, anonymous, content);
+			list.add(response);
 		}
 		return list;
 	}
@@ -195,33 +181,23 @@ public final class ResponseDao {
 	 */
 	public Response select(int id) throws DatabaseException {
 		LOGGER.debug("Getting response with response id " + id);
-		List<ResultSet> results = runner.runScript(RESPONSE_SELECT_SCRIPT, id);
+		List<LocalResult> results = runner.runScript(RESPONSE_SELECT_SCRIPT, id);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + RESPONSE_SELECT_SCRIPT + " did not yeild results!");
 		}
-		ResultSet result = results.getFirst();
+		LocalResult result = results.getFirst();
 		if (result == null) {
 			throw new DataAccessException("The first statement in " + RESPONSE_SELECT_SCRIPT + " did not yeild results!");
 		}
-		try {
-			if (!result.next()) {
-				return null;
-			}
-		} catch (SQLException exception) {
-			throw new DataAccessException("A database error occured!", exception);
+		List<Map<String, Object>> list = result.list();
+		if (list.size() == 0) {
+			return null;
 		}
-		int inquiryId;
-		int userId;
-		boolean anonymous;
-		String content;
-		try {
-			inquiryId = result.getInt("inquiry_id");
-			userId = result.getInt("user_id");
-			anonymous = result.getBoolean("anonymous");
-			content = result.getString("content");
-		} catch (SQLException exception) {
-			throw new DataAccessException("There was an error while retrieving the response information", exception);
-		}
+		Map<String, Object> row = list.getFirst();
+		int inquiryId = (int) row.get("inquiry_id");
+		int userId = (int) row.get("user_id");
+		boolean anonymous = (int) row.get("anonymous") == 1;
+		String content = (String) row.get("content");
 		Response response = new Response(id, inquiryId, userId, anonymous, content);
 		return response;
 	}
