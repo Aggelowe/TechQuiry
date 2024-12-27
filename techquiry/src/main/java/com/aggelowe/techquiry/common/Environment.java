@@ -9,6 +9,8 @@ import java.util.function.Function;
 import com.aggelowe.techquiry.common.exceptions.IllegalConstructionException;
 import com.aggelowe.techquiry.common.exceptions.InvalidEnvironmentVariableException;
 
+import lombok.extern.log4j.Log4j2;
+
 /**
  * The {@link Environment} class is the one responsible for providing the
  * environment variables used for the configuration of the TechQuiry
@@ -17,6 +19,7 @@ import com.aggelowe.techquiry.common.exceptions.InvalidEnvironmentVariableExcept
  * @author Aggelowe
  * @since 0.0.1
  */
+@Log4j2
 public final class Environment {
 
 	/**
@@ -105,7 +108,7 @@ public final class Environment {
 				try {
 					value = converter.convert(original);
 				} catch (InvalidEnvironmentVariableException exception) {
-					Constants.LOGGER.fatal(exception);
+					log.fatal(exception);
 					System.exit(1);
 				}
 			}

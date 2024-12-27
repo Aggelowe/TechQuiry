@@ -1,7 +1,6 @@
 package com.aggelowe.techquiry.database;
 
 import static com.aggelowe.techquiry.common.Constants.DATABASE_FILENAME;
-import static com.aggelowe.techquiry.common.Constants.LOGGER;
 
 import java.nio.file.Path;
 import java.sql.Connection;
@@ -25,6 +24,8 @@ import com.aggelowe.techquiry.database.entities.UserData;
 import com.aggelowe.techquiry.database.entities.UserLogin;
 import com.aggelowe.techquiry.database.exceptions.DatabaseException;
 
+import lombok.extern.log4j.Log4j2;
+
 /**
  * The {@link DatabaseManager} class is the one responsible for initializing the
  * database used by the TechQuiry application.
@@ -32,6 +33,7 @@ import com.aggelowe.techquiry.database.exceptions.DatabaseException;
  * @author Aggelowe
  * @since 0.0.1
  */
+@Log4j2
 public final class DatabaseManager {
 
 	/**
@@ -116,7 +118,7 @@ public final class DatabaseManager {
 	 * @throws DatabaseException If an error occurs while creating the schema.
 	 */
 	public void createSchema() throws DatabaseException {
-		LOGGER.debug("Applying database schema");
+		log.debug("Applying database schema");
 		runner.runScript(CREATE_SCHEMA_SCRIPT);
 	}
 
@@ -126,7 +128,7 @@ public final class DatabaseManager {
 	 * @throws DatabaseException If an error occurs while closing the connection.
 	 */
 	public void closeConnection() throws DatabaseException {
-		LOGGER.debug("Closing database connection");
+		log.debug("Closing database connection");
 		try {
 			connection.close();
 		} catch (SQLException exception) {
@@ -173,7 +175,7 @@ public final class DatabaseManager {
 	public ResponseDao getResponseDao() {
 		return responseDao;
 	}
-
+	
 	/**
 	 * This method returns the object responsible for handling the data access for
 	 * {@link Upvote} objects.
@@ -210,10 +212,10 @@ public final class DatabaseManager {
 	 * file and performs the necessary initialization operations.
 	 */
 	public static DatabaseManager initialize() {
-		LOGGER.info("Establishing database connection");
+		log.info("Establishing database connection");
 		Path databasePath = Environment.getWorkDirectory().toPath().resolve(DATABASE_FILENAME);
 		String databaseUrl = "jdbc:sqlite:" + databasePath;
-		LOGGER.debug("Database URL: " + databaseUrl);
+		log.debug("Database URL: " + databaseUrl);
 		SQLiteConfig config = new SQLiteConfig();
 		config.enforceForeignKeys(true);
 		Connection connection = null;
@@ -221,7 +223,7 @@ public final class DatabaseManager {
 			connection = DriverManager.getConnection(databaseUrl, config.toProperties());
 			connection.setAutoCommit(false);
 		} catch (SQLException exception) {
-			LOGGER.fatal("An error occured while connecting to " + databaseUrl, exception);
+			log.fatal("An error occured while connecting to " + databaseUrl, exception);
 			System.exit(1);
 		}
 		instance = new DatabaseManager(connection);
@@ -229,7 +231,7 @@ public final class DatabaseManager {
 			try {
 				instance.createSchema();
 			} catch (DatabaseException exception) {
-				LOGGER.fatal("An error occured while applying the database schema!", exception);
+				log.fatal("An error occured while applying the database schema!", exception);
 				System.exit(1);
 			}
 		}

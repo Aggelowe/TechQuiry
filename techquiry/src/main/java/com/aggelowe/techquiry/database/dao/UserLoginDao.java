@@ -1,7 +1,5 @@
 package com.aggelowe.techquiry.database.dao;
 
-import static com.aggelowe.techquiry.common.Constants.LOGGER;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +11,8 @@ import com.aggelowe.techquiry.database.entities.UserLogin;
 import com.aggelowe.techquiry.database.exceptions.DataAccessException;
 import com.aggelowe.techquiry.database.exceptions.DatabaseException;
 
+import lombok.extern.log4j.Log4j2;
+
 /**
  * The {@link UserLoginDao} interface provides methods to interact with the
  * database for managing user login information in the TechQuiry application.
@@ -20,6 +20,7 @@ import com.aggelowe.techquiry.database.exceptions.DatabaseException;
  * @author Aggelowe
  * @since 0.0.1
  */
+@Log4j2
 public final class UserLoginDao {
 
 	/**
@@ -80,7 +81,7 @@ public final class UserLoginDao {
 	 * @throws DatabaseException If an error occurs while retrieving the user count
 	 */
 	public int count() throws DatabaseException {
-		LOGGER.debug("Getting user login entry count");
+		log.debug("Getting user login entry count");
 		List<LocalResult> results = runner.runScript(USER_LOGIN_COUNT_SCRIPT);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + USER_LOGIN_COUNT_SCRIPT + " did not yeild results!");
@@ -106,7 +107,7 @@ public final class UserLoginDao {
 	 *                           entry
 	 */
 	public void delete(int id) throws DatabaseException {
-		LOGGER.debug("Deleting user with id " + id);
+		log.debug("Deleting user with id " + id);
 		runner.runScript(USER_LOGIN_DELETE_SCRIPT, id);
 	}
 
@@ -121,7 +122,7 @@ public final class UserLoginDao {
 	 *                           entry
 	 */
 	public int insert(UserLogin userLogin) throws DatabaseException {
-		LOGGER.debug("Inserting user login with information " + userLogin);
+		log.debug("Inserting user login with information " + userLogin);
 		String username = userLogin.getUsername();
 		byte[] passwordHash = userLogin.getPasswordHash();
 		byte[] passwordSalt = userLogin.getPasswordSalt();
@@ -155,7 +156,7 @@ public final class UserLoginDao {
 	 *                           information
 	 */
 	public List<UserLogin> range(int count, int offset) throws DatabaseException {
-		LOGGER.debug("Getting " + count + " user login entries with offset " + offset);
+		log.debug("Getting " + count + " user login entries with offset " + offset);
 		List<LocalResult> results = runner.runScript(USER_LOGIN_RANGE_SCRIPT, offset, count);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + USER_LOGIN_RANGE_SCRIPT + " did not yeild results!");
@@ -194,7 +195,7 @@ public final class UserLoginDao {
 	 *                           information
 	 */
 	public UserLogin select(int id) throws DatabaseException {
-		LOGGER.debug("Getting user login with user id " + id);
+		log.debug("Getting user login with user id " + id);
 		List<LocalResult> results = runner.runScript(USER_LOGIN_SELECT_SCRIPT, id);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + USER_LOGIN_SELECT_SCRIPT + " did not yeild results!");
@@ -233,7 +234,7 @@ public final class UserLoginDao {
 	 *                           information
 	 */
 	public UserLogin selectFromUsername(String username) throws DatabaseException {
-		LOGGER.debug("Getting user login with username " + username);
+		log.debug("Getting user login with username " + username);
 		List<LocalResult> results = runner.runScript(USER_LOGIN_SELECT_USERNAME_SCRIPT, username);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + USER_LOGIN_SELECT_USERNAME_SCRIPT + " did not yeild results!");
@@ -272,7 +273,7 @@ public final class UserLoginDao {
 	 *                           entry
 	 */
 	public void update(UserLogin userLogin) throws DatabaseException {
-		LOGGER.debug("Updating user login with data " + userLogin);
+		log.debug("Updating user login with data " + userLogin);
 		int id = userLogin.getId();
 		String username = userLogin.getUsername();
 		byte[] passwordHash = userLogin.getPasswordHash();

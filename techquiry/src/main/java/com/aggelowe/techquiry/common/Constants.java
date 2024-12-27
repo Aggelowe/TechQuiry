@@ -1,8 +1,5 @@
 package com.aggelowe.techquiry.common;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.aggelowe.techquiry.common.exceptions.IllegalConstructionException;
 
 /**
@@ -36,11 +33,6 @@ public final class Constants {
 	public static final String VERSION = "0.0.1";
 
 	/**
-	 * The logger object used by the application
-	 */
-	public static final Logger LOGGER;
-
-	/**
 	 * The path of the execution directory
 	 */
 	public static final String EXECUTION_DIRECTORY;
@@ -67,7 +59,6 @@ public final class Constants {
 	public static final String HASHING_ALGORITHM = "SHA-256";
 
 	static {
-		LOGGER = LogManager.getLogger(TechQuiry.class);
 		EXECUTION_DIRECTORY = System.getProperty("user.dir");
 	}
 

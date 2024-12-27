@@ -1,7 +1,5 @@
 package com.aggelowe.techquiry.database.dao;
 
-import static com.aggelowe.techquiry.common.Constants.LOGGER;
-
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +12,8 @@ import com.aggelowe.techquiry.database.exceptions.DataAccessException;
 import com.aggelowe.techquiry.database.exceptions.DatabaseException;
 import com.aggelowe.techquiry.database.exceptions.SQLRunnerLoadException;
 
+import lombok.extern.log4j.Log4j2;
+
 /**
  * The {@link UserDataDao} interface provides methods to interact with the
  * database for managing user data information in the TechQuiry application.
@@ -21,6 +21,7 @@ import com.aggelowe.techquiry.database.exceptions.SQLRunnerLoadException;
  * @author Aggelowe
  * @since 0.0.1
  */
+@Log4j2
 public final class UserDataDao {
 
 	/**
@@ -67,7 +68,7 @@ public final class UserDataDao {
 	 *                           entry
 	 */
 	public void delete(int id) throws DatabaseException {
-		LOGGER.debug("Deleting user with id " + id);
+		log.debug("Deleting user with id " + id);
 		try {
 			runner.runScript(USER_DATA_DELETE_SCRIPT, id);
 		} catch (SQLRunnerLoadException exception) {
@@ -84,7 +85,7 @@ public final class UserDataDao {
 	 *                           entry
 	 */
 	public void insert(UserData userData) throws DatabaseException {
-		LOGGER.debug("Inserting user data with information " + userData);
+		log.debug("Inserting user data with information " + userData);
 		int id = userData.getId();
 		String firstName = userData.getFirstName();
 		String lastName = userData.getLastName();
@@ -102,7 +103,7 @@ public final class UserDataDao {
 	 *                           information
 	 */
 	public UserData select(int id) throws DatabaseException {
-		LOGGER.debug("Getting user data with user id " + id);
+		log.debug("Getting user data with user id " + id);
 		List<LocalResult> results = runner.runScript(USER_DATA_SELECT_SCRIPT, id);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + USER_DATA_SELECT_SCRIPT + " did not yeild results!");
@@ -134,7 +135,7 @@ public final class UserDataDao {
 	 *                           entry
 	 */
 	public void update(UserData userData) throws DatabaseException {
-		LOGGER.debug("Updating user data with data " + userData);
+		log.debug("Updating user data with data " + userData);
 		int id = userData.getId();
 		String firstName = userData.getFirstName();
 		String lastName = userData.getLastName();

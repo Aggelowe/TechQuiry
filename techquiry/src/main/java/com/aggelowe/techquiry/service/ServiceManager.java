@@ -1,11 +1,11 @@
 package com.aggelowe.techquiry.service;
 
-import static com.aggelowe.techquiry.common.Constants.LOGGER;
-
 import com.aggelowe.techquiry.database.DatabaseManager;
 import com.aggelowe.techquiry.database.entities.Inquiry;
 import com.aggelowe.techquiry.database.entities.UserData;
 import com.aggelowe.techquiry.database.entities.UserLogin;
+
+import lombok.extern.log4j.Log4j2;
 
 /**
  * The {@link ServiceManager} class is the one responsible for initializing and
@@ -14,6 +14,7 @@ import com.aggelowe.techquiry.database.entities.UserLogin;
  * @author Aggelowe
  * @since 0.0.1
  */
+@Log4j2
 public class ServiceManager {
 
 	/**
@@ -84,7 +85,7 @@ public class ServiceManager {
 	 * application.
 	 */
 	public static ServiceManager initialize(DatabaseManager databaseManager) {
-		LOGGER.info("Initializing application services");
+		log.info("Initializing application services");
 		instance = new ServiceManager(databaseManager);
 		return instance;
 	}

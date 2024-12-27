@@ -1,7 +1,6 @@
 package com.aggelowe.techquiry.common;
 
 import static com.aggelowe.techquiry.common.Constants.HASHING_ALGORITHM;
-import static com.aggelowe.techquiry.common.Constants.LOGGER;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -13,6 +12,8 @@ import java.util.Base64.Encoder;
 
 import com.aggelowe.techquiry.common.exceptions.IllegalConstructionException;
 
+import lombok.extern.log4j.Log4j2;
+
 /**
  * The {@link SecurityUtils} contains several security methods that are
  * important for the functionality of the TechQuiry application.
@@ -20,6 +21,7 @@ import com.aggelowe.techquiry.common.exceptions.IllegalConstructionException;
  * @author Aggelowe
  * @since 0.0.1
  */
+@Log4j2
 public final class SecurityUtils {
 
 	/**
@@ -103,7 +105,7 @@ public final class SecurityUtils {
 		try {
 			digest = MessageDigest.getInstance(HASHING_ALGORITHM);
 		} catch (NoSuchAlgorithmException exception) {
-			LOGGER.fatal(exception);
+			log.fatal(exception);
 			System.exit(1);
 		}
 		byte[] bytes = password.getBytes(StandardCharsets.UTF_8);

@@ -1,7 +1,5 @@
 package com.aggelowe.techquiry.database.dao;
 
-import static com.aggelowe.techquiry.common.Constants.LOGGER;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +10,8 @@ import com.aggelowe.techquiry.database.entities.Upvote;
 import com.aggelowe.techquiry.database.exceptions.DataAccessException;
 import com.aggelowe.techquiry.database.exceptions.DatabaseException;
 
+import lombok.extern.log4j.Log4j2;
+
 /**
  * The {@link UpvoteDao} interface provides methods to interact with the
  * database for managing upvote information in the TechQuiry application.
@@ -19,6 +19,7 @@ import com.aggelowe.techquiry.database.exceptions.DatabaseException;
  * @author Aggelowe
  * @since 0.0.1
  */
+@Log4j2
 public final class UpvoteDao {
 
 	/**
@@ -72,7 +73,7 @@ public final class UpvoteDao {
 	 *                           count
 	 */
 	public int countFromResponseId(int responseId) throws DatabaseException {
-		LOGGER.debug("Getting upvote entry count");
+		log.debug("Getting upvote entry count");
 		List<LocalResult> results = runner.runScript(UPVOTE_COUNT_RESPONSE_ID_SCRIPT, responseId);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The first statement in " + UPVOTE_COUNT_RESPONSE_ID_SCRIPT + " did not yeild a result!");
@@ -97,7 +98,7 @@ public final class UpvoteDao {
 	 * @throws DatabaseException If an error occurs while deleting the upvote entry
 	 */
 	public void delete(Upvote upvote) throws DatabaseException {
-		LOGGER.debug("Deleting upvote with information " + upvote);
+		log.debug("Deleting upvote with information " + upvote);
 		int responseId = upvote.getResponseId();
 		int userId = upvote.getUserId();
 		runner.runScript(UPVOTE_DELETE_SCRIPT, responseId, userId);
@@ -111,7 +112,7 @@ public final class UpvoteDao {
 	 * @throws DatabaseException If an error occurs while inserting the upvote entry
 	 */
 	public void insert(Upvote upvote) throws DatabaseException {
-		LOGGER.debug("Inserting upvote with information " + upvote);
+		log.debug("Inserting upvote with information " + upvote);
 		int responseId = upvote.getResponseId();
 		int userId = upvote.getUserId();
 		runner.runScript(UPVOTE_INSERT_SCRIPT, responseId, userId);
@@ -127,7 +128,7 @@ public final class UpvoteDao {
 	 *                           information
 	 */
 	public List<Upvote> selectFromResponseId(int responseId) throws DatabaseException {
-		LOGGER.debug("Getting upvotes with response id " + responseId);
+		log.debug("Getting upvotes with response id " + responseId);
 		List<LocalResult> results = runner.runScript(UPVOTE_SELECT_RESPONSE_ID_SCRIPT, responseId);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The first statement in " + UPVOTE_SELECT_RESPONSE_ID_SCRIPT + " did not yeild results!");
@@ -155,7 +156,7 @@ public final class UpvoteDao {
 	 *                           information
 	 */
 	public List<Upvote> selectFromUserId(int userId) throws DatabaseException {
-		LOGGER.debug("Getting upvotes with user id " + userId);
+		log.debug("Getting upvotes with user id " + userId);
 		List<LocalResult> results = runner.runScript(UPVOTE_SELECT_USER_ID_SCRIPT, userId);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The first statement in " + UPVOTE_SELECT_USER_ID_SCRIPT + " did not yeild results!");

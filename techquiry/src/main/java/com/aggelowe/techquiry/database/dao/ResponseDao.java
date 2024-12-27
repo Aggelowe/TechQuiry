@@ -1,7 +1,5 @@
 package com.aggelowe.techquiry.database.dao;
 
-import static com.aggelowe.techquiry.common.Constants.LOGGER;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +10,8 @@ import com.aggelowe.techquiry.database.entities.Response;
 import com.aggelowe.techquiry.database.exceptions.DataAccessException;
 import com.aggelowe.techquiry.database.exceptions.DatabaseException;
 
+import lombok.extern.log4j.Log4j2;
+
 /**
  * The {@link ResponseDao} interface provides methods to interact with the
  * database for managing response information in the TechQuiry application.
@@ -19,6 +19,7 @@ import com.aggelowe.techquiry.database.exceptions.DatabaseException;
  * @author Aggelowe
  * @since 0.0.1
  */
+@Log4j2
 public final class ResponseDao {
 
 	/**
@@ -77,7 +78,7 @@ public final class ResponseDao {
 	 *                           count
 	 */
 	public int countFromInquiryId(int inquiryId) throws DatabaseException {
-		LOGGER.debug("Getting inquiry entry count");
+		log.debug("Getting inquiry entry count");
 		List<LocalResult> results = runner.runScript(RESPONSE_COUNT_INQUIRY_ID_SCRIPT, inquiryId);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + RESPONSE_COUNT_INQUIRY_ID_SCRIPT + " did not yeild results!");
@@ -103,7 +104,7 @@ public final class ResponseDao {
 	 *                           entry
 	 */
 	public void delete(int id) throws DatabaseException {
-		LOGGER.debug("Deleting response with id " + id);
+		log.debug("Deleting response with id " + id);
 		runner.runScript(RESPONSE_DELETE_SCRIPT, id);
 	}
 
@@ -118,7 +119,7 @@ public final class ResponseDao {
 	 *                           entry
 	 */
 	public int insert(Response response) throws DatabaseException {
-		LOGGER.debug("Inserting response with information " + response);
+		log.debug("Inserting response with information " + response);
 		int inquiryId = response.getInquiryId();
 		int userId = response.getUserId();
 		boolean anonymous = response.isAnonymous();
@@ -149,7 +150,7 @@ public final class ResponseDao {
 	 *                           information
 	 */
 	public List<Response> selectFromInquiryId(int inquiryId) throws DatabaseException {
-		LOGGER.debug("Getting responses with inquiry id " + inquiryId);
+		log.debug("Getting responses with inquiry id " + inquiryId);
 		List<LocalResult> results = runner.runScript(RESPONSE_SELECT_INQUIRY_ID_SCRIPT, inquiryId);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + RESPONSE_SELECT_INQUIRY_ID_SCRIPT + " did not yeild results!");
@@ -180,7 +181,7 @@ public final class ResponseDao {
 	 *                           information
 	 */
 	public Response select(int id) throws DatabaseException {
-		LOGGER.debug("Getting response with response id " + id);
+		log.debug("Getting response with response id " + id);
 		List<LocalResult> results = runner.runScript(RESPONSE_SELECT_SCRIPT, id);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + RESPONSE_SELECT_SCRIPT + " did not yeild results!");
@@ -212,7 +213,7 @@ public final class ResponseDao {
 	 *                           entry
 	 */
 	public void update(Response response) throws DatabaseException {
-		LOGGER.debug("Updating response with data " + response);
+		log.debug("Updating response with data " + response);
 		int id = response.getId();
 		int inquiryId = response.getInquiryId();
 		int userId = response.getUserId();

@@ -1,6 +1,5 @@
 package com.aggelowe.techquiry.common;
 
-import static com.aggelowe.techquiry.common.Constants.LOGGER;
 import static com.aggelowe.techquiry.common.Constants.NAME;
 import static com.aggelowe.techquiry.common.Constants.VERSION;
 
@@ -17,6 +16,8 @@ import com.aggelowe.techquiry.database.DatabaseManager;
 import com.aggelowe.techquiry.database.exceptions.DatabaseException;
 import com.aggelowe.techquiry.service.ServiceManager;
 
+import lombok.extern.log4j.Log4j2;
+
 /**
  * This is the main class of the TechQuiry application, it is responsible for
  * starting the spring boot application by invoking the necessary methods when
@@ -25,15 +26,16 @@ import com.aggelowe.techquiry.service.ServiceManager;
  * @author Aggelowe
  * @since 0.0.1
  */
+@Log4j2
 @SpringBootApplication
 public class TechQuiry {
 
 	public static void main(String[] args) {
-		LOGGER.info("Starting the " + NAME + " application on version " + VERSION);
-		LOGGER.debug("Application work directory: " + Environment.getWorkDirectory());
+		log.info("Starting the " + NAME + " application on version " + VERSION);
+		log.debug("Application work directory: " + Environment.getWorkDirectory());
 		SpringApplication application = new SpringApplication(TechQuiry.class);
 		properties(application);
-		LOGGER.info("Invoking Spring application startup");
+		log.info("Invoking Spring application startup");
 		application.run();
 	}
 
@@ -44,7 +46,7 @@ public class TechQuiry {
 	 * @param application The object representing the spring application
 	 */
 	private static void properties(SpringApplication application) {
-		LOGGER.debug("Setting up Spring application properties");
+		log.debug("Setting up Spring application properties");
 		Map<String, Object> applicationProperties = new HashMap<>();
 		applicationProperties.put("server.port", Environment.getPort());
 		application.setDefaultProperties(applicationProperties);
@@ -56,7 +58,7 @@ public class TechQuiry {
 	 */
 	@EventListener(ContextRefreshedEvent.class)
 	void start() {
-		LOGGER.info("Starting core application components");
+		log.info("Starting core application components");
 		DatabaseManager databaseManager = DatabaseManager.initialize();
 		ServiceManager.initialize(databaseManager);
 	}
@@ -67,11 +69,11 @@ public class TechQuiry {
 	 */
 	@EventListener(ContextClosedEvent.class)
 	void shutdown() {
-		LOGGER.info("Shutting down core application components");
+		log.info("Shutting down core application components");
 		try {
 			DatabaseManager.getInstance().closeConnection();
 		} catch (DatabaseException exception) {
-			LOGGER.error(exception);
+			log.error(exception);
 		}
 	}
 

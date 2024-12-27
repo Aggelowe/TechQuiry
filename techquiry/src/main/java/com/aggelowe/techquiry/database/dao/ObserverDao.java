@@ -1,7 +1,5 @@
 package com.aggelowe.techquiry.database.dao;
 
-import static com.aggelowe.techquiry.common.Constants.LOGGER;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +10,8 @@ import com.aggelowe.techquiry.database.entities.Observer;
 import com.aggelowe.techquiry.database.exceptions.DataAccessException;
 import com.aggelowe.techquiry.database.exceptions.DatabaseException;
 
+import lombok.extern.log4j.Log4j2;
+
 /**
  * The {@link ObserverDao} interface provides methods to interact with the
  * database for managing observer information in the TechQuiry application.
@@ -19,6 +19,7 @@ import com.aggelowe.techquiry.database.exceptions.DatabaseException;
  * @author Aggelowe
  * @since 0.0.1
  */
+@Log4j2
 public final class ObserverDao {
 
 	/**
@@ -73,7 +74,7 @@ public final class ObserverDao {
 	 *                           count
 	 */
 	public int countFromInquiryId(int inquiryId) throws DatabaseException {
-		LOGGER.debug("Getting observer entry count");
+		log.debug("Getting observer entry count");
 		List<LocalResult> results = runner.runScript(OBSERVER_COUNT_INQUIRY_ID_SCRIPT, inquiryId);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The first statement in " + OBSERVER_COUNT_INQUIRY_ID_SCRIPT + " did not yeild a result!");
@@ -113,7 +114,7 @@ public final class ObserverDao {
 	 *                           entry
 	 */
 	public void insert(Observer observer) throws DatabaseException {
-		LOGGER.debug("Inserting observer with information " + observer);
+		log.debug("Inserting observer with information " + observer);
 		int inquiryId = observer.getInquiryId();
 		int userId = observer.getUserId();
 		runner.runScript(OBSERVER_INSERT_SCRIPT, inquiryId, userId);
@@ -129,7 +130,7 @@ public final class ObserverDao {
 	 *                           information
 	 */
 	public List<Observer> selectFromInquiryId(int inquiryId) throws DatabaseException {
-		LOGGER.debug("Getting observers with inquiry id " + inquiryId);
+		log.debug("Getting observers with inquiry id " + inquiryId);
 		List<LocalResult> results = runner.runScript(OBSERVER_SELECT_INQUIRY_ID_SCRIPT, inquiryId);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + OBSERVER_SELECT_INQUIRY_ID_SCRIPT + " did not yeild results!");
@@ -157,7 +158,7 @@ public final class ObserverDao {
 	 *                           information
 	 */
 	public List<Observer> selectFromUserId(int userId) throws DatabaseException {
-		LOGGER.debug("Getting observers with user id " + userId);
+		log.debug("Getting observers with user id " + userId);
 		List<LocalResult> results = runner.runScript(OBSERVER_SELECT_USER_ID_SCRIPT, userId);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + OBSERVER_SELECT_USER_ID_SCRIPT + " did not yeild results!");
