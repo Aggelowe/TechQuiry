@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.aggelowe.techquiry.database.LocalResult;
 import com.aggelowe.techquiry.database.SQLRunner;
 import com.aggelowe.techquiry.database.entities.Inquiry;
@@ -19,6 +22,7 @@ import lombok.extern.log4j.Log4j2;
  * @author Aggelowe
  * @since 0.0.1
  */
+@Component
 @Log4j2
 public final class InquiryDao {
 
@@ -74,6 +78,7 @@ public final class InquiryDao {
 	 * 
 	 * @param runner The SQL script runner
 	 */
+	@Autowired
 	public InquiryDao(SQLRunner runner) {
 		this.runner = runner;
 	}

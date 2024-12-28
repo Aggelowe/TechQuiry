@@ -10,47 +10,57 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.sqlite.SQLiteConfig;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.aggelowe.techquiry.database.common.TestAppConfiguration;
 import com.aggelowe.techquiry.database.exceptions.SQLRunnerExecuteException;
 import com.aggelowe.techquiry.database.exceptions.SQLRunnerLoadException;
 
+@SpringBootTest(classes = TestAppConfiguration.class)
+@ExtendWith(SpringExtension.class)
 public class SQLRunnerTest {
 
-	Connection connection;
+	@Autowired
+	DataSource dataSource;
+
+	@Autowired
 	SQLRunner runner;
 
 	@BeforeEach
 	public void initialize() {
-		String databaseUrl = "jdbc:sqlite::memory:";
-		SQLiteConfig config = new SQLiteConfig();
-		config.enforceForeignKeys(true);
-		connection = assertDoesNotThrow(() -> DriverManager.getConnection(databaseUrl, config.toProperties()));
-		assertDoesNotThrow(() -> connection.setAutoCommit(false));
-		runner = new SQLRunner(connection);
 		assertDoesNotThrow(() -> {
-			Statement statement = connection.createStatement();
-			statement.execute("CREATE TABLE test (id INTEGER PRIMARY KEY, username TEXT NOT NULL)");
-			statement.execute("INSERT INTO test (id, username) VALUES (0, 'Alice')");
-			statement.execute("INSERT INTO test (id, username) VALUES (1, 'Bob')");
-			connection.commit();
+			try (Connection connection = dataSource.getConnection()) {
+				Statement statement = connection.createStatement();
+				statement.execute("CREATE TABLE test (id INTEGER PRIMARY KEY, username TEXT NOT NULL)");
+				statement.execute("INSERT INTO test (id, username) VALUES (0, 'Alice')");
+				statement.execute("INSERT INTO test (id, username) VALUES (1, 'Bob')");
+				connection.commit();
+			}
 		});
 	}
 
 	@AfterEach
 	public void destroy() {
-		if (connection != null) {
-			assertDoesNotThrow(() -> connection.close());
-		}
+		assertDoesNotThrow(() -> {
+			try (Connection connection = dataSource.getConnection()) {
+				Statement statement = connection.createStatement();
+				statement.execute("DROP TABLE test");
+				connection.commit();
+			}
+		});
 	}
 
 	@Test

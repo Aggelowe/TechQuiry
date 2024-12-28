@@ -1,6 +1,8 @@
 package com.aggelowe.techquiry.service.action;
 
-import com.aggelowe.techquiry.database.DatabaseManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.aggelowe.techquiry.database.dao.UserDataDao;
 import com.aggelowe.techquiry.database.dao.UserLoginDao;
 import com.aggelowe.techquiry.database.entities.UserData;
@@ -12,6 +14,8 @@ import com.aggelowe.techquiry.service.exceptions.ForbiddenOperationException;
 import com.aggelowe.techquiry.service.exceptions.InternalErrorException;
 import com.aggelowe.techquiry.service.exceptions.InvalidRequestException;
 import com.aggelowe.techquiry.service.exceptions.ServiceException;
+import com.aggelowe.techquiry.service.session.Authentication;
+import com.aggelowe.techquiry.service.session.SessionHelper;
 
 /**
  * The {@link UserDataActionService} class is a dependency of
@@ -21,6 +25,7 @@ import com.aggelowe.techquiry.service.exceptions.ServiceException;
  * @author Aggelowe
  * @since 0.0.1
  */
+@Service
 public class UserDataActionService {
 
 	/**
@@ -36,21 +41,23 @@ public class UserDataActionService {
 	private final UserLoginDao userLoginDao;
 
 	/**
-	 * The {@link UserLogin} representing the user currently acting
+	 * The {@link SessionHelper} containing the information of the user currently
+	 * acting
 	 */
-	private final UserLogin current;
+	@Autowired
+	private SessionHelper sessionHelper;
 
 	/**
 	 * This constructor constructs a new {@link UserDataActionService} instance that
 	 * is handling the personalized user data operations of the application.
 	 * 
-	 * @param databaseManager The object managing the application database
-	 * @param current         The user initializing the operations
+	 * @param userDataDao  The user data data access object
+	 * @param userLoginDao The user login data access object
 	 */
-	public UserDataActionService(DatabaseManager databaseManager, UserLogin current) {
-		this.userLoginDao = databaseManager.getUserLoginDao();
-		this.userDataDao = databaseManager.getUserDataDao();
-		this.current = current;
+	@Autowired
+	public UserDataActionService(UserDataDao userDataDao, UserLoginDao userLoginDao) {
+		this.userDataDao = userDataDao;
+		this.userLoginDao = userLoginDao;
 	}
 
 	/**
@@ -68,7 +75,8 @@ public class UserDataActionService {
 	 * 
 	 */
 	public void createData(UserData data) throws ServiceException {
-		if (current == null || current.getId() != data.getId()) {
+		Authentication current = sessionHelper.getAuthentication();
+		if (current == null || current.getUserId() != data.getId()) {
 			throw new ForbiddenOperationException("The requested user data creation is forbidden!");
 		}
 		int id = data.getId();
@@ -103,7 +111,8 @@ public class UserDataActionService {
 	 *                                     deleting the user
 	 */
 	public void deleteData(int id) throws ServiceException {
-		if (current == null || current.getId() != id) {
+		Authentication current = sessionHelper.getAuthentication();
+		if (current == null || current.getUserId() != id) {
 			throw new ForbiddenOperationException("The requested user data deletion is forbidden!");
 		}
 		try {
@@ -133,7 +142,8 @@ public class UserDataActionService {
 	 * 
 	 */
 	public void updateData(UserData data) throws ServiceException {
-		if (current == null || current.getId() != data.getId()) {
+		Authentication current = sessionHelper.getAuthentication();
+		if (current == null || current.getUserId() != data.getId()) {
 			throw new ForbiddenOperationException("The requested user update is forbidden!");
 		}
 		String firstName = data.getFirstName();

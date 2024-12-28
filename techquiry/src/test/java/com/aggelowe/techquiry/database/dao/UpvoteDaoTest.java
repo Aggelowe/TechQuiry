@@ -8,93 +8,113 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.sqlite.SQLiteConfig;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.aggelowe.techquiry.database.SQLRunner;
+import com.aggelowe.techquiry.database.common.TestAppConfiguration;
 import com.aggelowe.techquiry.database.entities.Upvote;
 import com.aggelowe.techquiry.database.exceptions.SQLRunnerExecuteException;
 
+@SpringBootTest(classes = TestAppConfiguration.class)
+@ExtendWith(SpringExtension.class)
 public class UpvoteDaoTest {
 
-	Connection connection;
+	@Autowired
+	DataSource dataSource;
+
+	@Autowired
 	UpvoteDao upvoteDao;
 
 	@BeforeEach
 	public void initialize() {
-		String databaseUrl = "jdbc:sqlite::memory:";
-		SQLiteConfig config = new SQLiteConfig();
-		config.enforceForeignKeys(true);
-		connection = assertDoesNotThrow(() -> DriverManager.getConnection(databaseUrl, config.toProperties()));
-		assertDoesNotThrow(() -> connection.setAutoCommit(false));
-		upvoteDao = new UpvoteDao(new SQLRunner(connection));
 		assertDoesNotThrow(() -> {
-			Statement statement = connection.createStatement();
-			statement.execute("CREATE TABLE IF NOT EXISTS \"user_login\" (\n"
-							+ "	\"user_id\" INTEGER NOT NULL UNIQUE,\n"
-							+ "	\"username\" TEXT NOT NULL UNIQUE,\n"
-							+ "	\"password_hash\" TEXT NOT NULL,\n"
-							+ "	\"password_salt\" TEXT NOT NULL,\n"
-							+ "	PRIMARY KEY(\"user_id\")\n"
-							+ ");\n");
-			statement.execute("CREATE TABLE IF NOT EXISTS \"inquiry\" (\n"
-							+ "	\"inquiry_id\" INTEGER NOT NULL UNIQUE,\n"
-							+ "	\"user_id\" INTEGER NOT NULL,\n"
-							+ "	\"title\" TEXT NOT NULL,\n"
-							+ "	\"content\" TEXT NOT NULL,\n"
-							+ "	\"anonymous\" INTEGER NOT NULL,\n"
-							+ "	PRIMARY KEY(\"inquiry_id\"),\n"
-							+ "	FOREIGN KEY (\"user_id\") REFERENCES \"user_login\"(\"user_id\")\n"
-							+ "	ON UPDATE CASCADE ON DELETE CASCADE\n"
-							+ ");");
-			statement.execute("CREATE TABLE IF NOT EXISTS \"response\" (\n"
-							+ "	\"response_id\" INTEGER NOT NULL UNIQUE,\n"
-							+ "	\"inquiry_id\" INTEGER NOT NULL,\n"
-							+ "	\"user_id\" INTEGER NOT NULL,\n"
-							+ "	\"anonymous\" INTEGER NOT NULL,\n"
-							+ "	\"content\" TEXT NOT NULL,\n"
-							+ "	PRIMARY KEY(\"response_id\"),\n"
-							+ "	FOREIGN KEY (\"inquiry_id\") REFERENCES \"inquiry\"(\"inquiry_id\")\n"
-							+ "	ON UPDATE CASCADE ON DELETE CASCADE,\n"
-							+ "	FOREIGN KEY (\"user_id\") REFERENCES \"user_login\"(\"user_id\")\n"
-							+ "	ON UPDATE CASCADE ON DELETE CASCADE\n"
-							+ ");");
-			statement.execute("CREATE TABLE IF NOT EXISTS \"upvote\" (\n"
-							+ "	\"response_id\" INTEGER NOT NULL,\n"
-							+ "	\"user_id\" INTEGER NOT NULL,\n"
-							+ "	PRIMARY KEY(\"response_id\", \"user_id\"),\n"
-							+ "	FOREIGN KEY (\"response_id\") REFERENCES \"response\"(\"response_id\")\n"
-							+ "	ON UPDATE CASCADE ON DELETE CASCADE,\n"
-							+ "	FOREIGN KEY (\"user_id\") REFERENCES \"user_login\"(\"user_id\")\n"
-							+ "	ON UPDATE CASCADE ON DELETE CASCADE\n"
-							+ ");");
-			statement.execute("INSERT INTO user_login(user_id, username, password_hash, password_salt) VALUES(0, 'alice', 'MTIzNDU2Nzg=', 'MTIzNA==');");
-			statement.execute("INSERT INTO user_login(user_id, username, password_hash, password_salt) VALUES(1, 'bob', 'cGFzc3dvcmQ=', 'cGFzcw==');");
-			statement.execute("INSERT INTO inquiry(inquiry_id, user_id, title, content, anonymous) VALUES(0, 1, 'Test',	'Test Content', true);");
-			statement.execute("INSERT INTO inquiry(inquiry_id, user_id, title, content, anonymous) VALUES(1, 0, 'Example',	'Example Content', true);");
-			statement.execute("INSERT INTO inquiry(inquiry_id, user_id, title, content, anonymous) VALUES(2, 0, 'Instance',	'Instance Content', true);");
-			statement.execute("INSERT INTO response(response_id, inquiry_id, user_id, anonymous, content) VALUES(0, 0, 0, true, 'Test Response');");
-			statement.execute("INSERT INTO response(response_id, inquiry_id, user_id, anonymous, content) VALUES(1, 2, 1, false, 'Instance Response');");
-			statement.execute("INSERT INTO response(response_id, inquiry_id, user_id, anonymous, content) VALUES(2, 2, 0, false, 'Second Response');");
-			statement.execute("INSERT INTO upvote(response_id, user_id) VALUES(0, 0);");
-			statement.execute("INSERT INTO upvote(response_id, user_id) VALUES(1, 1);");
-			statement.execute("INSERT INTO upvote(response_id, user_id) VALUES(1, 0);");
-			connection.commit();
+			try (Connection connection = dataSource.getConnection()) {
+				Statement statement = connection.createStatement();
+				statement.execute("""
+						CREATE TABLE IF NOT EXISTS 'user_login' (
+								'user_id' INTEGER NOT NULL UNIQUE,
+								'username' TEXT NOT NULL UNIQUE,
+								'password_hash' TEXT NOT NULL,
+								'password_salt' TEXT NOT NULL,
+								PRIMARY KEY('user_id')
+						);
+						""");
+				statement.execute("""
+						CREATE TABLE IF NOT EXISTS 'inquiry' (
+								'inquiry_id' INTEGER NOT NULL UNIQUE,
+								'user_id' INTEGER NOT NULL,
+								'title' TEXT NOT NULL,
+								'content' TEXT NOT NULL,
+								'anonymous' INTEGER NOT NULL,
+								PRIMARY KEY('inquiry_id'),
+								FOREIGN KEY ('user_id') REFERENCES 'user_login'('user_id')
+								ON UPDATE CASCADE ON DELETE CASCADE
+						);
+						""");
+				statement.execute("""
+						CREATE TABLE IF NOT EXISTS 'response' (
+								'response_id' INTEGER NOT NULL UNIQUE,
+								'inquiry_id' INTEGER NOT NULL,
+								'user_id' INTEGER NOT NULL,
+								'anonymous' INTEGER NOT NULL,
+								'content' TEXT NOT NULL,
+								PRIMARY KEY('response_id'),
+								FOREIGN KEY ('inquiry_id') REFERENCES 'inquiry'('inquiry_id')
+								ON UPDATE CASCADE ON DELETE CASCADE,
+								FOREIGN KEY ('user_id') REFERENCES 'user_login'('user_id')
+								ON UPDATE CASCADE ON DELETE CASCADE
+						);
+						""");
+				statement.execute("""
+						CREATE TABLE IF NOT EXISTS 'upvote' (
+								'response_id' INTEGER NOT NULL,
+								'user_id' INTEGER NOT NULL,
+								PRIMARY KEY('response_id', 'user_id'),
+								FOREIGN KEY ('response_id') REFERENCES 'response'('response_id')
+								ON UPDATE CASCADE ON DELETE CASCADE,
+								FOREIGN KEY ('user_id') REFERENCES 'user_login'('user_id')
+								ON UPDATE CASCADE ON DELETE CASCADE
+						);
+						""");
+				statement.execute("INSERT INTO user_login(user_id, username, password_hash, password_salt) VALUES(0, 'alice', 'MTIzNDU2Nzg=', 'MTIzNA==');");
+				statement.execute("INSERT INTO user_login(user_id, username, password_hash, password_salt) VALUES(1, 'bob', 'cGFzc3dvcmQ=', 'cGFzcw==');");
+				statement.execute("INSERT INTO inquiry(inquiry_id, user_id, title, content, anonymous) VALUES(0, 1, 'Test',	'Test Content', true);");
+				statement.execute("INSERT INTO inquiry(inquiry_id, user_id, title, content, anonymous) VALUES(1, 0, 'Example',	'Example Content', true);");
+				statement.execute("INSERT INTO inquiry(inquiry_id, user_id, title, content, anonymous) VALUES(2, 0, 'Instance',	'Instance Content', true);");
+				statement.execute("INSERT INTO response(response_id, inquiry_id, user_id, anonymous, content) VALUES(0, 0, 0, true, 'Test Response');");
+				statement.execute("INSERT INTO response(response_id, inquiry_id, user_id, anonymous, content) VALUES(1, 2, 1, false, 'Instance Response');");
+				statement.execute("INSERT INTO response(response_id, inquiry_id, user_id, anonymous, content) VALUES(2, 2, 0, false, 'Second Response');");
+				statement.execute("INSERT INTO upvote(response_id, user_id) VALUES(0, 0);");
+				statement.execute("INSERT INTO upvote(response_id, user_id) VALUES(1, 1);");
+				statement.execute("INSERT INTO upvote(response_id, user_id) VALUES(1, 0);");
+				connection.commit();
+			}
 		});
 	}
 
 	@AfterEach
 	public void destroy() {
-		if (connection != null) {
-			assertDoesNotThrow(() -> connection.close());
-		}
+		assertDoesNotThrow(() -> {
+			try (Connection connection = dataSource.getConnection()) {
+				Statement statement = connection.createStatement();
+				statement.execute("DROP TABLE 'upvote'");
+				statement.execute("DROP TABLE 'response'");
+				statement.execute("DROP TABLE 'inquiry'");
+				statement.execute("DROP TABLE 'user_login'");
+				connection.commit();
+			}
+		});
 	}
 
 	@Test
@@ -108,23 +128,31 @@ public class UpvoteDaoTest {
 	@Test
 	public void testDeleteSuccess() {
 		assertDoesNotThrow(() -> upvoteDao.delete(new Upvote(0, 0)));
-		Statement statement = assertDoesNotThrow(() -> connection.createStatement());
-		assertDoesNotThrow(() -> statement.execute("SELECT * FROM upvote WHERE response_id = 0"));
-		ResultSet result = assertDoesNotThrow(() -> statement.getResultSet());
-		assertNotNull(result);
-		assertFalse(assertDoesNotThrow(() -> result.next()));
+		assertDoesNotThrow(() -> {
+			try (Connection connection = dataSource.getConnection()) {
+				Statement statement = connection.createStatement();
+				statement.execute("SELECT * FROM upvote WHERE response_id = 0");
+				ResultSet result = statement.getResultSet();
+				assertNotNull(result);
+				assertFalse(result.next());
+			}
+		});
 	}
 
 	@Test
 	public void testInsertSuccess() {
 		assertDoesNotThrow(() -> upvoteDao.insert(new Upvote(2, 1)));
-		Statement statement = assertDoesNotThrow(() -> connection.createStatement());
-		assertDoesNotThrow(() -> statement.execute("SELECT * FROM upvote WHERE response_id = 2 AND user_id = 1"));
-		ResultSet result = assertDoesNotThrow(() -> statement.getResultSet());
-		assertNotNull(result);
-		assertTrue(assertDoesNotThrow(() -> result.next()));
-		assertEquals(2, assertDoesNotThrow(() -> result.getInt("response_id")));
-		assertEquals(1, assertDoesNotThrow(() -> result.getInt("user_id")));
+		assertDoesNotThrow(() -> {
+			try (Connection connection = dataSource.getConnection()) {
+				Statement statement = connection.createStatement();
+				assertDoesNotThrow(() -> statement.execute("SELECT * FROM upvote WHERE response_id = 2 AND user_id = 1"));
+				ResultSet result = statement.getResultSet();
+				assertNotNull(result);
+				assertTrue(result.next());
+				assertEquals(2, result.getInt("response_id"));
+				assertEquals(1, result.getInt("user_id"));
+			}
+		});
 	}
 
 	@Test

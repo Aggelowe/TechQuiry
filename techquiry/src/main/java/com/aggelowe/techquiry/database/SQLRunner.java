@@ -13,6 +13,11 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.sql.DataSource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.aggelowe.techquiry.database.exceptions.SQLRunnerException;
 import com.aggelowe.techquiry.database.exceptions.SQLRunnerExecuteException;
 import com.aggelowe.techquiry.database.exceptions.SQLRunnerLoadException;
@@ -24,22 +29,24 @@ import com.aggelowe.techquiry.database.exceptions.SQLRunnerLoadException;
  * @author Aggelowe
  * @since 0.0.1
  */
+@Component
 public final class SQLRunner {
 
 	/**
 	 * This object represents the connection with the SQLite database.
 	 */
-	private final Connection connection;
+	private final DataSource dataSource;
 
 	/**
 	 * This constructor constructs a new {@link SQLRunner} instance with the
-	 * provided connection as the interface between the application and the
+	 * provided data source as the interface between the application and the
 	 * database.
 	 * 
-	 * @param connection The database connection
+	 * @param dataSource The database data source
 	 */
-	public SQLRunner(Connection connection) {
-		this.connection = connection;
+	@Autowired
+	public SQLRunner(DataSource dataSource) {
+		this.dataSource = dataSource;
 	}
 
 	/**
@@ -54,9 +61,11 @@ public final class SQLRunner {
 	 *                            script
 	 */
 	public List<LocalResult> runScript(InputStream stream, Object... parameters) throws SQLRunnerException {
-		synchronized (connection) {
-			List<PreparedStatement> statements = loadStatements(stream);
-			return executeStatements(statements, parameters);
+		try (Connection connection = dataSource.getConnection()) {
+			List<PreparedStatement> statements = loadStatements(connection, stream);
+			return executeStatements(connection, statements, parameters);
+		} catch (SQLException exception) {
+			throw new SQLRunnerExecuteException("Could not get database connection!", exception);
 		}
 	}
 
@@ -87,10 +96,10 @@ public final class SQLRunner {
 	 *                            script
 	 */
 	public LocalResult runStatement(String statement, Object... parameters) throws SQLRunnerException {
-		synchronized (connection) {
+		try (Connection connection = dataSource.getConnection()) {
 			LocalResult result;
 			try {
-				PreparedStatement prepared = this.connection.prepareStatement(statement);
+				PreparedStatement prepared = connection.prepareStatement(statement);
 				result = executeStatement(prepared, parameters);
 				connection.commit();
 			} catch (SQLException exception) {
@@ -102,6 +111,8 @@ public final class SQLRunner {
 				throw new SQLRunnerExecuteException("An error occured while executing the provided SQL statement!", exception);
 			}
 			return result;
+		} catch (SQLException exception) {
+			throw new SQLRunnerExecuteException("Could not get database connection!", exception);
 		}
 	}
 
@@ -111,12 +122,13 @@ public final class SQLRunner {
 	 * generates the {@link List} containing the {@link PreparedStatement} objects,
 	 * ready to be executed.
 	 * 
-	 * @param stream The stream reading the file containing the SQL statements
+	 * @param connection The connection to the database
+	 * @param stream     The stream reading the file containing the SQL statements
 	 * @return The list of {@link PreparedStatement} objects
 	 * @throws SQLRunnerLoadException If an error occurs while the statements are
 	 *                                being loaded
 	 */
-	private List<PreparedStatement> loadStatements(InputStream stream) throws SQLRunnerLoadException {
+	private List<PreparedStatement> loadStatements(Connection connection, InputStream stream) throws SQLRunnerLoadException {
 		List<PreparedStatement> statements = new LinkedList<PreparedStatement>();
 		InputStreamReader reader = new InputStreamReader(stream);
 		StringBuilder commandBuilder = new StringBuilder();
@@ -156,7 +168,7 @@ public final class SQLRunner {
 							command = command.trim();
 							commandBuilder = new StringBuilder();
 							if (command.length() != 1) {
-								PreparedStatement statement = this.connection.prepareStatement(command);
+								PreparedStatement statement = connection.prepareStatement(command);
 								statements.add(statement);
 							}
 						}
@@ -194,7 +206,7 @@ public final class SQLRunner {
 			String command = commandBuilder.toString();
 			command = command.trim();
 			if (!command.isEmpty()) {
-				PreparedStatement statement = this.connection.prepareStatement(command);
+				PreparedStatement statement = connection.prepareStatement(command);
 				statements.add(statement);
 			}
 		} catch (IOException exception) {
@@ -254,13 +266,14 @@ public final class SQLRunner {
 	 * parameters in TechQuiry's database and then returns a list containing the
 	 * result of each executed SQL statement.
 	 * 
+	 * @param connection The connection to the database
 	 * @param statements The list of statements to execute
 	 * @param parameters The parameters for the statements
 	 * @return The list of the result of each executed statement
 	 * @throws SQLRunnerExecuteException If an error occurs while executing the
 	 *                                   statements
 	 */
-	private List<LocalResult> executeStatements(List<PreparedStatement> statements, Object... parameters) throws SQLRunnerExecuteException {
+	private List<LocalResult> executeStatements(Connection connection, List<PreparedStatement> statements, Object... parameters) throws SQLRunnerExecuteException {
 		List<LocalResult> results = new ArrayList<>(statements.size());
 		try {
 			for (PreparedStatement statement : statements) {

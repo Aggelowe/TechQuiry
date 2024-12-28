@@ -9,89 +9,111 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+
+import javax.sql.DataSource;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.sqlite.SQLiteConfig;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.aggelowe.techquiry.database.SQLRunner;
+import com.aggelowe.techquiry.database.common.TestAppConfiguration;
 import com.aggelowe.techquiry.database.entities.UserData;
 import com.aggelowe.techquiry.database.exceptions.SQLRunnerExecuteException;
 
+@SpringBootTest(classes = TestAppConfiguration.class)
+@ExtendWith(SpringExtension.class)
 public class UserDataDaoTest {
 
-	Connection connection;
+	@Autowired
+	DataSource dataSource;
+
+	@Autowired
 	UserDataDao userDataDao;
 
 	@BeforeEach
 	public void initialize() {
-		String databaseUrl = "jdbc:sqlite::memory:";
-		SQLiteConfig config = new SQLiteConfig();
-		config.enforceForeignKeys(true);
-		connection = assertDoesNotThrow(() -> DriverManager.getConnection(databaseUrl, config.toProperties()));
-		assertDoesNotThrow(() -> connection.setAutoCommit(false));
-		userDataDao = new UserDataDao(new SQLRunner(connection));
 		assertDoesNotThrow(() -> {
-			Statement statement = connection.createStatement();
-			statement.execute("CREATE TABLE IF NOT EXISTS \"user_login\" (\n"
-							+ "	\"user_id\" INTEGER NOT NULL UNIQUE,\n"
-							+ "	\"username\" TEXT NOT NULL UNIQUE,\n"
-							+ "	\"password_hash\" TEXT NOT NULL,\n"
-							+ "	\"password_salt\" TEXT NOT NULL,\n"
-							+ "	PRIMARY KEY(\"user_id\")\n"
-							+ ");\n");
-			statement.execute("CREATE TABLE IF NOT EXISTS \"user_data\" (\n"
-							+ "	\"user_id\" INTEGER NOT NULL UNIQUE,\n"
-							+ "	\"first_name\" TEXT NOT NULL,\n"
-							+ "	\"last_name\" TEXT NOT NULL,\n"
-							+ "	\"icon\" BLOB,\n"
-							+ "	PRIMARY KEY(\"user_id\"),\n"
-							+ "	FOREIGN KEY (\"user_id\") REFERENCES \"user_login\"(\"user_id\")\n"
-							+ "	ON UPDATE CASCADE ON DELETE CASCADE\n"
-							+ ");");
-			statement.execute("INSERT INTO user_login(user_id, username, password_hash, password_salt) VALUES(0, 'alice', 'MTIzNDU2Nzg=', 'MTIzNA==');");
-			statement.execute("INSERT INTO user_login(user_id, username, password_hash, password_salt) VALUES(1, 'bob', 'cGFzc3dvcmQ=', 'cGFzcw==');");
-			statement.execute("INSERT INTO user_login(user_id, username, password_hash, password_salt) VALUES(2, 'charlie', 'YWJjZGFiY2Q=', 'YWJjZA==');");
-			statement.execute("INSERT INTO user_data(user_id, first_name, last_name, icon) VALUES(0, 'Alice', 'Smith', X'0000');");
-			statement.execute("INSERT INTO user_data(user_id, first_name, last_name, icon) VALUES(1, 'Bob', 'Johnson', NULL);");
-			connection.commit();
+			try (Connection connection = dataSource.getConnection()) {
+				Statement statement = connection.createStatement();
+				statement.execute("""
+						CREATE TABLE IF NOT EXISTS 'user_login' (
+								'user_id' INTEGER NOT NULL UNIQUE,
+								'username' TEXT NOT NULL UNIQUE,
+								'password_hash' TEXT NOT NULL,
+								'password_salt' TEXT NOT NULL,
+								PRIMARY KEY('user_id')
+						);
+						""");
+				statement.execute("""
+						CREATE TABLE IF NOT EXISTS 'user_data' (
+								'user_id' INTEGER NOT NULL UNIQUE,
+								'first_name' TEXT NOT NULL,
+								'last_name' TEXT NOT NULL,
+								'icon' BLOB,
+								PRIMARY KEY('user_id'),
+								FOREIGN KEY ('user_id') REFERENCES 'user_login'('user_id')
+								ON UPDATE CASCADE ON DELETE CASCADE
+						);
+						""");
+				statement.execute("INSERT INTO user_login(user_id, username, password_hash, password_salt) VALUES(0, 'alice', 'MTIzNDU2Nzg=', 'MTIzNA==');");
+				statement.execute("INSERT INTO user_login(user_id, username, password_hash, password_salt) VALUES(1, 'bob', 'cGFzc3dvcmQ=', 'cGFzcw==');");
+				statement.execute("INSERT INTO user_login(user_id, username, password_hash, password_salt) VALUES(2, 'charlie', 'YWJjZGFiY2Q=', 'YWJjZA==');");
+				statement.execute("INSERT INTO user_data(user_id, first_name, last_name, icon) VALUES(0, 'Alice', 'Smith', X'0000');");
+				statement.execute("INSERT INTO user_data(user_id, first_name, last_name, icon) VALUES(1, 'Bob', 'Johnson', NULL);");
+				connection.commit();
+			}
 		});
 	}
 
 	@AfterEach
 	public void destroy() {
-		if (connection != null) {
-			assertDoesNotThrow(() -> connection.close());
-		}
+		assertDoesNotThrow(() -> {
+			try (Connection connection = dataSource.getConnection()) {
+				Statement statement = connection.createStatement();
+				statement.execute("DROP TABLE 'user_data'");
+				statement.execute("DROP TABLE 'user_login'");
+				connection.commit();
+			}
+		});
 	}
 
 	@Test
 	public void testDeleteSuccess() {
 		assertDoesNotThrow(() -> userDataDao.delete(1));
-		Statement statement = assertDoesNotThrow(() -> connection.createStatement());
-		assertDoesNotThrow(() -> statement.execute("SELECT * FROM user_data WHERE user_id = 1"));
-		ResultSet result = assertDoesNotThrow(() -> statement.getResultSet());
-		assertNotNull(result);
-		assertFalse(assertDoesNotThrow(() -> result.next()));
+		assertDoesNotThrow(() -> {
+			try (Connection connection = dataSource.getConnection()) {
+				Statement statement = connection.createStatement();
+				statement.execute("SELECT * FROM user_data WHERE user_id = 1");
+				ResultSet result = statement.getResultSet();
+				assertNotNull(result);
+				assertFalse(result.next());
+			}
+		});
 	}
 
 	@Test
 	public void testInsertSuccess() {
 		assertDoesNotThrow(() -> userDataDao.insert(new UserData(2, "Charlie", "Brown")));
-		Statement statement = assertDoesNotThrow(() -> connection.createStatement());
-		assertDoesNotThrow(() -> statement.execute("SELECT * FROM user_data WHERE user_id = 2"));
-		ResultSet result = assertDoesNotThrow(() -> statement.getResultSet());
-		assertNotNull(result);
-		assertTrue(assertDoesNotThrow(() -> result.next()));
-		assertEquals(2, assertDoesNotThrow(() -> result.getInt("user_id")));
-		assertEquals("Charlie", assertDoesNotThrow(() -> result.getString("first_name")));
-		assertEquals("Brown", assertDoesNotThrow(() -> result.getString("last_name")));
-		assertNull(assertDoesNotThrow(() -> result.getBytes("icon")));
-		assertFalse(assertDoesNotThrow(() -> result.next()));
+		assertDoesNotThrow(() -> {
+			try (Connection connection = dataSource.getConnection()) {
+				Statement statement = connection.createStatement();
+				statement.execute("SELECT * FROM user_data WHERE user_id = 2");
+				ResultSet result = statement.getResultSet();
+				assertNotNull(result);
+				assertTrue(result.next());
+				assertEquals(2, result.getInt("user_id"));
+				assertEquals("Charlie", result.getString("first_name"));
+				assertEquals("Brown", result.getString("last_name"));
+				assertNull(result.getBytes("icon"));
+				assertFalse(result.next());
+			}
+		});
 	}
 
 	@Test
@@ -113,15 +135,19 @@ public class UserDataDaoTest {
 	@Test
 	public void testUpdateSuccess() {
 		assertDoesNotThrow(() -> userDataDao.update(new UserData(1, "David", "Dawson")));
-		Statement statement = assertDoesNotThrow(() -> connection.createStatement());
-		assertDoesNotThrow(() -> statement.execute("SELECT * FROM user_data WHERE user_id = 1"));
-		ResultSet result = assertDoesNotThrow(() -> statement.getResultSet());
-		assertNotNull(result);
-		assertTrue(assertDoesNotThrow(() -> result.next()));
-		assertEquals(1, assertDoesNotThrow(() -> result.getInt("user_id")));
-		assertEquals("David", assertDoesNotThrow(() -> result.getString("first_name")));
-		assertEquals("Dawson", assertDoesNotThrow(() -> result.getString("last_name")));
-		assertNull(assertDoesNotThrow(() -> result.getBytes("icon")));
+		assertDoesNotThrow(() -> {
+			try (Connection connection = dataSource.getConnection()) {
+				Statement statement = connection.createStatement();
+				statement.execute("SELECT * FROM user_data WHERE user_id = 1");
+				ResultSet result = statement.getResultSet();
+				assertNotNull(result);
+				assertTrue(result.next());
+				assertEquals(1, result.getInt("user_id"));
+				assertEquals("David", result.getString("first_name"));
+				assertEquals("Dawson", result.getString("last_name"));
+				assertNull(assertDoesNotThrow(() -> result.getBytes("icon")));
+			}
+		});
 	}
 
 	@Test

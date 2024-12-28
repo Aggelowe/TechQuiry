@@ -1,27 +1,9 @@
 package com.aggelowe.techquiry.database;
 
-import static com.aggelowe.techquiry.common.Constants.DATABASE_FILENAME;
-
-import java.nio.file.Path;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-
-import org.sqlite.SQLiteConfig;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.aggelowe.techquiry.common.Environment;
-import com.aggelowe.techquiry.database.dao.InquiryDao;
-import com.aggelowe.techquiry.database.dao.ObserverDao;
-import com.aggelowe.techquiry.database.dao.ResponseDao;
-import com.aggelowe.techquiry.database.dao.UpvoteDao;
-import com.aggelowe.techquiry.database.dao.UserDataDao;
-import com.aggelowe.techquiry.database.dao.UserLoginDao;
-import com.aggelowe.techquiry.database.entities.Inquiry;
-import com.aggelowe.techquiry.database.entities.Observer;
-import com.aggelowe.techquiry.database.entities.Response;
-import com.aggelowe.techquiry.database.entities.Upvote;
-import com.aggelowe.techquiry.database.entities.UserData;
-import com.aggelowe.techquiry.database.entities.UserLogin;
 import com.aggelowe.techquiry.database.exceptions.DatabaseException;
 
 import lombok.extern.log4j.Log4j2;
@@ -33,6 +15,7 @@ import lombok.extern.log4j.Log4j2;
  * @author Aggelowe
  * @since 0.0.1
  */
+@Component
 @Log4j2
 public final class DatabaseManager {
 
@@ -42,73 +25,21 @@ public final class DatabaseManager {
 	public static final String CREATE_SCHEMA_SCRIPT = "/database/schema.sql";
 
 	/**
-	 * The instance of the {@link DatabaseManager} class.
-	 */
-	private static DatabaseManager instance;
-
-	/**
-	 * This object represents the connection with the SQLite database.
-	 */
-	private final Connection connection;
-
-	/**
 	 * This object is responsible for executing SQL scripts on the application
 	 * database
 	 */
 	private final SQLRunner runner;
 
 	/**
-	 * The object responsible for handling the data access for {@link Inquiry}
-	 * objects.
-	 */
-	private final InquiryDao inquiryDao;
-
-	/**
-	 * The object responsible for handling the data access for {@link Observer}
-	 * objects.
-	 */
-	private final ObserverDao observerDao;
-
-	/**
-	 * The object responsible for handling the data access for {@link Response}
-	 * objects.
-	 */
-	private final ResponseDao responseDao;
-
-	/**
-	 * The object responsible for handling the data access for {@link Upvote}
-	 * objects.
-	 */
-	private final UpvoteDao upvoteDao;
-
-	/**
-	 * The object responsible for handling the data access for {@link UserData}
-	 * objects.
-	 */
-	private final UserDataDao userDataDao;
-
-	/**
-	 * The object responsible for handling the data access for {@link UserLogin}
-	 * objects.
-	 */
-	private final UserLoginDao userLoginDao;
-
-	/**
 	 * This constructor constructs a new {@link DatabaseManager} instance with the
-	 * provided connection as the interface between the application and the
+	 * provided {@link SQLRunner} as the interface between the application and the
 	 * database.
 	 * 
-	 * @param connection The database connection
+	 * @param runner The runner for interfacing with the database
 	 */
-	public DatabaseManager(Connection connection) {
-		this.connection = connection;
-		this.runner = new SQLRunner(connection);
-		this.inquiryDao = new InquiryDao(runner);
-		this.observerDao = new ObserverDao(runner);
-		this.responseDao = new ResponseDao(runner);
-		this.upvoteDao = new UpvoteDao(runner);
-		this.userDataDao = new UserDataDao(runner);
-		this.userLoginDao = new UserLoginDao(runner);
+	@Autowired
+	public DatabaseManager(SQLRunner runner) {
+		this.runner = runner;
 	}
 
 	/**
@@ -121,131 +52,21 @@ public final class DatabaseManager {
 		log.debug("Applying database schema");
 		runner.runScript(CREATE_SCHEMA_SCRIPT);
 	}
-
-	/**
-	 * This method loses the connection with the application's database.
-	 * 
-	 * @throws DatabaseException If an error occurs while closing the connection.
-	 */
-	public void closeConnection() throws DatabaseException {
-		log.debug("Closing database connection");
-		try {
-			connection.close();
-		} catch (SQLException exception) {
-			throw new DatabaseException("An error occured while closing the database connection!", exception);
-		}
-	}
-
-	/**
-	 * This method returns the {@link SQLRunner} responsible for executing SQL
-	 * scripts on the application database
-	 * 
-	 * @return The application's {@link SQLRunner}
-	 */
-	SQLRunner getRunner() {
-		return runner;
-	}
-
-	/**
-	 * This method returns the object responsible for handling the data access for
-	 * {@link Inquiry} objects.
-	 * 
-	 * @return The {@link Inquiry} data access object
-	 */
-	public InquiryDao getInquiryDao() {
-		return inquiryDao;
-	}
-
-	/**
-	 * This method returns the object responsible for handling the data access for
-	 * {@link Observer} objects.
-	 * 
-	 * @return The {@link Observer} data access object
-	 */
-	public ObserverDao getObserverDao() {
-		return observerDao;
-	}
-
-	/**
-	 * This method returns the object responsible for handling the data access for
-	 * {@link Response} objects.
-	 * 
-	 * @return The {@link Response} data access object
-	 */
-	public ResponseDao getResponseDao() {
-		return responseDao;
-	}
 	
-	/**
-	 * This method returns the object responsible for handling the data access for
-	 * {@link Upvote} objects.
-	 * 
-	 * @return The {@link Upvote} data access object
-	 */
-	public UpvoteDao getUpvoteDao() {
-		return upvoteDao;
-	}
-
-	/**
-	 * This method returns the object responsible for handling the data access for
-	 * {@link UserData} objects.
-	 * 
-	 * @return The {@link UserData} data access object
-	 */
-	public UserDataDao getUserDataDao() {
-		return userDataDao;
-	}
-
-	/**
-	 * This method returns the object responsible for handling the data access for
-	 * {@link UserLogin} objects.
-	 * 
-	 * @return The {@link UserLogin} data access object
-	 */
-	public UserLoginDao getUserLoginDao() {
-		return userLoginDao;
-	}
-
 	/**
 	 * The {@link #initialize()} method is responsible for initializing the database
 	 * used by the application. When invoked, the method connects to the database
 	 * file and performs the necessary initialization operations.
 	 */
-	public static DatabaseManager initialize() {
-		log.info("Establishing database connection");
-		Path databasePath = Environment.getWorkDirectory().toPath().resolve(DATABASE_FILENAME);
-		String databaseUrl = "jdbc:sqlite:" + databasePath;
-		log.debug("Database URL: " + databaseUrl);
-		SQLiteConfig config = new SQLiteConfig();
-		config.enforceForeignKeys(true);
-		Connection connection = null;
-		try {
-			connection = DriverManager.getConnection(databaseUrl, config.toProperties());
-			connection.setAutoCommit(false);
-		} catch (SQLException exception) {
-			log.fatal("An error occured while connecting to " + databaseUrl, exception);
-			System.exit(1);
-		}
-		instance = new DatabaseManager(connection);
+	public void initialize() {
 		if (Environment.getSetup()) {
 			try {
-				instance.createSchema();
+				createSchema();
 			} catch (DatabaseException exception) {
 				log.fatal("An error occured while applying the database schema!", exception);
 				System.exit(1);
 			}
 		}
-		return instance;
-	}
-
-	/**
-	 * This method returns the {@link DatabaseManager} responsible for initializing
-	 * and managing the database of the application.
-	 * 
-	 * @return The application's {@link DatabaseManager}
-	 */
-	public static DatabaseManager getInstance() {
-		return instance;
 	}
 
 }

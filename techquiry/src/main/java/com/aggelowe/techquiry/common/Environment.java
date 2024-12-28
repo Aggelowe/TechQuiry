@@ -75,6 +75,23 @@ public final class Environment {
 	});
 
 	/**
+	 * The {@link Entry} containing the maximum size of the pool of connections to
+	 * the database.
+	 */
+	private static final Entry<Integer> CONNECTION_POOL_SIZE = new Entry<>("TQ_CONNECTION_POOL_SIZE", 10, original -> {
+		int value;
+		try {
+			value = Integer.valueOf(original);
+		} catch (NumberFormatException exception) {
+			throw new InvalidEnvironmentVariableException("The given connection pool size is not an integer.", exception);
+		}
+		if (value <= 0) {
+			throw new InvalidEnvironmentVariableException("The given connection pool size must be larger than 0.");
+		}
+		return value;
+	});
+
+	/**
 	 * The {@link Entry} class is responsible for loading, converting and storing
 	 * the environment variable with the given key.
 	 * 
@@ -196,6 +213,16 @@ public final class Environment {
 	 */
 	public static int getSaltLength() {
 		return SALT_LENGTH.get();
+	}
+
+	/**
+	 * This method returns the maximum size of the pool of connections to the
+	 * database.
+	 * 
+	 * @return The maximum connection pool size
+	 */
+	public static int getConnectionPoolSize() {
+		return CONNECTION_POOL_SIZE.get();
 	}
 
 }

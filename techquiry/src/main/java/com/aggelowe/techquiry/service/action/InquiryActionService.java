@@ -2,7 +2,9 @@ package com.aggelowe.techquiry.service.action;
 
 import java.util.List;
 
-import com.aggelowe.techquiry.database.DatabaseManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.aggelowe.techquiry.database.dao.InquiryDao;
 import com.aggelowe.techquiry.database.dao.UserLoginDao;
 import com.aggelowe.techquiry.database.entities.Inquiry;
@@ -14,15 +16,18 @@ import com.aggelowe.techquiry.service.exceptions.ForbiddenOperationException;
 import com.aggelowe.techquiry.service.exceptions.InternalErrorException;
 import com.aggelowe.techquiry.service.exceptions.InvalidRequestException;
 import com.aggelowe.techquiry.service.exceptions.ServiceException;
+import com.aggelowe.techquiry.service.session.Authentication;
+import com.aggelowe.techquiry.service.session.SessionHelper;
 
 /**
- * The {@link InquiryActionService} class is a dependency of
+ * The {@link InquiryActionService} class is a component of
  * {@link InquiryService} whose methods provide different functionality for
  * different users.
  *
  * @author Aggelowe
  * @since 0.0.1
  */
+@Service
 public class InquiryActionService {
 
 	/**
@@ -38,21 +43,23 @@ public class InquiryActionService {
 	private final UserLoginDao userLoginDao;
 
 	/**
-	 * The {@link UserLogin} representing the user currently acting
+	 * The {@link SessionHelper} containing the information of the user currently
+	 * acting
 	 */
-	private final UserLogin current;
+	@Autowired
+	private SessionHelper sessionHelper;
 
 	/**
 	 * This constructor constructs a new {@link InquiryActionService} instance that
 	 * is handling the personalized inquiry operations of the application.
 	 * 
-	 * @param databaseManager The object managing the application database
-	 * @param current         The user initializing the operations
+	 * @param inquiryDao   The inquiry data access object
+	 * @param userLoginDao The user login data access object
 	 */
-	public InquiryActionService(DatabaseManager databaseManager, UserLogin current) {
-		this.inquiryDao = databaseManager.getInquiryDao();
-		this.userLoginDao = databaseManager.getUserLoginDao();
-		this.current = current;
+	@Autowired
+	public InquiryActionService(InquiryDao inquiryDao, UserLoginDao userLoginDao) {
+		this.inquiryDao = inquiryDao;
+		this.userLoginDao = userLoginDao;
 	}
 
 	/**
@@ -69,7 +76,8 @@ public class InquiryActionService {
 	 * 
 	 */
 	public int createInquiry(Inquiry inquiry) throws ServiceException {
-		if (current == null || current.getId() != inquiry.getUserId()) {
+		Authentication current = sessionHelper.getAuthentication();
+		if (current == null || current.getUserId() != inquiry.getUserId()) {
 			throw new ForbiddenOperationException("The requested inquiry creation is forbidden!");
 		}
 		String title = inquiry.getTitle();
@@ -104,7 +112,8 @@ public class InquiryActionService {
 			if (inquiry == null) {
 				throw new EntityNotFoundException("The requested inquiry does not exist!");
 			}
-			if (current == null || current.getId() != inquiry.getUserId()) {
+			Authentication current = sessionHelper.getAuthentication();
+			if (current == null || current.getUserId() != inquiry.getUserId()) {
 				throw new ForbiddenOperationException("The requested inquiry deletion is forbidden!");
 			}
 			inquiryDao.delete(id);
@@ -128,7 +137,8 @@ public class InquiryActionService {
 	 *                                     updating the inquiry
 	 */
 	public void updateInquiry(Inquiry inquiry) throws ServiceException {
-		if (current == null || current.getId() != inquiry.getUserId()) {
+		Authentication current = sessionHelper.getAuthentication();
+		if (current == null || current.getUserId() != inquiry.getUserId()) {
 			throw new ForbiddenOperationException("The requested inquiry update is forbidden!");
 		}
 		String title = inquiry.getTitle();
@@ -141,7 +151,7 @@ public class InquiryActionService {
 			if (idInquiry == null) {
 				throw new EntityNotFoundException("The requested inquiry does not exist!");
 			}
-			if (current.getId() != idInquiry.getUserId()) {
+			if (current.getUserId() != idInquiry.getUserId()) {
 				throw new ForbiddenOperationException("The requested inquiry update is forbidden!");
 			}
 			inquiryDao.update(inquiry);
@@ -169,7 +179,8 @@ public class InquiryActionService {
 			if (userLogin == null) {
 				throw new EntityNotFoundException("The given user id does not have a corresponding login!");
 			}
-			if (current == null || current.getId() != id) {
+			Authentication current = sessionHelper.getAuthentication();
+			if (current == null || current.getUserId() != id) {
 				inquiries = inquiryDao.selectFromUserIdNonAnonymous(id);
 			} else {
 				inquiries = inquiryDao.selectFromUserId(id);

@@ -1,11 +1,10 @@
 package com.aggelowe.techquiry.service;
 
-import com.aggelowe.techquiry.database.DatabaseManager;
+import org.springframework.stereotype.Service;
+
 import com.aggelowe.techquiry.database.dao.UserDataDao;
 import com.aggelowe.techquiry.database.entities.UserData;
-import com.aggelowe.techquiry.database.entities.UserLogin;
 import com.aggelowe.techquiry.database.exceptions.DatabaseException;
-import com.aggelowe.techquiry.service.action.UserDataActionService;
 import com.aggelowe.techquiry.service.exceptions.EntityNotFoundException;
 import com.aggelowe.techquiry.service.exceptions.InternalErrorException;
 import com.aggelowe.techquiry.service.exceptions.ServiceException;
@@ -17,6 +16,7 @@ import com.aggelowe.techquiry.service.exceptions.ServiceException;
  * @author Aggelowe
  * @since 0.0.1
  */
+@Service
 public class UserDataService {
 
 	/**
@@ -26,19 +26,13 @@ public class UserDataService {
 	private final UserDataDao userDataDao;
 
 	/**
-	 * The object responsible for managing the database of the application.
-	 */
-	private final DatabaseManager databaseManager;
-
-	/**
 	 * This constructor constructs a new {@link UserDataDao} instance that is
 	 * handling the user data operations of the application.
 	 * 
-	 * @param databaseManager The object managing the application database
+	 * @param userDataDao The user data data access object
 	 */
-	public UserDataService(DatabaseManager manager) {
-		this.databaseManager = manager;
-		this.userDataDao = manager.getUserDataDao();
+	public UserDataService(UserDataDao userDataDao) {
+		this.userDataDao = userDataDao;
 	}
 
 	/**
@@ -61,17 +55,6 @@ public class UserDataService {
 			throw new EntityNotFoundException("The requested user data do not exist!");
 		}
 		return data;
-	}
-
-	/**
-	 * This method constructs and returns the personalized service for the given
-	 * user.
-	 *
-	 * @param current The currently logged-in user
-	 * @return The service instance for making the personalized operations
-	 */
-	public UserDataActionService createActionService(UserLogin current) {
-		return new UserDataActionService(databaseManager, current);
 	}
 
 }

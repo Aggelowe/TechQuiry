@@ -3,6 +3,8 @@ package com.aggelowe.techquiry.database.dao;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.sqlite.SQLiteErrorCode;
 
 import com.aggelowe.techquiry.database.LocalResult;
@@ -21,6 +23,7 @@ import lombok.extern.log4j.Log4j2;
  * @author Aggelowe
  * @since 0.0.1
  */
+@Component
 @Log4j2
 public final class UserDataDao {
 
@@ -55,6 +58,7 @@ public final class UserDataDao {
 	 * 
 	 * @param runner The SQL script runner
 	 */
+	@Autowired
 	public UserDataDao(SQLRunner runner) {
 		this.runner = runner;
 	}

@@ -6,15 +6,15 @@ import static com.aggelowe.techquiry.common.Constants.VERSION;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 
 import com.aggelowe.techquiry.database.DatabaseManager;
-import com.aggelowe.techquiry.database.exceptions.DatabaseException;
-import com.aggelowe.techquiry.service.ServiceManager;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -28,7 +28,11 @@ import lombok.extern.log4j.Log4j2;
  */
 @Log4j2
 @SpringBootApplication
+@Import({ AppConfiguration.class })
 public class TechQuiry {
+
+	@Autowired
+	private DatabaseManager databaseManager;
 
 	public static void main(String[] args) {
 		log.info("Starting the " + NAME + " application on version " + VERSION);
@@ -59,8 +63,7 @@ public class TechQuiry {
 	@EventListener(ContextRefreshedEvent.class)
 	void start() {
 		log.info("Starting core application components");
-		DatabaseManager databaseManager = DatabaseManager.initialize();
-		ServiceManager.initialize(databaseManager);
+		databaseManager.initialize();
 	}
 
 	/**
@@ -70,11 +73,6 @@ public class TechQuiry {
 	@EventListener(ContextClosedEvent.class)
 	void shutdown() {
 		log.info("Shutting down core application components");
-		try {
-			DatabaseManager.getInstance().closeConnection();
-		} catch (DatabaseException exception) {
-			log.error(exception);
-		}
 	}
 
 }

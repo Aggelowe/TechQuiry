@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.aggelowe.techquiry.database.LocalResult;
 import com.aggelowe.techquiry.database.SQLRunner;
 import com.aggelowe.techquiry.database.entities.Response;
@@ -19,6 +22,7 @@ import lombok.extern.log4j.Log4j2;
  * @author Aggelowe
  * @since 0.0.1
  */
+@Component
 @Log4j2
 public final class ResponseDao {
 
@@ -64,6 +68,7 @@ public final class ResponseDao {
 	 * 
 	 * @param runner The SQL script runner
 	 */
+	@Autowired
 	public ResponseDao(SQLRunner runner) {
 		this.runner = runner;
 	}
