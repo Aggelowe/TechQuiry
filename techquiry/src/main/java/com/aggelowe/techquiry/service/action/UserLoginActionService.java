@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.aggelowe.techquiry.common.SecurityUtils;
 import com.aggelowe.techquiry.database.dao.UserLoginDao;
 import com.aggelowe.techquiry.database.entities.UserLogin;
 import com.aggelowe.techquiry.database.exceptions.DatabaseException;
@@ -153,4 +154,54 @@ public class UserLoginActionService {
 			throw new InternalErrorException("An internal error occured while getting the user!", exception);
 		}
 	}
+
+	/**
+	 * Sets the respective {@link Authentication} in the respective user session if
+	 * the given password matches with the one contained in the database.
+	 * 
+	 * @param username The username of the user
+	 * @param password The password of the user
+	 * @throws ForbiddenOperationException If there is an active session
+	 * @throws InvalidRequestException     If the username or password is incorrect
+	 * @throws InternalErrorException      If an internal error occurs while
+	 *                                     authenticating
+	 */
+	public void authenticateUser(String username, String password) throws ServiceException {
+		Authentication current = sessionHelper.getAuthentication();
+		if (current != null) {
+			throw new ForbiddenOperationException("Logging in with an active session is forbidden!");
+		}
+		UserLogin login;
+		try {
+			login = userLoginDao.selectFromUsername(username);
+		} catch (DatabaseException exception) {
+			throw new InternalErrorException("An internal error occured while authenticating!", exception);
+		}
+		if (login == null) {
+			throw new InvalidRequestException("The username or password is incorrect!");
+		}
+		byte[] salt = login.getPasswordSalt();
+		byte[] hash = login.getPasswordHash();
+		if (SecurityUtils.verifyPassword(password, salt, hash)) {
+			int userId = login.getId();
+			Authentication authentication = new Authentication(userId);
+			sessionHelper.setAuthentication(authentication);
+		} else {
+			throw new InvalidRequestException("The username or password is incorrect!");
+		}
+	}
+
+	/**
+	 * Sets the {@link Authentication} in the respective user session to NULL.
+	 * 
+	 * @throws ForbiddenOperationException If there is no active session
+	 */
+	public void logoutUser() throws ServiceException {
+		Authentication current = sessionHelper.getAuthentication();
+		if (current == null) {
+			throw new ForbiddenOperationException("Logging out with no active session is forbidden!");
+		}
+		sessionHelper.setAuthentication(null);
+	}
+
 }

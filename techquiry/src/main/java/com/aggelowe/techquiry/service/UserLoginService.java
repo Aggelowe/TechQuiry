@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.aggelowe.techquiry.common.SecurityUtils;
 import com.aggelowe.techquiry.database.dao.UserLoginDao;
 import com.aggelowe.techquiry.database.entities.UserLogin;
 import com.aggelowe.techquiry.database.exceptions.DatabaseException;
@@ -13,7 +12,6 @@ import com.aggelowe.techquiry.service.exceptions.EntityNotFoundException;
 import com.aggelowe.techquiry.service.exceptions.InternalErrorException;
 import com.aggelowe.techquiry.service.exceptions.InvalidRequestException;
 import com.aggelowe.techquiry.service.exceptions.ServiceException;
-import com.aggelowe.techquiry.service.session.Authentication;
 
 /**
  * The {@link UserLoginService} class provides methods for managing user login
@@ -123,36 +121,6 @@ public class UserLoginService {
 			throw new EntityNotFoundException("The requested user does not exist!");
 		}
 		return login;
-	}
-
-	/**
-	 * Returns the {@link Authentication} for the user if the given password matches
-	 * with the one contained in the database.
-	 * 
-	 * @param username The username of the user
-	 * @param password The password of the user
-	 * @return The authentication for the user with the give username
-	 * @throws InvalidRequestException If the username or password is incorrect
-	 * @throws InternalErrorException  If an internal error occurs while
-	 *                                 authenticating
-	 */
-	public Authentication authenticateUser(String username, String password) throws ServiceException {
-		UserLogin login;
-		try {
-			login = userLoginDao.selectFromUsername(username);
-		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while authenticating!", exception);
-		}
-		if (login == null) {
-			throw new InvalidRequestException("The username or password is incorrect!");
-		}
-		byte[] salt = login.getPasswordSalt();
-		byte[] hash = login.getPasswordHash();
-		if (SecurityUtils.verifyPassword(password, salt, hash)) {
-			int userId = login.getId();
-			return new Authentication(userId);
-		}
-		throw new InvalidRequestException("The username or password is incorrect!");
 	}
 
 }

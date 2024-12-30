@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -128,18 +129,6 @@ public class UserLoginServiceTest {
 	}
 
 	@Test
-	public void testAuthenticateUserSuccess() {
-		Authentication authentication = assertDoesNotThrow(() -> userLoginService.authenticateUser("bob", "pass"));
-		assertEquals(1, authentication.getUserId());
-	}
-
-	@Test
-	public void testAuthenticateUserException() {
-		assertThrows(InvalidRequestException.class, () -> userLoginService.authenticateUser("bob", "word"));
-		assertThrows(InvalidRequestException.class, () -> userLoginService.authenticateUser("david", "pass"));
-	}
-
-	@Test
 	public void testCreateLoginSuccess() {
 		UserLogin target = new UserLogin(0, "david", "extra");
 		sessionHelper.setAuthentication(null);
@@ -239,6 +228,39 @@ public class UserLoginServiceTest {
 		assertThrows(InvalidRequestException.class, () -> userLoginActionService.updateLogin(login1));
 		UserLogin login2 = new UserLogin(2, "alice", "password");
 		assertThrows(InvalidRequestException.class, () -> userLoginActionService.updateLogin(login2));
+	}
+
+	@Test
+	public void testAuthenticateUserSuccess() {
+		sessionHelper.setAuthentication(null);
+		assertDoesNotThrow(() -> userLoginActionService.authenticateUser("bob", "pass"));
+		Authentication current = sessionHelper.getAuthentication();
+		assertNotNull(current);
+		assertEquals(1, current.getUserId());
+	}
+
+	@Test
+	public void testAuthenticateUserException() {
+		sessionHelper.setAuthentication(new Authentication(2));
+		assertThrows(ForbiddenOperationException.class, () -> userLoginActionService.authenticateUser("bob", "pass"));
+		sessionHelper.setAuthentication(null);
+		assertThrows(InvalidRequestException.class, () -> userLoginActionService.authenticateUser("bob", "word"));
+		sessionHelper.setAuthentication(null);
+		assertThrows(InvalidRequestException.class, () -> userLoginActionService.authenticateUser("david", "pass"));
+	}
+
+	@Test
+	public void testLogoutUserSuccess() {
+		sessionHelper.setAuthentication(new Authentication(1));
+		assertDoesNotThrow(() -> userLoginActionService.logoutUser());
+		Authentication current = sessionHelper.getAuthentication();
+		assertNull(current);
+	}
+
+	@Test
+	public void testLogoutUserException() {
+		sessionHelper.setAuthentication(null);
+		assertThrows(ForbiddenOperationException.class, () -> userLoginActionService.logoutUser());
 	}
 
 }
