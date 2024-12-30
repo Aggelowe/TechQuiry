@@ -59,7 +59,7 @@ public final class DatabaseManager {
 	 * file and performs the necessary initialization operations.
 	 */
 	public void initialize() {
-		if (Environment.getSetup()) {
+		if (Environment.SETUP) {
 			try {
 				createSchema();
 			} catch (DatabaseException exception) {

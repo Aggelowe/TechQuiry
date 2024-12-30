@@ -1,13 +1,10 @@
 package com.aggelowe.techquiry.common;
 
 import static com.aggelowe.techquiry.common.Constants.EXECUTION_DIRECTORY;
-import static com.aggelowe.techquiry.common.Constants.MAX_SALT_LENGTH;
 
 import java.io.File;
-import java.util.function.Function;
 
 import com.aggelowe.techquiry.common.exception.IllegalConstructionException;
-import com.aggelowe.techquiry.common.exception.InvalidEnvironmentVariableException;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -23,125 +20,61 @@ import lombok.extern.log4j.Log4j2;
 public final class Environment {
 
 	/**
-	 * The {@link Entry} containing the application's port.
+	 * The application's port.
 	 */
-	private static final Entry<Integer> PORT = new Entry<>("TQ_PORT", 9850, original -> {
-		int value;
-		try {
-			value = Integer.valueOf(original);
-		} catch (NumberFormatException exception) {
-			throw new InvalidEnvironmentVariableException("The given port is not an integer.", exception);
-		}
-		if (value <= 0 || value > 65535) {
-			throw new InvalidEnvironmentVariableException("The given port is not within the valid port range.");
-		}
-		return value;
+	public static final int PORT = getVariable("TQ_PORT", 9850, Integer::valueOf, value -> {
+		return value > 0 && value <= 65535;
 	});
 
 	/**
-	 * The {@link Entry} containing the work directory of the application.
+	 * The work directory of the application.
 	 */
-	private static final Entry<File> WORK_DIRECTORY = new Entry<>("TQ_PATH", new File(EXECUTION_DIRECTORY), original -> {
-		File file = new File(original);
-		if (!file.exists()) {
-			throw new InvalidEnvironmentVariableException("The given path does not exist.");
-		}
-		if (!file.isDirectory()) {
-			throw new InvalidEnvironmentVariableException("The given path is not a directory.");
-		}
-		return file;
+	public static final File WORK_DIRECTORY = getVariable("TQ_PATH", new File(EXECUTION_DIRECTORY), original -> new File(original), value -> {
+		return value.exists() && value.isDirectory();
 	});
 
 	/**
-	 * The {@link Entry} containing whether to perform the initial setup.
+	 * The whether to perform the initial setup.
 	 */
-	private static final Entry<Boolean> SETUP = new Entry<>("TQ_SETUP", false, Boolean::parseBoolean);
+	public static final boolean SETUP = getVariable("TQ_SETUP", false, Boolean::parseBoolean);
 
 	/**
-	 * The {@link Entry} containing the salt length for hashing the application
-	 * users' passwords.
+	 * The salt length for hashing the application users' passwords.
 	 */
-	private static final Entry<Integer> SALT_LENGTH = new Entry<>("TQ_SALT_SIZE", 16, original -> {
-		int value;
-		try {
-			value = Integer.valueOf(original);
-		} catch (NumberFormatException exception) {
-			throw new InvalidEnvironmentVariableException("The given salt length is not an integer.", exception);
-		}
-		if (value <= 0 || value > MAX_SALT_LENGTH) {
-			throw new InvalidEnvironmentVariableException("The given salt length must be between 0 and " + MAX_SALT_LENGTH + ".");
-		}
-		return value;
+	public static final int SALT_LENGTH = getVariable("TQ_SALT_SIZE", 16, Integer::valueOf, value -> {
+		return value > 0 && value <= 64;
 	});
 
 	/**
-	 * The {@link Entry} containing the maximum size of the pool of connections to
-	 * the database.
+	 * The maximum time the application will wait for a connection from the database
+	 * connection pool.
 	 */
-	private static final Entry<Integer> CONNECTION_POOL_SIZE = new Entry<>("TQ_CONNECTION_POOL_SIZE", 10, original -> {
-		int value;
-		try {
-			value = Integer.valueOf(original);
-		} catch (NumberFormatException exception) {
-			throw new InvalidEnvironmentVariableException("The given connection pool size is not an integer.", exception);
-		}
-		if (value <= 0) {
-			throw new InvalidEnvironmentVariableException("The given connection pool size must be larger than 0.");
-		}
-		return value;
+	public static final long CONNECTION_TIMEOUT = getVariable("TQ_CONNECTION_TIMEOUT", 30000L, Long::valueOf, value -> {
+		return value >= 250L;
 	});
 
 	/**
-	 * The {@link Entry} class is responsible for loading, converting and storing
-	 * the environment variable with the given key.
-	 * 
-	 * @param <Output> The type of the entry's value
-	 * @author Aggelowe
-	 * @since 0.0.1
+	 * The maximum time a database connection will stay idle in the database
+	 * connection pool.
 	 */
-	private static class Entry<Output> {
+	public static final long CONNECTION_IDLE_TIMEOUT = getVariable("TQ_CONNECTION_IDLE_TIMEOUT", 600000L, Long::valueOf, value -> {
+		return value == 0L || value >= 10000L;
+	});
 
-		/**
-		 * The converted value of the environment variable
-		 */
-		private final Output value;
+	/**
+	 * The maximum lifetime of a database connection in the database connection
+	 * pool.
+	 */
+	public static final long CONNECTION_MAX_LIFETIME = getVariable("TQ_CONNECTION_MAX_LIFETIME", 1800000L, Long::valueOf, value -> {
+		return value >= 30000L;
+	});
 
-		/**
-		 * This constructor constructs a new {@link Entry} object. The value is obtained
-		 * from the environment variables using the given key. If the variable found, it
-		 * is converted to the {@link Output} type using the given converter. If the
-		 * conversion fails, the application will terminate. If the variable is not
-		 * found, the given fallback value is used instead.
-		 * 
-		 * @param key       The key of the environment variable
-		 * @param fallback  The value to use if the key is not found in the environment
-		 * @param converter The {@link Function} that defines how to convert the value
-		 *                  from a {@link String}
-		 */
-		public Entry(String key, Output fallback, IConverter<Output> converter) {
-			final String original = System.getenv(key);
-			Output value = fallback;
-			if (original != null) {
-				try {
-					value = converter.convert(original);
-				} catch (InvalidEnvironmentVariableException exception) {
-					log.fatal(exception);
-					System.exit(1);
-				}
-			}
-			this.value = value;
-		}
-
-		/**
-		 * This method returns the converted value of the environment variable.
-		 * 
-		 * @return The converted value
-		 */
-		public Output get() {
-			return value;
-		}
-
-	}
+	/**
+	 * The maximum size of the pool of connections to the database.
+	 */
+	public static final int CONNECTION_POOL_SIZE = getVariable("TQ_CONNECTION_POOL_SIZE", 10, Integer::valueOf, value -> {
+		return value > 0;
+	});
 
 	/**
 	 * The {@link IConverter} functional interface is used to define how a string
@@ -158,10 +91,28 @@ public final class Environment {
 		 * 
 		 * @param original The string to convert to the target type
 		 * @return The converted value
-		 * @throws InvalidEnvironmentVariableException If an error occurs during the
-		 *                                             conversion
+		 * @throws Exception If an error occurs during the conversion
 		 */
-		Output convert(String original) throws InvalidEnvironmentVariableException;
+		Output convert(String original) throws Exception;
+
+	}
+
+	/**
+	 * The {@link ILimit} functional interface is used to define the boundaries for
+	 * whether the provided value is valid.
+	 * 
+	 * @param <Output> The checked value type
+	 */
+	private interface ILimit<Output> {
+
+		/**
+		 * This method checks whether the given value of type {@link Output} falls
+		 * within the constraints of the application.
+		 * 
+		 * @param value The value to check
+		 * @return Whether the value is valid
+		 */
+		boolean check(Output value);
 
 	}
 
@@ -177,52 +128,53 @@ public final class Environment {
 	}
 
 	/**
-	 * This method returns the port assigned to the Spring application by the
-	 * environment.
+	 * This method returns value obtained from the environment variables using the
+	 * given key. If the variable found, it is converted to the {@link Output} type
+	 * using the given converter. If the conversion fails, the application will
+	 * terminate. If the converted value falls outside the predefined constraints,
+	 * the application will terminate. If the variable is not found, the given
+	 * fallback value is used instead.
 	 * 
-	 * @return The application's network port
+	 * @param key       The key of the environment variable
+	 * @param fallback  The value to use if the key is not found in the environment
+	 * @param converter The {@link IConverter} that defines how to convert the value
+	 *                  from a {@link String}
+	 * @param limit     The constraints for the value of the variable
+	 * @return The value of the environment variable
 	 */
-	public static int getPort() {
-		return PORT.get();
+	private static <Output> Output getVariable(String key, Output fallback, IConverter<Output> converter, ILimit<Output> limit) {
+		final String original = System.getenv(key);
+		Output value = fallback;
+		if (original != null) {
+			try {
+				value = converter.convert(original);
+			} catch (Exception exception) {
+				log.fatal("An exception was thrown while converting " + key + "!", exception);
+				System.exit(1);
+			}
+		}
+		if (limit != null && !limit.check(value)) {
+			log.fatal("The value of " + key + " is outside the defined contraints!");
+			System.exit(1);
+		}
+		return value;
 	}
 
 	/**
-	 * This method returns the work directory of the application as defined by the
-	 * environment.
+	 * This method returns value obtained from the environment variables using the
+	 * given key. If the variable found, it is converted to the {@link Output} type
+	 * using the given converter. If the conversion fails, the application will
+	 * terminate. If the variable is not found, the given fallback value is used
+	 * instead.
 	 * 
-	 * @return The application's work directory
+	 * @param key       The key of the environment variable
+	 * @param fallback  The value to use if the key is not found in the environment
+	 * @param converter The {@link IConverter} that defines how to convert the value
+	 *                  from a {@link String}
+	 * @return The value of the environment variable
 	 */
-	public static File getWorkDirectory() {
-		return WORK_DIRECTORY.get();
-	}
-
-	/**
-	 * This method returns whether to perform the initial setup as defined by the
-	 * environment.
-	 * 
-	 * @return Whether to perform the initial setup
-	 */
-	public static boolean getSetup() {
-		return SETUP.get();
-	}
-
-	/**
-	 * This method returns the salt length for the application users' passwords.
-	 * 
-	 * @return The password hashes' salt length
-	 */
-	public static int getSaltLength() {
-		return SALT_LENGTH.get();
-	}
-
-	/**
-	 * This method returns the maximum size of the pool of connections to the
-	 * database.
-	 * 
-	 * @return The maximum connection pool size
-	 */
-	public static int getConnectionPoolSize() {
-		return CONNECTION_POOL_SIZE.get();
+	private static <Output> Output getVariable(String key, Output fallback, IConverter<Output> converter) {
+		return getVariable(key, fallback, converter, null);
 	}
 
 }

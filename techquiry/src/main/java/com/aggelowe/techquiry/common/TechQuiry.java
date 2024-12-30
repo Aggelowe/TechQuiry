@@ -36,7 +36,7 @@ public class TechQuiry {
 
 	public static void main(String[] args) {
 		log.info("Starting the " + NAME + " application on version " + VERSION);
-		log.debug("Application work directory: " + Environment.getWorkDirectory());
+		log.debug("Application work directory: " + Environment.WORK_DIRECTORY);
 		SpringApplication application = new SpringApplication(TechQuiry.class);
 		properties(application);
 		log.info("Invoking Spring application startup");
@@ -52,7 +52,7 @@ public class TechQuiry {
 	private static void properties(SpringApplication application) {
 		log.debug("Setting up Spring application properties");
 		Map<String, Object> applicationProperties = new HashMap<>();
-		applicationProperties.put("server.port", Environment.getPort());
+		applicationProperties.put("server.port", Environment.PORT);
 		application.setDefaultProperties(applicationProperties);
 	}
 

@@ -35,18 +35,12 @@ public final class Constants {
 	/**
 	 * The path of the execution directory
 	 */
-	public static final String EXECUTION_DIRECTORY;
+	public static final String EXECUTION_DIRECTORY = System.getProperty("user.dir");
 
 	/**
 	 * The filename of the application database file
 	 */
 	public static final String DATABASE_FILENAME = "techquiry.db";
-
-	/**
-	 * The maximum possible length of the salt for hashing the application users'
-	 * passwords.
-	 */
-	public static final int MAX_SALT_LENGTH = 64;
 
 	/**
 	 * The regular expression defining the valid format for usernames.
@@ -57,9 +51,5 @@ public final class Constants {
 	 * The hashing algorithm for generating the password hashes.
 	 */
 	public static final String HASHING_ALGORITHM = "SHA-256";
-
-	static {
-		EXECUTION_DIRECTORY = System.getProperty("user.dir");
-	}
 
 }

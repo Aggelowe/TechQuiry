@@ -72,7 +72,7 @@ public final class SecurityUtils {
 	 */
 	public static byte[] generateSalt() {
 		SecureRandom random = new SecureRandom();
-		int length = Environment.getSaltLength();
+		int length = Environment.SALT_LENGTH;
 		byte[] salt = new byte[length];
 		random.nextBytes(salt);
 		return salt;

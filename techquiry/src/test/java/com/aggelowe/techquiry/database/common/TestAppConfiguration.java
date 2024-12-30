@@ -20,13 +20,7 @@ public class TestAppConfiguration {
 	public static DataSource getDataSource() {
 		HikariConfig hikariConfig = new HikariConfig();
 		hikariConfig.setJdbcUrl("jdbc:sqlite:file::memory:?cache=shared");
-		hikariConfig.setMaximumPoolSize(10);
-		hikariConfig.setIdleTimeout(30000);
-		hikariConfig.setConnectionTimeout(30000);
-		hikariConfig.setMinimumIdle(2);
-		hikariConfig.addDataSourceProperty("cachePrepStmts", "true");
-		hikariConfig.addDataSourceProperty("prepStmtCacheSize", "250");
-		hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+		hikariConfig.setMaximumPoolSize(1);
 		hikariConfig.setAutoCommit(false);
 		SQLiteConfig sqliteConfig = new SQLiteConfig();
 		sqliteConfig.enforceForeignKeys(true);

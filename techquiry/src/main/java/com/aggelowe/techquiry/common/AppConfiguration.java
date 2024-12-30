@@ -31,18 +31,16 @@ public class AppConfiguration {
 	 */
 	@Bean(destroyMethod = "close")
 	public static DataSource getDataSource() {
-		Path databasePath = Environment.getWorkDirectory().toPath().resolve(Constants.DATABASE_FILENAME);
+		Path databasePath = Environment.WORK_DIRECTORY.toPath().resolve(Constants.DATABASE_FILENAME);
 		String databaseUrl = "jdbc:sqlite:" + databasePath;
 		HikariConfig hikariConfig = new HikariConfig();
-		hikariConfig.setJdbcUrl(databaseUrl);
-		hikariConfig.setMaximumPoolSize(Environment.getConnectionPoolSize());
-		hikariConfig.setIdleTimeout(30000);
-		hikariConfig.setConnectionTimeout(30000);
-		hikariConfig.setMinimumIdle(2);
-		hikariConfig.addDataSourceProperty("cachePrepStmts", "true");
-		hikariConfig.addDataSourceProperty("prepStmtCacheSize", "250");
-		hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
 		hikariConfig.setAutoCommit(false);
+		hikariConfig.setJdbcUrl(databaseUrl);
+		hikariConfig.setConnectionTimeout(Environment.CONNECTION_TIMEOUT);
+		hikariConfig.setIdleTimeout(Environment.CONNECTION_IDLE_TIMEOUT);
+		hikariConfig.setMaxLifetime(Environment.CONNECTION_MAX_LIFETIME);
+		hikariConfig.setMaximumPoolSize(Environment.CONNECTION_POOL_SIZE);
+		hikariConfig.setPoolName(Constants.NAME + "ConnectionPool");
 		SQLiteConfig sqliteConfig = new SQLiteConfig();
 		sqliteConfig.enforceForeignKeys(true);
 		hikariConfig.setDataSourceProperties(sqliteConfig.toProperties());
