@@ -1,4 +1,4 @@
-package com.aggelowe.techquiry.common.exceptions;
+package com.aggelowe.techquiry.common.exception;
 
 /**
  * {@link TechQuiryException} is the superclass of all exceptions implemented

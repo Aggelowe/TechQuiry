@@ -1,4 +1,4 @@
-package com.aggelowe.techquiry.database.exceptions;
+package com.aggelowe.techquiry.database.exception;
 
 /**
  * {@link DataAccessException} is an exception class that represents errors encountered

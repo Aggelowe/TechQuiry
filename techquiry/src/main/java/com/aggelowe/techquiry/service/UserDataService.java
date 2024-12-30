@@ -3,11 +3,11 @@ package com.aggelowe.techquiry.service;
 import org.springframework.stereotype.Service;
 
 import com.aggelowe.techquiry.database.dao.UserDataDao;
-import com.aggelowe.techquiry.database.entities.UserData;
-import com.aggelowe.techquiry.database.exceptions.DatabaseException;
-import com.aggelowe.techquiry.service.exceptions.EntityNotFoundException;
-import com.aggelowe.techquiry.service.exceptions.InternalErrorException;
-import com.aggelowe.techquiry.service.exceptions.ServiceException;
+import com.aggelowe.techquiry.database.entity.UserData;
+import com.aggelowe.techquiry.database.exception.DatabaseException;
+import com.aggelowe.techquiry.service.exception.EntityNotFoundException;
+import com.aggelowe.techquiry.service.exception.InternalErrorException;
+import com.aggelowe.techquiry.service.exception.ServiceException;
 
 /**
  * The {@link UserDataService} class provides methods for managing user data

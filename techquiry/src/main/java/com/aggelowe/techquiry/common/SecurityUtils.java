@@ -10,7 +10,7 @@ import java.util.Base64;
 import java.util.Base64.Decoder;
 import java.util.Base64.Encoder;
 
-import com.aggelowe.techquiry.common.exceptions.IllegalConstructionException;
+import com.aggelowe.techquiry.common.exception.IllegalConstructionException;
 
 import lombok.extern.log4j.Log4j2;
 

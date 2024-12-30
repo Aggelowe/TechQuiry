@@ -1,6 +1,6 @@
-package com.aggelowe.techquiry.service.exceptions;
+package com.aggelowe.techquiry.service.exception;
 
-import com.aggelowe.techquiry.common.exceptions.TechQuiryException;
+import com.aggelowe.techquiry.common.exception.TechQuiryException;
 
 /**
  * {@link ServiceException} is an {@link TechQuiryException} subclass that is

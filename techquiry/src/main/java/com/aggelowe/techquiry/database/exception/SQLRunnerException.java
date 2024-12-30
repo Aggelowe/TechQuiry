@@ -1,4 +1,4 @@
-package com.aggelowe.techquiry.database.exceptions;
+package com.aggelowe.techquiry.database.exception;
 
 /**
  * {@link SQLRunnerException} is an {@link DatabaseException} subclass that

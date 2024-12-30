@@ -1,4 +1,4 @@
-package com.aggelowe.techquiry.service.exceptions;
+package com.aggelowe.techquiry.service.exception;
 
 /**
  * {@link ForbiddenOperationException} is an {@link ServiceException}

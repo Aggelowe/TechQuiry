@@ -24,11 +24,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.aggelowe.techquiry.database.common.TestAppConfiguration;
-import com.aggelowe.techquiry.database.entities.UserData;
+import com.aggelowe.techquiry.database.entity.UserData;
 import com.aggelowe.techquiry.service.action.UserDataActionService;
-import com.aggelowe.techquiry.service.exceptions.EntityNotFoundException;
-import com.aggelowe.techquiry.service.exceptions.ForbiddenOperationException;
-import com.aggelowe.techquiry.service.exceptions.InvalidRequestException;
+import com.aggelowe.techquiry.service.exception.EntityNotFoundException;
+import com.aggelowe.techquiry.service.exception.ForbiddenOperationException;
+import com.aggelowe.techquiry.service.exception.InvalidRequestException;
 import com.aggelowe.techquiry.service.session.Authentication;
 import com.aggelowe.techquiry.service.session.SessionHelper;
 

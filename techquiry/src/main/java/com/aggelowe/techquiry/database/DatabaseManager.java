@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.aggelowe.techquiry.common.Environment;
-import com.aggelowe.techquiry.database.exceptions.DatabaseException;
+import com.aggelowe.techquiry.database.exception.DatabaseException;
 
 import lombok.extern.log4j.Log4j2;
 

@@ -18,9 +18,9 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.aggelowe.techquiry.database.exceptions.SQLRunnerException;
-import com.aggelowe.techquiry.database.exceptions.SQLRunnerExecuteException;
-import com.aggelowe.techquiry.database.exceptions.SQLRunnerLoadException;
+import com.aggelowe.techquiry.database.exception.SQLRunnerException;
+import com.aggelowe.techquiry.database.exception.SQLRunnerExecuteException;
+import com.aggelowe.techquiry.database.exception.SQLRunnerLoadException;
 
 /**
  * The {@link SQLRunner} class is responsible for executing the provided SQL

@@ -6,8 +6,8 @@ import static com.aggelowe.techquiry.common.Constants.MAX_SALT_LENGTH;
 import java.io.File;
 import java.util.function.Function;
 
-import com.aggelowe.techquiry.common.exceptions.IllegalConstructionException;
-import com.aggelowe.techquiry.common.exceptions.InvalidEnvironmentVariableException;
+import com.aggelowe.techquiry.common.exception.IllegalConstructionException;
+import com.aggelowe.techquiry.common.exception.InvalidEnvironmentVariableException;
 
 import lombok.extern.log4j.Log4j2;
 

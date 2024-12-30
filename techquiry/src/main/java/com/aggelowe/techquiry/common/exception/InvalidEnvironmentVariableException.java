@@ -1,4 +1,4 @@
-package com.aggelowe.techquiry.common.exceptions;
+package com.aggelowe.techquiry.common.exception;
 
 /**
  * {@link InvalidEnvironmentVariableException} is an {@link TechQuiryException} subclass that

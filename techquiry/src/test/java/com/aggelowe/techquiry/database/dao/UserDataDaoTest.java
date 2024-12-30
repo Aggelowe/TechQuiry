@@ -23,8 +23,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.aggelowe.techquiry.database.common.TestAppConfiguration;
-import com.aggelowe.techquiry.database.entities.UserData;
-import com.aggelowe.techquiry.database.exceptions.SQLRunnerExecuteException;
+import com.aggelowe.techquiry.database.entity.UserData;
+import com.aggelowe.techquiry.database.exception.SQLRunnerExecuteException;
 
 @SpringBootTest(classes = TestAppConfiguration.class)
 @ExtendWith(SpringExtension.class)

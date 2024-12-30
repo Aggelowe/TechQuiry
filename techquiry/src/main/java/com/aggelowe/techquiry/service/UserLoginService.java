@@ -6,12 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.aggelowe.techquiry.database.dao.UserLoginDao;
-import com.aggelowe.techquiry.database.entities.UserLogin;
-import com.aggelowe.techquiry.database.exceptions.DatabaseException;
-import com.aggelowe.techquiry.service.exceptions.EntityNotFoundException;
-import com.aggelowe.techquiry.service.exceptions.InternalErrorException;
-import com.aggelowe.techquiry.service.exceptions.InvalidRequestException;
-import com.aggelowe.techquiry.service.exceptions.ServiceException;
+import com.aggelowe.techquiry.database.entity.UserLogin;
+import com.aggelowe.techquiry.database.exception.DatabaseException;
+import com.aggelowe.techquiry.service.exception.EntityNotFoundException;
+import com.aggelowe.techquiry.service.exception.InternalErrorException;
+import com.aggelowe.techquiry.service.exception.InvalidRequestException;
+import com.aggelowe.techquiry.service.exception.ServiceException;
 
 /**
  * The {@link UserLoginService} class provides methods for managing user login

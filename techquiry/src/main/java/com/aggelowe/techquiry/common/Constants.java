@@ -1,6 +1,6 @@
 package com.aggelowe.techquiry.common;
 
-import com.aggelowe.techquiry.common.exceptions.IllegalConstructionException;
+import com.aggelowe.techquiry.common.exception.IllegalConstructionException;
 
 /**
  * {@link Constants} is a class that holds constants that are important for the

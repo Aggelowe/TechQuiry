@@ -7,15 +7,15 @@ import org.springframework.stereotype.Service;
 
 import com.aggelowe.techquiry.database.dao.InquiryDao;
 import com.aggelowe.techquiry.database.dao.UserLoginDao;
-import com.aggelowe.techquiry.database.entities.Inquiry;
-import com.aggelowe.techquiry.database.entities.UserLogin;
-import com.aggelowe.techquiry.database.exceptions.DatabaseException;
+import com.aggelowe.techquiry.database.entity.Inquiry;
+import com.aggelowe.techquiry.database.entity.UserLogin;
+import com.aggelowe.techquiry.database.exception.DatabaseException;
 import com.aggelowe.techquiry.service.InquiryService;
-import com.aggelowe.techquiry.service.exceptions.EntityNotFoundException;
-import com.aggelowe.techquiry.service.exceptions.ForbiddenOperationException;
-import com.aggelowe.techquiry.service.exceptions.InternalErrorException;
-import com.aggelowe.techquiry.service.exceptions.InvalidRequestException;
-import com.aggelowe.techquiry.service.exceptions.ServiceException;
+import com.aggelowe.techquiry.service.exception.EntityNotFoundException;
+import com.aggelowe.techquiry.service.exception.ForbiddenOperationException;
+import com.aggelowe.techquiry.service.exception.InternalErrorException;
+import com.aggelowe.techquiry.service.exception.InvalidRequestException;
+import com.aggelowe.techquiry.service.exception.ServiceException;
 import com.aggelowe.techquiry.service.session.Authentication;
 import com.aggelowe.techquiry.service.session.SessionHelper;
 
