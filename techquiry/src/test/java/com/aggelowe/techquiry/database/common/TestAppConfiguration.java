@@ -17,7 +17,7 @@ public class TestAppConfiguration {
 
 	@Primary
 	@Bean(destroyMethod = "close")
-	public static DataSource getDataSource() {
+	public DataSource getDataSource() {
 		HikariConfig hikariConfig = new HikariConfig();
 		hikariConfig.setJdbcUrl("jdbc:sqlite:file::memory:?cache=shared");
 		hikariConfig.setMaximumPoolSize(1);

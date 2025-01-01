@@ -30,7 +30,7 @@ public class AppConfiguration {
 	 * @return The {@link DataSource} instance
 	 */
 	@Bean(destroyMethod = "close")
-	public static DataSource getDataSource() {
+	public DataSource getDataSource() {
 		Path databasePath = Environment.WORK_DIRECTORY.toPath().resolve(Constants.DATABASE_FILENAME);
 		String databaseUrl = "jdbc:sqlite:" + databasePath;
 		HikariConfig hikariConfig = new HikariConfig();

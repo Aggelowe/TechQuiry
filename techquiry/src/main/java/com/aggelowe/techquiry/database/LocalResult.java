@@ -1,8 +1,12 @@
 package com.aggelowe.techquiry.database;
 
+import java.sql.Blob;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -76,12 +80,28 @@ public class LocalResult implements Iterable<Map<String, Object>> {
 			for (int i = 1; i <= columns; i++) {
 				String label = meta.getColumnLabel(i);
 				int type = meta.getColumnType(i);
-				Object value;
-				if (type == Types.BLOB) {
-					value = resultSet.getBytes(i);
-				} else {
-					value = resultSet.getObject(i);
-				}
+				Object value = resultSet.getObject(i);
+				value = switch (type) {
+					case Types.BLOB: {
+						if (value != null) {
+							Blob blob = (Blob) value;
+							yield blob.getBytes(1, (int) blob.length());
+						}
+						yield null;
+					}
+					case Types.DATE: {
+						yield value != null ? ((Date) value).toLocalDate() : null;
+					}
+					case Types.TIME: {
+						yield value != null ? ((Time) value).toLocalTime() : null;
+					}
+					case Types.TIMESTAMP: {
+						yield value != null ? ((Timestamp) value).toLocalDateTime() : null;
+					}
+					default: {
+						yield value;
+					}
+				};
 				row.put(label, value);
 			}
 			result.add(row);
