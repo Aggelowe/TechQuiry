@@ -90,25 +90,26 @@ public class UserLoginActionService {
 	}
 
 	/**
-	 * This method deletes the user login with the specified user id.
+	 * This method deletes the user login of the logged in user.
 	 *
-	 * @param id The user id
 	 * @throws ForbiddenOperationException If the current user does not have the
 	 *                                     given id
 	 * @throws EntityNotFoundException     If the requested user does not exist
 	 * @throws InternalErrorException      If an internal error occurred while
 	 *                                     deleting the user
 	 */
-	public void deleteLogin(int id) throws ServiceException {
+	public void deleteLogin() throws ServiceException {
 		Authentication current = sessionHelper.getAuthentication();
-		if (current == null || current.getUserId() != id) {
+		if (current == null) {
 			throw new ForbiddenOperationException("The requested user deletion is forbidden!");
 		}
+		int id = current.getUserId();
 		try {
 			UserLogin login = userLoginDao.select(id);
 			if (login == null) {
 				throw new EntityNotFoundException("The requested user does not exist!");
 			}
+			sessionHelper.setAuthentication(null);
 			userLoginDao.delete(id);
 		} catch (DatabaseException exception) {
 			throw new InternalErrorException("An internal error occured while deleting the user!", exception);

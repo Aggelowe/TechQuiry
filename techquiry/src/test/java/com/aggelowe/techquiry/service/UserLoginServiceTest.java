@@ -102,7 +102,7 @@ public class UserLoginServiceTest {
 
 	@Test
 	public void testFindLoginByUserIdSuccess() {
-		UserLogin userLogin = assertDoesNotThrow(() -> userLoginService.findLoginByUserId(1));
+		UserLogin userLogin = assertDoesNotThrow(() -> userLoginService.getLoginByUserId(1));
 		assertEquals(1, userLogin.getId());
 		assertEquals("bob", userLogin.getUsername());
 		assertArrayEquals(SecurityUtils.decodeBase64("ptp5i/V5DHjaOsFQfCo7NseUflYX45loc9DTSPrl+NU="), userLogin.getPasswordHash());
@@ -111,12 +111,12 @@ public class UserLoginServiceTest {
 
 	@Test
 	public void testFindLoginByUserIdException() {
-		assertThrows(EntityNotFoundException.class, () -> userLoginService.findLoginByUserId(3));
+		assertThrows(EntityNotFoundException.class, () -> userLoginService.getLoginByUserId(3));
 	}
 
 	@Test
 	public void testFindLoginByUsernameSuccess() {
-		UserLogin userLogin = assertDoesNotThrow(() -> userLoginService.findLoginByUsername("bob"));
+		UserLogin userLogin = assertDoesNotThrow(() -> userLoginService.getLoginByUsername("bob"));
 		assertEquals(1, userLogin.getId());
 		assertEquals("bob", userLogin.getUsername());
 		assertArrayEquals(SecurityUtils.decodeBase64("ptp5i/V5DHjaOsFQfCo7NseUflYX45loc9DTSPrl+NU="), userLogin.getPasswordHash());
@@ -125,7 +125,7 @@ public class UserLoginServiceTest {
 
 	@Test
 	public void testFindLoginByUsernameException() {
-		assertThrows(EntityNotFoundException.class, () -> userLoginService.findLoginByUsername("david"));
+		assertThrows(EntityNotFoundException.class, () -> userLoginService.getLoginByUsername("david"));
 	}
 
 	@Test
@@ -170,7 +170,7 @@ public class UserLoginServiceTest {
 	@Test
 	public void testDeleteLoginSuccess() {
 		sessionHelper.setAuthentication(new Authentication(1));
-		assertDoesNotThrow(() -> userLoginActionService.deleteLogin(1));
+		assertDoesNotThrow(() -> userLoginActionService.deleteLogin());
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
 				Statement statement = connection.createStatement();
@@ -185,11 +185,9 @@ public class UserLoginServiceTest {
 	@Test
 	public void testDeleteLoginException() {
 		sessionHelper.setAuthentication(null);
-		assertThrows(ForbiddenOperationException.class, () -> userLoginActionService.deleteLogin(1));
-		sessionHelper.setAuthentication(new Authentication(1));
-		assertThrows(ForbiddenOperationException.class, () -> userLoginActionService.deleteLogin(0));
+		assertThrows(ForbiddenOperationException.class, () -> userLoginActionService.deleteLogin());
 		sessionHelper.setAuthentication(new Authentication(3));
-		assertThrows(EntityNotFoundException.class, () -> userLoginActionService.deleteLogin(3));
+		assertThrows(EntityNotFoundException.class, () -> userLoginActionService.deleteLogin());
 	}
 
 	@Test
