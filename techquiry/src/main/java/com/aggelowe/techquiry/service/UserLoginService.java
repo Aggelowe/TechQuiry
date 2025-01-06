@@ -88,7 +88,7 @@ public class UserLoginService {
 	 * @throws InternalErrorException  If an internal error occurs while retrieving
 	 *                                 the user
 	 */
-	public UserLogin findLoginByUserId(int id) throws ServiceException {
+	public UserLogin getLoginByUserId(int id) throws ServiceException {
 		UserLogin login;
 		try {
 			login = userLoginDao.select(id);
@@ -110,7 +110,7 @@ public class UserLoginService {
 	 * @throws InternalErrorException  If an internal error occurs while retrieving
 	 *                                 the user
 	 */
-	public UserLogin findLoginByUsername(String username) throws ServiceException {
+	public UserLogin getLoginByUsername(String username) throws ServiceException {
 		UserLogin login;
 		try {
 			login = userLoginDao.selectFromUsername(username);

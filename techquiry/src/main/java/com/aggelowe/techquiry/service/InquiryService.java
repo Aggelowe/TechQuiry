@@ -88,7 +88,7 @@ public class InquiryService {
 	 * @throws InternalErrorException  If an internal error occurs while retrieving
 	 *                                 the inquiry
 	 */
-	public Inquiry findInquiryByInquiryId(int id) throws ServiceException {
+	public Inquiry getInquiryByInquiryId(int id) throws ServiceException {
 		Inquiry inquiry;
 		try {
 			inquiry = inquiryDao.select(id);

@@ -44,7 +44,7 @@ public class UserDataService {
 	 * @throws InternalErrorException  If an internal error occurs while retrieving
 	 *                                 the user data
 	 */
-	public UserData findDataByUserId(int id) throws ServiceException {
+	public UserData getDataByUserId(int id) throws ServiceException {
 		UserData data;
 		try {
 			data = userDataDao.select(id);
