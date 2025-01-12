@@ -114,7 +114,7 @@ public class InquiryServiceTest {
 	}
 
 	@Test
-	public void testFindInquiryByInquiryIdSuccess() {
+	public void testGetInquiryByInquiryIdSuccess() {
 		Inquiry inquiry = assertDoesNotThrow(() -> inquiryService.getInquiryByInquiryId(1));
 		assertEquals(1, inquiry.getId());
 		assertEquals(0, inquiry.getUserId());
@@ -124,7 +124,7 @@ public class InquiryServiceTest {
 	}
 
 	@Test
-	public void testFindInquiryByInquiryIdException() {
+	public void testGetInquiryByInquiryIdException() {
 		assertThrows(EntityNotFoundException.class, () -> inquiryService.getInquiryByInquiryId(3));
 	}
 

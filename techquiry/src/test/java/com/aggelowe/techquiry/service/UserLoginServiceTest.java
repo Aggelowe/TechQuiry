@@ -101,7 +101,7 @@ public class UserLoginServiceTest {
 	}
 
 	@Test
-	public void testFindLoginByUserIdSuccess() {
+	public void testGetLoginByUserIdSuccess() {
 		UserLogin userLogin = assertDoesNotThrow(() -> userLoginService.getLoginByUserId(1));
 		assertEquals(1, userLogin.getId());
 		assertEquals("bob", userLogin.getUsername());
@@ -110,12 +110,12 @@ public class UserLoginServiceTest {
 	}
 
 	@Test
-	public void testFindLoginByUserIdException() {
+	public void testGetLoginByUserIdException() {
 		assertThrows(EntityNotFoundException.class, () -> userLoginService.getLoginByUserId(3));
 	}
 
 	@Test
-	public void testFindLoginByUsernameSuccess() {
+	public void testGetLoginByUsernameSuccess() {
 		UserLogin userLogin = assertDoesNotThrow(() -> userLoginService.getLoginByUsername("bob"));
 		assertEquals(1, userLogin.getId());
 		assertEquals("bob", userLogin.getUsername());
@@ -124,7 +124,7 @@ public class UserLoginServiceTest {
 	}
 
 	@Test
-	public void testFindLoginByUsernameException() {
+	public void testGetLoginByUsernameException() {
 		assertThrows(EntityNotFoundException.class, () -> userLoginService.getLoginByUsername("david"));
 	}
 

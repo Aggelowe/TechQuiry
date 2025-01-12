@@ -96,7 +96,7 @@ public class UserDataServiceTest {
 	}
 
 	@Test
-	public void testFindDataByUserIdSuccess() {
+	public void testGetDataByUserIdSuccess() {
 		UserData userData = assertDoesNotThrow(() -> userDataService.getDataByUserId(1));
 		assertEquals(1, userData.getId());
 		assertEquals("Bob", userData.getFirstName());
@@ -105,7 +105,7 @@ public class UserDataServiceTest {
 	}
 
 	@Test
-	public void testFindDataByUserIdException() {
+	public void testGetDataByUserIdException() {
 		assertThrows(EntityNotFoundException.class, () -> userDataService.getDataByUserId(2));
 	}
 
