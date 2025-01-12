@@ -7,9 +7,12 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.aggelowe.techquiry.common.SecurityUtils;
 import com.aggelowe.techquiry.database.LocalResult;
 import com.aggelowe.techquiry.database.SQLRunner;
+import com.aggelowe.techquiry.database.entity.Inquiry;
 import com.aggelowe.techquiry.database.entity.Observer;
+import com.aggelowe.techquiry.database.entity.UserLogin;
 import com.aggelowe.techquiry.database.exception.DataAccessException;
 import com.aggelowe.techquiry.database.exception.DatabaseException;
 
@@ -126,15 +129,16 @@ public final class ObserverDao {
 	}
 
 	/**
-	 * This method returns and retrieves the list of {@link Observer} objects with
-	 * the given inquiry id from the application database.
+	 * This method returns and retrieves the list of {@link UserLogin} objects with
+	 * the user id in the observer objects with the given inquiry id from the
+	 * application database.
 	 * 
 	 * @param inquiryId The inquiry id
-	 * @return The observers with the given id
+	 * @return The selected user logins
 	 * @throws DatabaseException If an error occurs while retrieving the observer
 	 *                           information
 	 */
-	public List<Observer> selectFromInquiryId(int inquiryId) throws DatabaseException {
+	public List<UserLogin> selectFromInquiryId(int inquiryId) throws DatabaseException {
 		log.debug("Getting observers with inquiry id " + inquiryId);
 		List<LocalResult> results = runner.runScript(OBSERVER_SELECT_INQUIRY_ID_SCRIPT, inquiryId);
 		if (results.isEmpty()) {
@@ -144,25 +148,37 @@ public final class ObserverDao {
 		if (result == null) {
 			throw new DataAccessException("The first statement in " + OBSERVER_SELECT_INQUIRY_ID_SCRIPT + " did not yeild results!");
 		}
-		List<Observer> list = new ArrayList<>();
+		List<UserLogin> list = new ArrayList<>();
 		for (Map<String, Object> row : result) {
-			int userId = (int) row.get("user_id");
-			Observer observer = new Observer(inquiryId, userId);
-			list.add(observer);
+			int id = (int) row.get("user_id");
+			String username = (String) row.get("username");
+			String encodedHash = (String) row.get("password_hash");
+			String encodedSalt = (String) row.get("password_salt");
+			byte[] passwordHash;
+			byte[] passwordSalt;
+			try {
+				passwordHash = SecurityUtils.decodeBase64(encodedHash);
+				passwordSalt = SecurityUtils.decodeBase64(encodedSalt);
+			} catch (IllegalArgumentException exception) {
+				throw new DataAccessException("There was an error while retrieving the user login information!", exception);
+			}
+			UserLogin userLogin = new UserLogin(id, username, passwordHash, passwordSalt);
+			list.add(userLogin);
 		}
 		return list;
 	}
 
 	/**
-	 * This method returns and retrieves the list of {@link Observer} objects with
-	 * the given user id from the application database.
+	 * This method returns and retrieves the list of {@link Inquiry} objects from
+	 * the application database where the inquiry id matches with the inquiry id in
+	 * the observer objects with the given user id.
 	 * 
 	 * @param userId The user id
-	 * @return The observers with the given id
+	 * @return The selected inquiries
 	 * @throws DatabaseException If an error occurs while retrieving the observer
 	 *                           information
 	 */
-	public List<Observer> selectFromUserId(int userId) throws DatabaseException {
+	public List<Inquiry> selectFromUserId(int userId) throws DatabaseException {
 		log.debug("Getting observers with user id " + userId);
 		List<LocalResult> results = runner.runScript(OBSERVER_SELECT_USER_ID_SCRIPT, userId);
 		if (results.isEmpty()) {
@@ -172,11 +188,15 @@ public final class ObserverDao {
 			throw new DataAccessException("The first statement in " + OBSERVER_SELECT_USER_ID_SCRIPT + " did not yeild results!");
 		}
 		LocalResult result = results.getFirst();
-		List<Observer> list = new ArrayList<>();
+		List<Inquiry> list = new ArrayList<>();
 		for (Map<String, Object> row : result) {
 			int inquiryId = (int) row.get("inquiry_id");
-			Observer observer = new Observer(inquiryId, userId);
-			list.add(observer);
+			int authorId = (int) row.get("user_id");
+			String title = (String) row.get("title");
+			String content = (String) row.get("content");
+			boolean anonymous = (int) row.get("anonymous") == 1;
+			Inquiry inquiry = new Inquiry(inquiryId, authorId, title, content, anonymous);
+			list.add(inquiry);
 		}
 		return list;
 	}

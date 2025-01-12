@@ -1,5 +1,6 @@
 package com.aggelowe.techquiry.database.dao;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -22,8 +23,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.aggelowe.techquiry.common.SecurityUtils;
 import com.aggelowe.techquiry.database.common.TestAppConfiguration;
+import com.aggelowe.techquiry.database.entity.Inquiry;
 import com.aggelowe.techquiry.database.entity.Observer;
+import com.aggelowe.techquiry.database.entity.UserLogin;
 import com.aggelowe.techquiry.database.exception.SQLRunnerExecuteException;
 
 @SpringBootTest(classes = TestAppConfiguration.class)
@@ -145,20 +149,25 @@ public class ObserverDaoTest {
 
 	@Test
 	public void testSelectFromInquiryIdSuccess() {
-		List<Observer> observers = assertDoesNotThrow(() -> observerDao.selectFromInquiryId(1));
+		List<UserLogin> observers = assertDoesNotThrow(() -> observerDao.selectFromInquiryId(1));
 		assertEquals(1, observers.size());
-		Observer observer = observers.getFirst();
-		assertEquals(1, observer.getInquiryId());
-		assertEquals(1, observer.getUserId());
+		UserLogin userLogin = observers.getFirst();
+		assertEquals(1, userLogin.getId());
+		assertEquals("bob", userLogin.getUsername());
+		assertArrayEquals(SecurityUtils.decodeBase64("cGFzc3dvcmQ="), userLogin.getPasswordHash());
+		assertArrayEquals(SecurityUtils.decodeBase64("cGFzcw=="), userLogin.getPasswordSalt());
 	}
 
 	@Test
 	public void testSelectFromUserIdSuccess() {
-		List<Observer> observers = assertDoesNotThrow(() -> observerDao.selectFromUserId(1));
+		List<Inquiry> observers = assertDoesNotThrow(() -> observerDao.selectFromUserId(1));
 		assertEquals(2, observers.size());
-		Observer observer = observers.getFirst();
-		assertEquals(0, observer.getInquiryId());
-		assertEquals(1, observer.getUserId());
+		Inquiry inquiry = observers.getFirst();		
+		assertEquals(0, inquiry.getId());
+		assertEquals(1, inquiry.getUserId());
+		assertEquals("Test", inquiry.getTitle());
+		assertEquals("Test Content", inquiry.getContent());
+		assertEquals(true, inquiry.isAnonymous());
 	}
 
 }
