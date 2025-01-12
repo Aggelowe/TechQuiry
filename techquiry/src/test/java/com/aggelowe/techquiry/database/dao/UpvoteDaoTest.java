@@ -1,5 +1,6 @@
 package com.aggelowe.techquiry.database.dao;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -22,8 +23,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.aggelowe.techquiry.common.SecurityUtils;
 import com.aggelowe.techquiry.database.common.TestAppConfiguration;
+import com.aggelowe.techquiry.database.entity.Response;
 import com.aggelowe.techquiry.database.entity.Upvote;
+import com.aggelowe.techquiry.database.entity.UserLogin;
 import com.aggelowe.techquiry.database.exception.SQLRunnerExecuteException;
 
 @SpringBootTest(classes = TestAppConfiguration.class)
@@ -163,20 +167,25 @@ public class UpvoteDaoTest {
 
 	@Test
 	public void testSelectFromResponseIdSuccess() {
-		List<Upvote> upvotes = assertDoesNotThrow(() -> upvoteDao.selectFromResponseId(0));
+		List<UserLogin> upvotes = assertDoesNotThrow(() -> upvoteDao.selectFromResponseId(0));
 		assertEquals(1, upvotes.size());
-		Upvote upvote = upvotes.getFirst();
-		assertEquals(0, upvote.getResponseId());
-		assertEquals(0, upvote.getUserId());
+		UserLogin userLogin = upvotes.getFirst();
+		assertEquals(0, userLogin.getId());
+		assertEquals("alice", userLogin.getUsername());
+		assertArrayEquals(SecurityUtils.decodeBase64("MTIzNDU2Nzg="), userLogin.getPasswordHash());
+		assertArrayEquals(SecurityUtils.decodeBase64("MTIzNA=="), userLogin.getPasswordSalt());
 	}
 
 	@Test
 	public void testSelectFromUserIdSuccess() {
-		List<Upvote> upvotes = assertDoesNotThrow(() -> upvoteDao.selectFromUserId(1));
+		List<Response> upvotes = assertDoesNotThrow(() -> upvoteDao.selectFromUserId(1));
 		assertEquals(1, upvotes.size());
-		Upvote upvote = upvotes.getFirst();
-		assertEquals(1, upvote.getResponseId());
-		assertEquals(1, upvote.getUserId());
+		Response response = upvotes.getFirst();
+		assertEquals(1, response.getId());
+		assertEquals(2, response.getInquiryId());
+		assertEquals(1, response.getUserId());
+		assertEquals(false, response.isAnonymous());
+		assertEquals("Instance Response", response.getContent());
 	}
 
 }

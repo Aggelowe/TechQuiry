@@ -129,9 +129,9 @@ public final class ObserverDao {
 	}
 
 	/**
-	 * This method returns and retrieves the list of {@link UserLogin} objects with
-	 * the user id in the observer objects with the given inquiry id from the
-	 * application database.
+	 * This method returns and retrieves the list of {@link UserLogin} objects from
+	 * the application database where the user id matches with the user id in the
+	 * observer objects with the given inquiry id.
 	 * 
 	 * @param inquiryId The inquiry id
 	 * @return The selected user logins
@@ -150,7 +150,7 @@ public final class ObserverDao {
 		}
 		List<UserLogin> list = new ArrayList<>();
 		for (Map<String, Object> row : result) {
-			int id = (int) row.get("user_id");
+			int userId = (int) row.get("user_id");
 			String username = (String) row.get("username");
 			String encodedHash = (String) row.get("password_hash");
 			String encodedSalt = (String) row.get("password_salt");
@@ -162,7 +162,7 @@ public final class ObserverDao {
 			} catch (IllegalArgumentException exception) {
 				throw new DataAccessException("There was an error while retrieving the user login information!", exception);
 			}
-			UserLogin userLogin = new UserLogin(id, username, passwordHash, passwordSalt);
+			UserLogin userLogin = new UserLogin(userId, username, passwordHash, passwordSalt);
 			list.add(userLogin);
 		}
 		return list;

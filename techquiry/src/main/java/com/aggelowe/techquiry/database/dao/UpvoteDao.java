@@ -7,9 +7,12 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.aggelowe.techquiry.common.SecurityUtils;
 import com.aggelowe.techquiry.database.LocalResult;
 import com.aggelowe.techquiry.database.SQLRunner;
+import com.aggelowe.techquiry.database.entity.Response;
 import com.aggelowe.techquiry.database.entity.Upvote;
+import com.aggelowe.techquiry.database.entity.UserLogin;
 import com.aggelowe.techquiry.database.exception.DataAccessException;
 import com.aggelowe.techquiry.database.exception.DatabaseException;
 
@@ -124,15 +127,16 @@ public final class UpvoteDao {
 	}
 
 	/**
-	 * This method returns and retrieves the list of {@link Upvote} objects with the
-	 * given response id from the application database.
+	 * This method returns and retrieves the list of {@link UserLogin} objects from
+	 * the application database where the user id matches with the user id in the
+	 * upvote objects with the given response id.
 	 * 
 	 * @param responseId The response id
-	 * @return The upvotes with the given id
+	 * @return The selected user logins
 	 * @throws DatabaseException If an error occurs while retrieving the response
 	 *                           information
 	 */
-	public List<Upvote> selectFromResponseId(int responseId) throws DatabaseException {
+	public List<UserLogin> selectFromResponseId(int responseId) throws DatabaseException {
 		log.debug("Getting upvotes with response id " + responseId);
 		List<LocalResult> results = runner.runScript(UPVOTE_SELECT_RESPONSE_ID_SCRIPT, responseId);
 		if (results.isEmpty()) {
@@ -142,25 +146,37 @@ public final class UpvoteDao {
 		if (result == null) {
 			throw new DataAccessException("The first statement in " + UPVOTE_SELECT_RESPONSE_ID_SCRIPT + " did not yeild results!");
 		}
-		List<Upvote> list = new ArrayList<>();
+		List<UserLogin> list = new ArrayList<>();
 		for (Map<String, Object> row : result) {
-			int userId = (int) row.get("user_id");
-			Upvote upvote = new Upvote(responseId, userId);
-			list.add(upvote);
+			int id = (int) row.get("user_id");
+			String username = (String) row.get("username");
+			String encodedHash = (String) row.get("password_hash");
+			String encodedSalt = (String) row.get("password_salt");
+			byte[] passwordHash;
+			byte[] passwordSalt;
+			try {
+				passwordHash = SecurityUtils.decodeBase64(encodedHash);
+				passwordSalt = SecurityUtils.decodeBase64(encodedSalt);
+			} catch (IllegalArgumentException exception) {
+				throw new DataAccessException("There was an error while retrieving the user login information!", exception);
+			}
+			UserLogin userLogin = new UserLogin(id, username, passwordHash, passwordSalt);
+			list.add(userLogin);
 		}
 		return list;
 	}
 
 	/**
-	 * This method returns and retrieves the list of {@link Upvote} objects with the
-	 * given user id from the application database.
+	 * This method returns and retrieves the list of {@link Response} objects from
+	 * the application database where the response id matches with the response id
+	 * in the upvote objects with the given user id.
 	 * 
 	 * @param userId The user id
-	 * @return The upvotes with the given id
+	 * @return The selected responses
 	 * @throws DatabaseException If an error occurs while retrieving the response
 	 *                           information
 	 */
-	public List<Upvote> selectFromUserId(int userId) throws DatabaseException {
+	public List<Response> selectFromUserId(int userId) throws DatabaseException {
 		log.debug("Getting upvotes with user id " + userId);
 		List<LocalResult> results = runner.runScript(UPVOTE_SELECT_USER_ID_SCRIPT, userId);
 		if (results.isEmpty()) {
@@ -170,11 +186,15 @@ public final class UpvoteDao {
 		if (result == null) {
 			throw new DataAccessException("The first statement in " + UPVOTE_SELECT_USER_ID_SCRIPT + " did not yeild results!");
 		}
-		List<Upvote> list = new ArrayList<>();
+		List<Response> list = new ArrayList<>();
 		for (Map<String, Object> row : result) {
 			int responseId = (int) row.get("response_id");
-			Upvote upvote = new Upvote(responseId, userId);
-			list.add(upvote);
+			int inquiryId = (int) row.get("inquiry_id");
+			int authorId = (int) row.get("user_id");
+			boolean anonymous = (int) row.get("anonymous") == 1;
+			String content = (String) row.get("content");
+			Response response = new Response(responseId, inquiryId, authorId, anonymous, content);
+			list.add(response);
 		}
 		return list;
 	}
