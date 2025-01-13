@@ -33,6 +33,12 @@ public final class ObserverDao {
 	 * The path of the SQL script for obtaining the count of observer entries with
 	 * an inquiry id.
 	 */
+	public static final String OBSERVER_CHECK_SCRIPT = "/database/observer/check.sql";
+
+	/**
+	 * The path of the SQL script for obtaining the count of observer entries with
+	 * an inquiry id.
+	 */
 	public static final String OBSERVER_COUNT_INQUIRY_ID_SCRIPT = "/database/observer/count_inquiry_id.sql";
 
 	/**
@@ -70,6 +76,34 @@ public final class ObserverDao {
 	@Autowired
 	public ObserverDao(SQLRunner runner) {
 		this.runner = runner;
+	}
+
+	/**
+	 * This method checks whether the given {@link Observer} object exists inside
+	 * the application database.
+	 * 
+	 * @param observer The observer entry to check
+	 * @return Whether the entry exists
+	 * @throws DatabaseException If an error occurs while checking for the observer
+	 */
+	public boolean check(Observer observer) throws DatabaseException {
+		log.debug("Checking whether the observer " + observer + " exists");
+		int inquiryId = observer.getInquiryId();
+		int userId = observer.getUserId();
+		List<LocalResult> results = runner.runScript(OBSERVER_CHECK_SCRIPT, inquiryId, userId);
+		if (results.isEmpty()) {
+			throw new DataAccessException("The first statement in " + OBSERVER_CHECK_SCRIPT + " did not yeild a result!");
+		}
+		LocalResult result = results.getFirst();
+		if (result == null) {
+			throw new DataAccessException("The first statement in " + OBSERVER_CHECK_SCRIPT + " did not yeild results!");
+		}
+		List<Map<String, Object>> list = result.list();
+		if (list.size() == 0) {
+			throw new DataAccessException("The first statement in " + OBSERVER_CHECK_SCRIPT + " did not yeild a result!");
+		}
+		Map<String, Object> row = list.getFirst();
+		return (int) row.get("exist") == 1;
 	}
 
 	/**

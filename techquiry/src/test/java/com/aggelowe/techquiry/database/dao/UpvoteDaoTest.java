@@ -122,6 +122,14 @@ public class UpvoteDaoTest {
 	}
 
 	@Test
+	public void testCheckSuccess() {
+		Upvote target0 = new Upvote(0, 0);
+		assertTrue(assertDoesNotThrow(() -> upvoteDao.check(target0)));
+		Upvote target1 = new Upvote(2, 0);
+		assertFalse(assertDoesNotThrow(() -> upvoteDao.check(target1)));
+	}
+
+	@Test
 	public void testCountFromResponseIdSuccess() {
 		int count0 = assertDoesNotThrow(() -> upvoteDao.countFromResponseId(0));
 		assertEquals(1, count0);

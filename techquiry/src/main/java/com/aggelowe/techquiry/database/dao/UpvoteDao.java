@@ -30,6 +30,12 @@ import lombok.extern.log4j.Log4j2;
 public final class UpvoteDao {
 
 	/**
+	 * The path of the SQL script for obtaining the count of upvote entries with an
+	 * inquiry id.
+	 */
+	public static final String UPVOTE_CHECK_SCRIPT = "/database/upvote/check.sql";
+
+	/**
 	 * The path of the SQL script for obtaining the count of upvote entries with a
 	 * response id.
 	 */
@@ -69,6 +75,34 @@ public final class UpvoteDao {
 	@Autowired
 	public UpvoteDao(SQLRunner runner) {
 		this.runner = runner;
+	}
+
+	/**
+	 * This method checks whether the given {@link Upvote} object exists inside the
+	 * application database.
+	 * 
+	 * @param upvote The upvote entry to check
+	 * @return Whether the entry exists
+	 * @throws DatabaseException If an error occurs while checking for the upvote
+	 */
+	public boolean check(Upvote upvote) throws DatabaseException {
+		log.debug("Checking whether the upvote " + upvote + " exists");
+		int responseId = upvote.getResponseId();
+		int userId = upvote.getUserId();
+		List<LocalResult> results = runner.runScript(UPVOTE_CHECK_SCRIPT, responseId, userId);
+		if (results.isEmpty()) {
+			throw new DataAccessException("The first statement in " + UPVOTE_CHECK_SCRIPT + " did not yeild a result!");
+		}
+		LocalResult result = results.getFirst();
+		if (result == null) {
+			throw new DataAccessException("The first statement in " + UPVOTE_CHECK_SCRIPT + " did not yeild results!");
+		}
+		List<Map<String, Object>> list = result.list();
+		if (list.size() == 0) {
+			throw new DataAccessException("The first statement in " + UPVOTE_CHECK_SCRIPT + " did not yeild a result!");
+		}
+		Map<String, Object> row = list.getFirst();
+		return (int) row.get("exist") == 1;
 	}
 
 	/**

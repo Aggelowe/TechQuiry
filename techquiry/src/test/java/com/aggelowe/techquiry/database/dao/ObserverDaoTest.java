@@ -104,6 +104,14 @@ public class ObserverDaoTest {
 	}
 
 	@Test
+	public void testCheckSuccess() {
+		Observer target0 = new Observer(0, 0);
+		assertTrue(assertDoesNotThrow(() -> observerDao.check(target0)));
+		Observer target1 = new Observer(2, 0);
+		assertFalse(assertDoesNotThrow(() -> observerDao.check(target1)));
+	}
+
+	@Test
 	public void testCountFromInquiryIdSuccess() {
 		int count0 = assertDoesNotThrow(() -> observerDao.countFromInquiryId(0));
 		assertEquals(2, count0);
