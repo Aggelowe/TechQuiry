@@ -123,7 +123,7 @@ public class ObserverActionService {
 		}
 		try {
 			if (!observerDao.check(observer)) {
-				throw new InvalidRequestException("The requested observer does not exist!");
+				throw new EntityNotFoundException("The requested observer does not exist!");
 			}
 			observerDao.delete(observer);
 		} catch (DatabaseException exception) {
