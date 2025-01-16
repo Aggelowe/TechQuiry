@@ -73,7 +73,7 @@ public class ObserverActionService {
 	/**
 	 * This method inserts the given {@link Observer} object in the database
 	 *
-	 * @param response The observer object to create
+	 * @param observer The observer object to create
 	 * @throws ForbiddenOperationException If the current user does not have the
 	 *                                     given user id
 	 * @throws EntityNotFoundException     If the given user id or inquiry id do not
@@ -86,7 +86,7 @@ public class ObserverActionService {
 	public void createObserver(Observer observer) throws ServiceException {
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null || current.getUserId() != observer.getUserId()) {
-			throw new ForbiddenOperationException("The requested response update is forbidden!");
+			throw new ForbiddenOperationException("The requested observer creation is forbidden!");
 		}
 		try {
 			UserLogin userLogin = userLoginDao.select(observer.getUserId());
@@ -102,7 +102,7 @@ public class ObserverActionService {
 			}
 			observerDao.insert(observer);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while creating the inquiry!", exception);
+			throw new InternalErrorException("An internal error occured while creating the observer!", exception);
 		}
 	}
 
@@ -114,12 +114,12 @@ public class ObserverActionService {
 	 *                                     given user id
 	 * @throws EntityNotFoundException     If the requested observer does not exist
 	 * @throws InternalErrorException      If an internal error occurred while
-	 *                                     deleting the response
+	 *                                     deleting the observer
 	 */
 	public void deleteObserver(Observer observer) throws ServiceException {
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null || current.getUserId() != observer.getUserId()) {
-			throw new ForbiddenOperationException("The requested response update is forbidden!");
+			throw new ForbiddenOperationException("The requested observer deletion is forbidden!");
 		}
 		try {
 			if (!observerDao.check(observer)) {

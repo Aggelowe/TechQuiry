@@ -82,7 +82,7 @@ public class ObserverService {
 		try {
 			return observerDao.countFromInquiryId(inquiryId);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while getting the response count!", exception);
+			throw new InternalErrorException("An internal error occured while getting the observer count!", exception);
 		}
 	}
 

@@ -105,7 +105,7 @@ public class ResponseActionService {
 			}
 			return responseDao.insert(response);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while creating the inquiry!", exception);
+			throw new InternalErrorException("An internal error occured while creating the response!", exception);
 		}
 	}
 
