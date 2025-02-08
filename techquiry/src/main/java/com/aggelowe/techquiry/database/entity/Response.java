@@ -1,6 +1,7 @@
 package com.aggelowe.techquiry.database.entity;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,6 +15,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
+@EqualsAndHashCode
 public class Response {
 
 	/**
@@ -48,11 +50,19 @@ public class Response {
 	 */
 	@Override
 	public String toString() {
-		return "[Response ID: " + id
-				+ ", Inquiry ID: " + inquiryId
-				+ ", User ID: " + (anonymous ? "REDACTED" : userId)
-				+ ", Anonymous: " + anonymous
-				+ ", Content: " + content + "]";
+	    return "Response(id=" + id +
+	    		", inquiryId=" + inquiryId +
+	    		(anonymous ? "" : ", userId=" + userId) +
+	    		", anonymous=" + anonymous +
+	    		", content=" + content + ")";
+	}
+
+	/**
+	 * This method creates a new shallow copy of the current {@link Response}
+	 * object.
+	 */
+	public Response copy() {
+		return new Response(id, inquiryId, userId, anonymous, content);
 	}
 
 }

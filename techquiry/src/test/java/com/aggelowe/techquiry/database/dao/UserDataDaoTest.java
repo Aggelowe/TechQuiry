@@ -120,7 +120,6 @@ public class UserDataDaoTest {
 	public void testInsertException() {
 		assertThrows(SQLRunnerExecuteException.class, () -> userDataDao.insert(new UserData(1, "Charlie", "Brown")));
 		assertThrows(SQLRunnerExecuteException.class, () -> userDataDao.insert(new UserData(3, "Charlie", "Brown")));
-		assertThrows(SQLRunnerExecuteException.class, () -> userDataDao.insert(new UserData(2, null, null)));
 	}
 
 	@Test
@@ -148,11 +147,6 @@ public class UserDataDaoTest {
 				assertNull(assertDoesNotThrow(() -> result.getBytes("icon")));
 			}
 		});
-	}
-
-	@Test
-	public void testUpdateException() {
-		assertThrows(SQLRunnerExecuteException.class, () -> userDataDao.update(new UserData(1, null, null)));
 	}
 
 }

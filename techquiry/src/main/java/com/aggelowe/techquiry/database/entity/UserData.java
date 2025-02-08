@@ -3,7 +3,10 @@ package com.aggelowe.techquiry.database.entity;
 import com.aggelowe.techquiry.common.SecurityUtils;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -15,7 +18,9 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@RequiredArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class UserData {
 
 	/**
@@ -26,11 +31,13 @@ public class UserData {
 	/**
 	 * The first name of the user
 	 */
+	@NonNull
 	private String firstName;
 
 	/**
 	 * The last name of the user
 	 */
+	@NonNull
 	private String lastName;
 
 	/**
@@ -39,29 +46,23 @@ public class UserData {
 	private byte[] icon;
 
 	/**
-	 * This constructor constructs a new {@link UserData} instance with the provided
-	 * parameters as the required user data information.
-	 * 
-	 * @param id           The unique user id
-	 * @param username     The user's first name
-	 * @param passwordHash The user's last name
-	 */
-	public UserData(int id, String firstName, String lastName) {
-		this(id, firstName, lastName, null);
-	}
-	
-	/**
-	 * This method returns the last name of the user
-	/**
-	 * This method returns the object as a string containing the user id, the
-	 * first name, the last name and the profile icon.
+	 * This method returns the object as a string containing the user id, the first
+	 * name, the last name and the profile icon.
 	 */
 	@Override
 	public String toString() {
-		return "[User ID: " + id +
-				", First Name: " + firstName +
-				", Last Name: " + lastName +
-				", Icon: " + (icon == null ? "NULL" : SecurityUtils.encodeBase64(icon)) + "]";
+		return "UserData(id=" + id + 
+				", firstName=" + firstName + 
+				", lastName=" + lastName + 
+				", icon=" + (icon == null ? "null" : SecurityUtils.encodeBase64(icon)) + ")";
+	}
+
+	/**
+	 * This method creates a new shallow copy of the current {@link UserData}
+	 * object.
+	 */
+	public UserData copy() {
+		return new UserData(id, firstName, lastName, icon);
 	}
 
 }

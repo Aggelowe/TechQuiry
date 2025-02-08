@@ -1,7 +1,9 @@
 package com.aggelowe.techquiry.database.entity;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 
 /**
  * The {@link Upvote} class represents an upvote entry of the TechQuiry
@@ -12,6 +14,8 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
+@EqualsAndHashCode
+@ToString
 public class Upvote {
 
 	/**
@@ -23,15 +27,5 @@ public class Upvote {
 	 * The user id of the upvoter
 	 */
 	private final int userId;
-	
-	/**
-	 * This method returns the object as a string containing the response id and the
-	 * upvoter's user id.
-	 */
-	@Override
-	public String toString() {
-		return "[Response ID: " + responseId
-				+ ", User ID: " + userId + "]";
-	}
 
 }

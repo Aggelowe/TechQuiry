@@ -3,8 +3,10 @@ package com.aggelowe.techquiry.database.entity;
 import com.aggelowe.techquiry.common.SecurityUtils;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * The {@link UserLogin} class represents a user login of the TechQuiry
@@ -16,6 +18,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
+@EqualsAndHashCode
+@ToString
 public class UserLogin {
 
 	/**
@@ -31,13 +35,15 @@ public class UserLogin {
 	/**
 	 * The hashed password of the user
 	 */
+	@ToString.Exclude
 	private byte[] passwordHash;
 
 	/**
 	 * The random salt used in hashing the password
 	 */
+	@ToString.Exclude
 	private byte[] passwordSalt;
-	
+
 	/**
 	 * This constructor constructs a new {@link UserLogin} instance with the
 	 * provided parameters as the required user login information.
@@ -54,15 +60,11 @@ public class UserLogin {
 	}
 
 	/**
-	 * This method returns the object as a string containing the user id, the
-	 * username, the password hash and the password salt.
+	 * This method creates a new shallow copy of the current {@link UserLogin}
+	 * object.
 	 */
-	@Override
-	public String toString() {
-		return "[User ID: " + id +
-				", Username: " + username +
-				", Password Hash: " + SecurityUtils.encodeBase64(passwordHash) +
-				", Password Salt: " + SecurityUtils.encodeBase64(passwordSalt) + "]";
+	public UserLogin copy() {
+		return new UserLogin(id, username, passwordHash, passwordSalt);
 	}
 
 }

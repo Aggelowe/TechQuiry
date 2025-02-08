@@ -1,7 +1,9 @@
 package com.aggelowe.techquiry.database.entity;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 
 /**
  * The {@link Observer} class represents an observer entry of the TechQuiry
@@ -12,6 +14,8 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
+@EqualsAndHashCode
+@ToString
 public class Observer {
 
 	/**
@@ -23,15 +27,5 @@ public class Observer {
 	 * The user id of the observer
 	 */
 	private final int userId;
-	
-	/**
-	 * This method returns the object as a string containing the inquiry id and the
-	 * observer's user id.
-	 */
-	@Override
-	public String toString() {
-		return "[Inquiry ID: " + inquiryId +
-				", User ID: " + userId + "]";
-	}
 
 }
