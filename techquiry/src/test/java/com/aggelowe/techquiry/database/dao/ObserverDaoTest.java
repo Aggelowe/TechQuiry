@@ -160,7 +160,7 @@ public class ObserverDaoTest {
 		List<UserLogin> observers = assertDoesNotThrow(() -> observerDao.selectFromInquiryId(1));
 		assertEquals(1, observers.size());
 		UserLogin userLogin = observers.getFirst();
-		assertEquals(1, userLogin.getId());
+		assertEquals(1, userLogin.getUserId());
 		assertEquals("bob", userLogin.getUsername());
 		assertArrayEquals(SecurityUtils.decodeBase64("cGFzc3dvcmQ="), userLogin.getPasswordHash());
 		assertArrayEquals(SecurityUtils.decodeBase64("cGFzcw=="), userLogin.getPasswordSalt());
@@ -171,11 +171,11 @@ public class ObserverDaoTest {
 		List<Inquiry> observers = assertDoesNotThrow(() -> observerDao.selectFromUserId(1));
 		assertEquals(2, observers.size());
 		Inquiry inquiry = observers.getFirst();		
-		assertEquals(0, inquiry.getId());
+		assertEquals(0, inquiry.getInquiryId());
 		assertEquals(1, inquiry.getUserId());
 		assertEquals("Test", inquiry.getTitle());
 		assertEquals("Test Content", inquiry.getContent());
-		assertEquals(true, inquiry.isAnonymous());
+		assertEquals(true, inquiry.getAnonymous());
 	}
 
 }

@@ -178,7 +178,7 @@ public class UpvoteDaoTest {
 		List<UserLogin> upvotes = assertDoesNotThrow(() -> upvoteDao.selectFromResponseId(0));
 		assertEquals(1, upvotes.size());
 		UserLogin userLogin = upvotes.getFirst();
-		assertEquals(0, userLogin.getId());
+		assertEquals(0, userLogin.getUserId());
 		assertEquals("alice", userLogin.getUsername());
 		assertArrayEquals(SecurityUtils.decodeBase64("MTIzNDU2Nzg="), userLogin.getPasswordHash());
 		assertArrayEquals(SecurityUtils.decodeBase64("MTIzNA=="), userLogin.getPasswordSalt());
@@ -189,10 +189,10 @@ public class UpvoteDaoTest {
 		List<Response> upvotes = assertDoesNotThrow(() -> upvoteDao.selectFromUserId(1));
 		assertEquals(1, upvotes.size());
 		Response response = upvotes.getFirst();
-		assertEquals(1, response.getId());
+		assertEquals(1, response.getResponseId());
 		assertEquals(2, response.getInquiryId());
 		assertEquals(1, response.getUserId());
-		assertEquals(false, response.isAnonymous());
+		assertEquals(false, response.getAnonymous());
 		assertEquals("Instance Response", response.getContent());
 	}
 

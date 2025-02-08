@@ -86,8 +86,7 @@ public class InquiryActionService {
 		if (title.isEmpty() || content.isEmpty()) {
 			throw new InvalidRequestException("The given title and content name must not be empty!");
 		}
-		Inquiry copy = inquiry.copy();
-		copy.setUserId(current.getUserId());
+		Inquiry copy = inquiry.toBuilder().userId(current.getUserId()).build();
 		try {
 			return inquiryDao.insert(copy);
 		} catch (DatabaseException exception) {
@@ -147,15 +146,14 @@ public class InquiryActionService {
 			throw new InvalidRequestException("The given title and content name must not be empty!");
 		}
 		try {
-			Inquiry previous = inquiryDao.select(inquiry.getId());
+			Inquiry previous = inquiryDao.select(inquiry.getInquiryId());
 			if (previous == null) {
 				throw new EntityNotFoundException("The requested inquiry does not exist!");
 			}
 			if (current.getUserId() != previous.getUserId()) {
 				throw new ForbiddenOperationException("The requested inquiry update is forbidden!");
 			}
-			Inquiry copy = inquiry.copy();
-			copy.setUserId(current.getUserId());
+			Inquiry copy = inquiry.toBuilder().userId(current.getUserId()).build();
 			inquiryDao.update(copy);
 		} catch (DatabaseException exception) {
 			throw new InternalErrorException("An internal error occured while creating the inquiry!", exception);

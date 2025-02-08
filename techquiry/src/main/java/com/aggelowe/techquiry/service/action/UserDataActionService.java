@@ -77,8 +77,7 @@ public class UserDataActionService {
 			if (userData != null) {
 				throw new InvalidRequestException("The given id is not available!");
 			}
-			UserData copy = data.copy();
-			copy.setId(current.getUserId());
+			UserData copy = data.toBuilder().userId(current.getUserId()).build();
 			userDataDao.insert(copy);
 		} catch (DatabaseException exception) {
 			throw new InternalErrorException("An internal error occured while creating the user!", exception);
@@ -139,8 +138,7 @@ public class UserDataActionService {
 			if (userData == null) {
 				throw new EntityNotFoundException("The requested user data do not exist!");
 			}
-			UserData copy = data.copy();
-			copy.setId(current.getUserId());
+			UserData copy = data.toBuilder().userId(current.getUserId()).build();
 			userDataDao.update(copy);
 		} catch (DatabaseException exception) {
 			throw new InternalErrorException("An internal error occured while getting the user!", exception);

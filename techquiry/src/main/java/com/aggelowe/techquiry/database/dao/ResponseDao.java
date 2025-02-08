@@ -127,7 +127,7 @@ public final class ResponseDao {
 		log.debug("Inserting response with information " + response);
 		int inquiryId = response.getInquiryId();
 		int userId = response.getUserId();
-		boolean anonymous = response.isAnonymous();
+		boolean anonymous = response.getAnonymous();
 		String content = response.getContent();
 		List<LocalResult> results = runner.runScript(RESPONSE_INSERT_SCRIPT, inquiryId, userId, anonymous, content);
 		if (results.size() < 2) {
@@ -219,10 +219,10 @@ public final class ResponseDao {
 	 */
 	public void update(Response response) throws DatabaseException {
 		log.debug("Updating response with data " + response);
-		int id = response.getId();
+		int id = response.getResponseId();
 		int inquiryId = response.getInquiryId();
 		int userId = response.getUserId();
-		boolean anonymous = response.isAnonymous();
+		boolean anonymous = response.getAnonymous();
 		String content = response.getContent();
 		runner.runScript(RESPONSE_UPDATE_SCRIPT, inquiryId, userId, anonymous, content, id);
 	}

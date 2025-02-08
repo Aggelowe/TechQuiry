@@ -2,10 +2,11 @@ package com.aggelowe.techquiry.database.entity;
 
 import com.aggelowe.techquiry.common.SecurityUtils;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
@@ -16,8 +17,8 @@ import lombok.ToString;
  * @since 0.0.1
  */
 @Getter
-@Setter
-@AllArgsConstructor
+@RequiredArgsConstructor
+@Builder(toBuilder = true)
 @EqualsAndHashCode
 @ToString
 public class UserLogin {
@@ -25,22 +26,26 @@ public class UserLogin {
 	/**
 	 * The unique id of the user
 	 */
-	private int id;
+	@NonNull
+	private Integer userId;
 
 	/**
 	 * The unique username chosen by the user
 	 */
+	@NonNull
 	private String username;
 
 	/**
 	 * The hashed password of the user
 	 */
+	@NonNull
 	@ToString.Exclude
 	private byte[] passwordHash;
 
 	/**
 	 * The random salt used in hashing the password
 	 */
+	@NonNull
 	@ToString.Exclude
 	private byte[] passwordSalt;
 
@@ -53,18 +58,10 @@ public class UserLogin {
 	 * @param password The user's password
 	 */
 	public UserLogin(int id, String username, String password) {
-		this.id = id;
+		this.userId = id;
 		this.username = username;
 		this.passwordSalt = SecurityUtils.generateSalt();
 		this.passwordHash = SecurityUtils.hashPassword(password, passwordSalt);
-	}
-
-	/**
-	 * This method creates a new shallow copy of the current {@link UserLogin}
-	 * object.
-	 */
-	public UserLogin copy() {
-		return new UserLogin(id, username, passwordHash, passwordSalt);
 	}
 
 }

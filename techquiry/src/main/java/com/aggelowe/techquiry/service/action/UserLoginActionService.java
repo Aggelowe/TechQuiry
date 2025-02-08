@@ -140,11 +140,10 @@ public class UserLoginActionService {
 		}
 		try {
 			UserLogin usernameLogin = userLoginDao.selectFromUsername(login.getUsername());
-			if (usernameLogin != null && usernameLogin.getId() != login.getId()) {
+			if (usernameLogin != null && usernameLogin.getUserId() != login.getUserId()) {
 				throw new InvalidRequestException("The given username is not available!");
 			}
-			UserLogin copy = login.copy();
-			copy.setId(current.getUserId());
+			UserLogin copy = login.toBuilder().userId(current.getUserId()).build();
 			userLoginDao.update(copy);
 		} catch (DatabaseException exception) {
 			throw new InternalErrorException("An internal error occured while getting the user!", exception);
@@ -179,7 +178,7 @@ public class UserLoginActionService {
 		byte[] salt = login.getPasswordSalt();
 		byte[] hash = login.getPasswordHash();
 		if (SecurityUtils.verifyPassword(password, salt, hash)) {
-			int userId = login.getId();
+			int userId = login.getUserId();
 			Authentication authentication = new Authentication(userId);
 			sessionHelper.setAuthentication(authentication);
 		} else {

@@ -94,7 +94,7 @@ public class UserLoginServiceTest {
 		List<UserLogin> userLogins = assertDoesNotThrow(() -> userLoginService.getLoginRange(2, 1));
 		assertEquals(1, userLogins.size());
 		UserLogin userLogin = userLogins.get(0);
-		assertEquals(2, userLogin.getId());
+		assertEquals(2, userLogin.getUserId());
 		assertEquals("charlie", userLogin.getUsername());
 		assertArrayEquals(SecurityUtils.decodeBase64("dm2H/fl9TtxWBKW5dN5nh9MRUNTbWuFM3xquxwQ+VC4="), userLogin.getPasswordHash());
 		assertArrayEquals(SecurityUtils.decodeBase64("jgKZJ7psArGnRao9N464eg=="), userLogin.getPasswordSalt());
@@ -103,7 +103,7 @@ public class UserLoginServiceTest {
 	@Test
 	public void testGetLoginByUserIdSuccess() {
 		UserLogin userLogin = assertDoesNotThrow(() -> userLoginService.getLoginByUserId(1));
-		assertEquals(1, userLogin.getId());
+		assertEquals(1, userLogin.getUserId());
 		assertEquals("bob", userLogin.getUsername());
 		assertArrayEquals(SecurityUtils.decodeBase64("ptp5i/V5DHjaOsFQfCo7NseUflYX45loc9DTSPrl+NU="), userLogin.getPasswordHash());
 		assertArrayEquals(SecurityUtils.decodeBase64("Fw7zNLq9p0L1bT68ifEz9g=="), userLogin.getPasswordSalt());
@@ -117,7 +117,7 @@ public class UserLoginServiceTest {
 	@Test
 	public void testGetLoginByUsernameSuccess() {
 		UserLogin userLogin = assertDoesNotThrow(() -> userLoginService.getLoginByUsername("bob"));
-		assertEquals(1, userLogin.getId());
+		assertEquals(1, userLogin.getUserId());
 		assertEquals("bob", userLogin.getUsername());
 		assertArrayEquals(SecurityUtils.decodeBase64("ptp5i/V5DHjaOsFQfCo7NseUflYX45loc9DTSPrl+NU="), userLogin.getPasswordHash());
 		assertArrayEquals(SecurityUtils.decodeBase64("Fw7zNLq9p0L1bT68ifEz9g=="), userLogin.getPasswordSalt());

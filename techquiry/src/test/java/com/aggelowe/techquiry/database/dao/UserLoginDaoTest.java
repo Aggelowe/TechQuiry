@@ -114,7 +114,6 @@ public class UserLoginDaoTest {
 	@Test
 	public void testInsertException() {
 		assertThrows(SQLRunnerExecuteException.class, () -> userLoginDao.insert(new UserLogin(3, "charlie", new byte[4], new byte[2])));
-		assertThrows(SQLRunnerExecuteException.class, () -> userLoginDao.insert(new UserLogin(3, null, new byte[0], new byte[0])));
 	}
 
 	@Test
@@ -122,18 +121,18 @@ public class UserLoginDaoTest {
 		List<UserLogin> userLogins = assertDoesNotThrow(() -> userLoginDao.range(2, 1));
 		assertEquals(2, userLogins.size());
 		UserLogin userLogin0 = userLogins.get(0);
-		assertEquals(1, userLogin0.getId());
+		assertEquals(1, userLogin0.getUserId());
 		assertEquals("bob", userLogin0.getUsername());
 		assertArrayEquals(SecurityUtils.decodeBase64("cGFzc3dvcmQ="), userLogin0.getPasswordHash());
 		assertArrayEquals(SecurityUtils.decodeBase64("cGFzcw=="), userLogin0.getPasswordSalt());
 		UserLogin userLogin1 = userLogins.get(1);
-		assertEquals(2, userLogin1.getId());
+		assertEquals(2, userLogin1.getUserId());
 	}
 
 	@Test
 	public void testSelectSuccess() {
 		UserLogin userLogin = assertDoesNotThrow(() -> userLoginDao.select(1));
-		assertEquals(1, userLogin.getId());
+		assertEquals(1, userLogin.getUserId());
 		assertEquals("bob", userLogin.getUsername());
 		assertArrayEquals(SecurityUtils.decodeBase64("cGFzc3dvcmQ="), userLogin.getPasswordHash());
 		assertArrayEquals(SecurityUtils.decodeBase64("cGFzcw=="), userLogin.getPasswordSalt());
@@ -159,7 +158,6 @@ public class UserLoginDaoTest {
 	@Test
 	public void testUpdateException() {
 		assertThrows(SQLRunnerExecuteException.class, () -> userLoginDao.update(new UserLogin(2, "alice", new byte[4], new byte[2])));
-		assertThrows(SQLRunnerExecuteException.class, () -> userLoginDao.update(new UserLogin(2, null, new byte[4], new byte[2])));
 	}
 
 }

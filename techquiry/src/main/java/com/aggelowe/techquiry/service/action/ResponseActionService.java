@@ -89,8 +89,7 @@ public class ResponseActionService {
 			if (inquiry == null) {
 				throw new EntityNotFoundException("The given inquiry id does not have a corresponding inquiry!");
 			}
-			Response copy = response.copy();
-			copy.setUserId(current.getUserId());
+			Response copy = response.toBuilder().userId(current.getUserId()).build();
 			return responseDao.insert(copy);
 		} catch (DatabaseException exception) {
 			throw new InternalErrorException("An internal error occured while creating the response!", exception);
@@ -149,7 +148,7 @@ public class ResponseActionService {
 			throw new InvalidRequestException("The given content name must not be empty!");
 		}
 		try {
-			Response previous = responseDao.select(response.getId());
+			Response previous = responseDao.select(response.getResponseId());
 			if (previous == null) {
 				throw new EntityNotFoundException("The requested response does not exist!");
 			}
@@ -160,9 +159,8 @@ public class ResponseActionService {
 			if (inquiry == null) {
 				throw new EntityNotFoundException("The given inquiry id does not have a corresponding inquiry!");
 			}
-			Response copy = response.copy();
-			copy.setUserId(current.getUserId());
-			responseDao.update(response);
+			Response copy = response.toBuilder().userId(current.getUserId()).build();
+			responseDao.update(copy);
 		} catch (DatabaseException exception) {
 			throw new InternalErrorException("An internal error occured while creating the inquiry!", exception);
 		}

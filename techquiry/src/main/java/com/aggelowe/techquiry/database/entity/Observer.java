@@ -1,8 +1,10 @@
 package com.aggelowe.techquiry.database.entity;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
@@ -13,7 +15,8 @@ import lombok.ToString;
  * @since 0.0.1
  */
 @Getter
-@AllArgsConstructor
+@RequiredArgsConstructor
+@Builder(toBuilder = true)
 @EqualsAndHashCode
 @ToString
 public class Observer {
@@ -21,11 +24,13 @@ public class Observer {
 	/**
 	 * The inquiry id of the inquiry
 	 */
-	private final int inquiryId;
+	@NonNull
+	private Integer inquiryId;
 
 	/**
 	 * The user id of the observer
 	 */
-	private final int userId;
+	@NonNull
+	private Integer userId;
 
 }

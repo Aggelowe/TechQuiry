@@ -1,9 +1,11 @@
 package com.aggelowe.techquiry.database.entity;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 /**
  * The {@link Response} class represents an response entry of the TechQuiry
@@ -13,56 +15,41 @@ import lombok.Setter;
  * @since 0.0.1
  */
 @Getter
-@Setter
-@AllArgsConstructor
+@RequiredArgsConstructor
+@Builder(toBuilder = true)
 @EqualsAndHashCode
+@ToString
 public class Response {
 
 	/**
 	 * The unique id of the response
 	 */
-	private final int id;
+	@NonNull
+	private Integer responseId;
 
 	/**
 	 * The id of the parent inquiry
 	 */
-	private int inquiryId;
+	@NonNull
+	private Integer inquiryId;
 
 	/**
 	 * The user id of the author
 	 */
-	private int userId;
+	@NonNull
+	@ToString.Exclude
+	private Integer userId;
 
 	/**
 	 * Whether the author is anonymous
 	 */
-	private boolean anonymous;
+	@NonNull
+	private Boolean anonymous;
 
 	/**
 	 * The content of the response
 	 */
+	@NonNull
 	private String content;
-
-	/**
-	 * This method returns the object as a string containing the response id, the
-	 * parent inquiry's id, the author's user id, the content and whether the author
-	 * is anonymous.
-	 */
-	@Override
-	public String toString() {
-	    return "Response(id=" + id +
-	    		", inquiryId=" + inquiryId +
-	    		(anonymous ? "" : ", userId=" + userId) +
-	    		", anonymous=" + anonymous +
-	    		", content=" + content + ")";
-	}
-
-	/**
-	 * This method creates a new shallow copy of the current {@link Response}
-	 * object.
-	 */
-	public Response copy() {
-		return new Response(id, inquiryId, userId, anonymous, content);
-	}
 
 }

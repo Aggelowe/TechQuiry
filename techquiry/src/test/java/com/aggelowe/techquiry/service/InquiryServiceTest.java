@@ -106,21 +106,21 @@ public class InquiryServiceTest {
 		List<Inquiry> inquiries = assertDoesNotThrow(() -> inquiryService.getInquiryRange(2, 1));
 		assertEquals(1, inquiries.size());
 		Inquiry inquiry = inquiries.get(0);
-		assertEquals(2, inquiry.getId());
+		assertEquals(2, inquiry.getInquiryId());
 		assertEquals(0, inquiry.getUserId());
 		assertEquals("Instance", inquiry.getTitle());
 		assertEquals("Instance Content", inquiry.getContent());
-		assertEquals(false, inquiry.isAnonymous());
+		assertEquals(false, inquiry.getAnonymous());
 	}
 
 	@Test
 	public void testGetInquiryByInquiryIdSuccess() {
 		Inquiry inquiry = assertDoesNotThrow(() -> inquiryService.getInquiryByInquiryId(1));
-		assertEquals(1, inquiry.getId());
+		assertEquals(1, inquiry.getInquiryId());
 		assertEquals(0, inquiry.getUserId());
 		assertEquals("Example", inquiry.getTitle());
 		assertEquals("Example Content", inquiry.getContent());
-		assertEquals(true, inquiry.isAnonymous());
+		assertEquals(true, inquiry.getAnonymous());
 	}
 
 	@Test
@@ -134,11 +134,11 @@ public class InquiryServiceTest {
 		List<Inquiry> inquiries0 = assertDoesNotThrow(() -> inquiryActionService.getInquiryListByUserId(0));
 		assertEquals(1, inquiries0.size());
 		Inquiry inquiry = inquiries0.get(0);
-		assertEquals(2, inquiry.getId());
+		assertEquals(2, inquiry.getInquiryId());
 		assertEquals(0, inquiry.getUserId());
 		assertEquals("Instance", inquiry.getTitle());
 		assertEquals("Instance Content", inquiry.getContent());
-		assertEquals(false, inquiry.isAnonymous());
+		assertEquals(false, inquiry.getAnonymous());
 		sessionHelper.setAuthentication(new Authentication(0));
 		List<Inquiry> inquiries1 = assertDoesNotThrow(() -> inquiryActionService.getInquiryListByUserId(0));
 		assertEquals(2, inquiries1.size());

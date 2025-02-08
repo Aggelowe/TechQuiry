@@ -128,7 +128,6 @@ public class InquiryDaoTest {
 	@Test
 	public void testInsertException() {
 		assertThrows(SQLRunnerExecuteException.class, () -> inquiryDao.insert(new Inquiry(3, 2, "Fail", "Fail Content", true)));
-		assertThrows(SQLRunnerExecuteException.class, () -> inquiryDao.insert(new Inquiry(3, 0, null, null, true)));
 	}
 
 	@Test
@@ -136,13 +135,13 @@ public class InquiryDaoTest {
 		List<Inquiry> inquiries = assertDoesNotThrow(() -> inquiryDao.range(2, 1));
 		assertEquals(2, inquiries.size());
 		Inquiry inquiry0 = inquiries.get(0);
-		assertEquals(1, inquiry0.getId());
+		assertEquals(1, inquiry0.getInquiryId());
 		assertEquals(0, inquiry0.getUserId());
 		assertEquals("Example", inquiry0.getTitle());
 		assertEquals("Example Content", inquiry0.getContent());
-		assertEquals(true, inquiry0.isAnonymous());
+		assertEquals(true, inquiry0.getAnonymous());
 		Inquiry inquiry1 = inquiries.get(1);
-		assertEquals(2, inquiry1.getId());
+		assertEquals(2, inquiry1.getInquiryId());
 	}
 
 	@Test
@@ -150,11 +149,11 @@ public class InquiryDaoTest {
 		List<Inquiry> inquiries0 = assertDoesNotThrow(() -> inquiryDao.selectFromUserIdNonAnonymous(0));
 		assertEquals(1, inquiries0.size());
 		Inquiry inquiry = inquiries0.get(0);
-		assertEquals(2, inquiry.getId());
+		assertEquals(2, inquiry.getInquiryId());
 		assertEquals(0, inquiry.getUserId());
 		assertEquals("Instance", inquiry.getTitle());
 		assertEquals("Instance Content", inquiry.getContent());
-		assertEquals(false, inquiry.isAnonymous());
+		assertEquals(false, inquiry.getAnonymous());
 		List<Inquiry> inquiries1 = assertDoesNotThrow(() -> inquiryDao.selectFromUserIdNonAnonymous(1));
 		assertTrue(inquiries1.isEmpty());
 	}
@@ -164,29 +163,29 @@ public class InquiryDaoTest {
 		List<Inquiry> inquiries0 = assertDoesNotThrow(() -> inquiryDao.selectFromUserId(0));
 		assertEquals(2, inquiries0.size());
 		Inquiry inquiry0 = inquiries0.get(0);
-		assertEquals(1, inquiry0.getId());
+		assertEquals(1, inquiry0.getInquiryId());
 		assertEquals(0, inquiry0.getUserId());
 		assertEquals("Example", inquiry0.getTitle());
 		assertEquals("Example Content", inquiry0.getContent());
-		assertEquals(true, inquiry0.isAnonymous());
+		assertEquals(true, inquiry0.getAnonymous());
 		List<Inquiry> inquiries1 = assertDoesNotThrow(() -> inquiryDao.selectFromUserId(1));
 		assertEquals(1, inquiries1.size());
 		Inquiry inquiry1 = inquiries1.get(0);
-		assertEquals(0, inquiry1.getId());
+		assertEquals(0, inquiry1.getInquiryId());
 		assertEquals(1, inquiry1.getUserId());
 		assertEquals("Test", inquiry1.getTitle());
 		assertEquals("Test Content", inquiry1.getContent());
-		assertEquals(true, inquiry1.isAnonymous());
+		assertEquals(true, inquiry1.getAnonymous());
 	}
 
 	@Test
 	public void testSelectSuccess() {
 		Inquiry inquiry = assertDoesNotThrow(() -> inquiryDao.select(1));
-		assertEquals(1, inquiry.getId());
+		assertEquals(1, inquiry.getInquiryId());
 		assertEquals(0, inquiry.getUserId());
 		assertEquals("Example", inquiry.getTitle());
 		assertEquals("Example Content", inquiry.getContent());
-		assertEquals(true, inquiry.isAnonymous());
+		assertEquals(true, inquiry.getAnonymous());
 	}
 
 	@Test
@@ -211,7 +210,6 @@ public class InquiryDaoTest {
 	@Test
 	public void testUpdateException() {
 		assertThrows(SQLRunnerExecuteException.class, () -> inquiryDao.update(new Inquiry(0, 3, "Fail", "Fail Content", false)));
-		assertThrows(SQLRunnerExecuteException.class, () -> inquiryDao.update(new Inquiry(0, 1, null, null, false)));
 	}
 
 }

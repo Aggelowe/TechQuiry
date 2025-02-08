@@ -98,7 +98,7 @@ public class UserDataServiceTest {
 	@Test
 	public void testGetDataByUserIdSuccess() {
 		UserData userData = assertDoesNotThrow(() -> userDataService.getDataByUserId(1));
-		assertEquals(1, userData.getId());
+		assertEquals(1, userData.getUserId());
 		assertEquals("Bob", userData.getFirstName());
 		assertEquals("Johnson", userData.getLastName());
 		assertEquals(null, userData.getIcon());

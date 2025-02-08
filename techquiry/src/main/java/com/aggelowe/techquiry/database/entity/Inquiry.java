@@ -1,9 +1,11 @@
 package com.aggelowe.techquiry.database.entity;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 /**
  * The {@link Inquiry} class represents an inquiry entry of the TechQuiry
@@ -13,54 +15,41 @@ import lombok.Setter;
  * @since 0.0.1
  */
 @Getter
-@Setter
-@AllArgsConstructor
+@RequiredArgsConstructor
+@Builder(toBuilder = true)
 @EqualsAndHashCode
+@ToString
 public class Inquiry {
 
 	/**
 	 * The unique id of the inquiry
 	 */
-	private final int id;
+	@NonNull
+	private Integer inquiryId;
 
 	/**
 	 * The user id of the author
 	 */
-	private int userId;
+	@NonNull
+	@ToString.Exclude
+	private Integer userId;
 
 	/**
 	 * The title of the inquiry
 	 */
+	@NonNull
 	private String title;
 
 	/**
 	 * The content of the inquiry
 	 */
+	@NonNull
 	private String content;
 
 	/**
 	 * Whether the author is anonymous
 	 */
-	private boolean anonymous;
-
-	/**
-	 * This method returns the object as a string containing the inquiry id, the
-	 * author's user id, the title, the content and whether the author is anonymous.
-	 */
-	@Override
-	public String toString() {
-	    return "Inquiry(id=" + id +
-	    		(anonymous ? "" : ", userId=" + userId) +
-	    		", title=" + title +
-	    		", content=" + content +
-	    		", anonymous=" + anonymous + ")";
-	}
-	
-	/**
-	 * This method creates a new shallow copy of the current {@link Inquiry} object.
-	 */
-	public Inquiry copy() {
-		return new Inquiry(id, userId, title, content, anonymous);
-	}
+	@NonNull
+	private Boolean anonymous;
 
 }

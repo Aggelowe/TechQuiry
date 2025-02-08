@@ -147,8 +147,7 @@ public class ResponseDaoTest {
 
 	@Test
 	public void testInsertException() {
-		assertThrows(SQLRunnerExecuteException.class, () -> responseDao.insert(new Response(2, 3, 1, true, "Example Respnse")));
-		assertThrows(SQLRunnerExecuteException.class, () -> responseDao.insert(new Response(3, 1, 1, true, null)));
+		assertThrows(SQLRunnerExecuteException.class, () -> responseDao.insert(new Response(2, 3, 1, true, "Example Response")));
 	}
 
 	@Test
@@ -156,20 +155,20 @@ public class ResponseDaoTest {
 		List<Response> responses = assertDoesNotThrow(() -> responseDao.selectFromInquiryId(2));
 		assertEquals(2, responses.size());
 		Response response = responses.getFirst();
-		assertEquals(1, response.getId());
+		assertEquals(1, response.getResponseId());
 		assertEquals(2, response.getInquiryId());
 		assertEquals(1, response.getUserId());
-		assertEquals(false, response.isAnonymous());
+		assertEquals(false, response.getAnonymous());
 		assertEquals("Instance Response", response.getContent());
 	}
 
 	@Test
 	public void testSelectSuccess() {
 		Response response = assertDoesNotThrow(() -> responseDao.select(1));
-		assertEquals(1, response.getId());
+		assertEquals(1, response.getResponseId());
 		assertEquals(2, response.getInquiryId());
 		assertEquals(1, response.getUserId());
-		assertEquals(false, response.isAnonymous());
+		assertEquals(false, response.getAnonymous());
 		assertEquals("Instance Response", response.getContent());
 	}
 
@@ -195,7 +194,6 @@ public class ResponseDaoTest {
 	@Test
 	public void testUpdateException() {
 		assertThrows(SQLRunnerExecuteException.class, () -> responseDao.update(new Response(0, 3, 2, false, "Fail Response")));
-		assertThrows(SQLRunnerExecuteException.class, () -> responseDao.update(new Response(0, 1, 1, false, null)));
 	}
 
 }

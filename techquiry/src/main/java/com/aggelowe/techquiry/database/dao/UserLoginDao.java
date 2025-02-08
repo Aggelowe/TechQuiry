@@ -279,7 +279,7 @@ public final class UserLoginDao {
 	 */
 	public void update(UserLogin userLogin) throws DatabaseException {
 		log.debug("Updating user login with data " + userLogin);
-		int id = userLogin.getId();
+		int id = userLogin.getUserId();
 		String username = userLogin.getUsername();
 		byte[] passwordHash = userLogin.getPasswordHash();
 		byte[] passwordSalt = userLogin.getPasswordSalt();

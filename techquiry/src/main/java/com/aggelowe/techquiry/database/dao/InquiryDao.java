@@ -136,7 +136,7 @@ public final class InquiryDao {
 		int userId = inquiry.getUserId();
 		String title = inquiry.getTitle();
 		String content = inquiry.getContent();
-		boolean anonymous = inquiry.isAnonymous();
+		boolean anonymous = inquiry.getAnonymous();
 		List<LocalResult> results = runner.runScript(INQUIRY_INSERT_SCRIPT, userId, title, content, anonymous);
 		if (results.size() < 2) {
 			throw new DataAccessException("The script " + INQUIRY_INSERT_SCRIPT + " did not yeild at least two results!");
@@ -291,11 +291,11 @@ public final class InquiryDao {
 	 */
 	public void update(Inquiry inquiry) throws DatabaseException {
 		log.debug("Updating inquiry with data " + inquiry);
-		int id = inquiry.getId();
+		int id = inquiry.getInquiryId();
 		int userId = inquiry.getUserId();
 		String title = inquiry.getTitle();
 		String content = inquiry.getContent();
-		boolean anonymous = inquiry.isAnonymous();
+		boolean anonymous = inquiry.getAnonymous();
 		runner.runScript(INQUIRY_UPDATE_SCRIPT, userId, title, content, anonymous, id);
 	}
 

@@ -125,7 +125,7 @@ public class UserDataDaoTest {
 	@Test
 	public void testSelectSuccess() {
 		UserData userData = assertDoesNotThrow(() -> userDataDao.select(1));
-		assertEquals(1, userData.getId());
+		assertEquals(1, userData.getUserId());
 		assertEquals("Bob", userData.getFirstName());
 		assertEquals("Johnson", userData.getLastName());
 		assertNull(userData.getIcon());

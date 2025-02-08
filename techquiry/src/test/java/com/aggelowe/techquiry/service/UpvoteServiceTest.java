@@ -147,7 +147,7 @@ public class UpvoteServiceTest {
 		List<UserLogin> logins = assertDoesNotThrow(() -> upvoteService.getUpvoteUserLoginListByResponseId(0));
 		assertEquals(1, logins.size());
 		UserLogin userLogin = logins.getFirst();
-		assertEquals(0, userLogin.getId());
+		assertEquals(0, userLogin.getUserId());
 		assertEquals("alice", userLogin.getUsername());
 		assertArrayEquals(SecurityUtils.decodeBase64("MTIzNDU2Nzg="), userLogin.getPasswordHash());
 		assertArrayEquals(SecurityUtils.decodeBase64("MTIzNA=="), userLogin.getPasswordSalt());
@@ -163,10 +163,10 @@ public class UpvoteServiceTest {
 		List<Response> responses = assertDoesNotThrow(() -> upvoteService.getUpvotedResponseListByUserId(1));
 		assertEquals(1, responses.size());
 		Response response = responses.getFirst();
-		assertEquals(1, response.getId());
+		assertEquals(1, response.getResponseId());
 		assertEquals(2, response.getInquiryId());
 		assertEquals(1, response.getUserId());
-		assertEquals(false, response.isAnonymous());
+		assertEquals(false, response.getAnonymous());
 		assertEquals("Instance Response", response.getContent());
 	}
 

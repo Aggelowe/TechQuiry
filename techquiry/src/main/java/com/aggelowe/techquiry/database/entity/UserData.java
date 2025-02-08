@@ -3,11 +3,11 @@ package com.aggelowe.techquiry.database.entity;
 import com.aggelowe.techquiry.common.SecurityUtils;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 /**
  * The {@link UserData} class represents a user data entry of the TechQuiry
@@ -17,9 +17,9 @@ import lombok.Setter;
  * @since 0.0.1
  */
 @Getter
-@Setter
 @RequiredArgsConstructor
 @AllArgsConstructor
+@Builder(toBuilder = true)
 @EqualsAndHashCode
 public class UserData {
 
@@ -27,7 +27,7 @@ public class UserData {
 	 * The unique id of the user
 	 */
 	@NonNull
-	private Integer id;
+	private Integer userId;
 
 	/**
 	 * The first name of the user
@@ -52,18 +52,10 @@ public class UserData {
 	 */
 	@Override
 	public String toString() {
-		return "UserData(id=" + id + 
+		return "UserData(id=" + userId + 
 				", firstName=" + firstName + 
 				", lastName=" + lastName + 
 				", icon=" + (icon == null ? "null" : SecurityUtils.encodeBase64(icon)) + ")";
-	}
-
-	/**
-	 * This method creates a new shallow copy of the current {@link UserData}
-	 * object.
-	 */
-	public UserData copy() {
-		return new UserData(id, firstName, lastName, icon);
 	}
 
 }

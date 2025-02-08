@@ -90,7 +90,7 @@ public final class UserDataDao {
 	 */
 	public void insert(UserData userData) throws DatabaseException {
 		log.debug("Inserting user data with information " + userData);
-		int id = userData.getId();
+		int id = userData.getUserId();
 		String firstName = userData.getFirstName();
 		String lastName = userData.getLastName();
 		byte[] icon = userData.getIcon();
@@ -140,7 +140,7 @@ public final class UserDataDao {
 	 */
 	public void update(UserData userData) throws DatabaseException {
 		log.debug("Updating user data with data " + userData);
-		int id = userData.getId();
+		int id = userData.getUserId();
 		String firstName = userData.getFirstName();
 		String lastName = userData.getLastName();
 		byte[] icon = userData.getIcon();

@@ -129,10 +129,10 @@ public class ResponseServiceTest {
 		List<Response> responses = assertDoesNotThrow(() -> responseService.getResponseListByInquiryId(2));
 		assertEquals(2, responses.size());
 		Response response = responses.getFirst();
-		assertEquals(1, response.getId());
+		assertEquals(1, response.getResponseId());
 		assertEquals(2, response.getInquiryId());
 		assertEquals(1, response.getUserId());
-		assertEquals(false, response.isAnonymous());
+		assertEquals(false, response.getAnonymous());
 		assertEquals("Instance Response", response.getContent());
 	}
 
@@ -144,10 +144,10 @@ public class ResponseServiceTest {
 	@Test
 	public void testGetResponseByResponseIdSuccess() {
 		Response response = assertDoesNotThrow(() -> responseService.getResponseByResponseId(1));
-		assertEquals(1, response.getId());
+		assertEquals(1, response.getResponseId());
 		assertEquals(2, response.getInquiryId());
 		assertEquals(1, response.getUserId());
-		assertEquals(false, response.isAnonymous());
+		assertEquals(false, response.getAnonymous());
 		assertEquals("Instance Response", response.getContent());
 	}
 
