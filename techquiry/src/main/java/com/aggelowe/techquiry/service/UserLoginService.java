@@ -2,7 +2,6 @@ package com.aggelowe.techquiry.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.aggelowe.techquiry.database.dao.UserLoginDao;
@@ -13,6 +12,8 @@ import com.aggelowe.techquiry.service.exception.InternalErrorException;
 import com.aggelowe.techquiry.service.exception.InvalidRequestException;
 import com.aggelowe.techquiry.service.exception.ServiceException;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * The {@link UserLoginService} class provides methods for managing user login
  * operations in the TechQuiry application.
@@ -21,6 +22,7 @@ import com.aggelowe.techquiry.service.exception.ServiceException;
  * @since 0.0.1
  */
 @Service
+@RequiredArgsConstructor
 public class UserLoginService {
 
 	/**
@@ -28,17 +30,6 @@ public class UserLoginService {
 	 * objects.
 	 */
 	private final UserLoginDao userLoginDao;
-
-	/**
-	 * This constructor constructs a new {@link UserLoginService} instance that is
-	 * handling the user login operations of the application.
-	 * 
-	 * @param userLoginDao The user login data access object
-	 */
-	@Autowired
-	public UserLoginService(UserLoginDao userLoginDao) {
-		this.userLoginDao = userLoginDao;
-	}
 
 	/**
 	 * This method retrieves and returns the total count of user logins.

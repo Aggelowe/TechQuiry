@@ -6,7 +6,6 @@ import static com.aggelowe.techquiry.common.Constants.VERSION;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
@@ -16,6 +15,7 @@ import org.springframework.context.event.EventListener;
 
 import com.aggelowe.techquiry.database.DatabaseManager;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 /**
@@ -29,10 +29,10 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @SpringBootApplication
 @Import({ AppConfiguration.class })
+@RequiredArgsConstructor
 public class TechQuiry {
 
-	@Autowired
-	private DatabaseManager databaseManager;
+	private final DatabaseManager databaseManager;
 
 	public static void main(String[] args) {
 		log.info("Starting the " + NAME + " application on version " + VERSION);

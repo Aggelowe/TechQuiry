@@ -2,7 +2,6 @@ package com.aggelowe.techquiry.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.aggelowe.techquiry.database.dao.InquiryDao;
@@ -16,6 +15,8 @@ import com.aggelowe.techquiry.service.exception.EntityNotFoundException;
 import com.aggelowe.techquiry.service.exception.InternalErrorException;
 import com.aggelowe.techquiry.service.exception.ServiceException;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * The {@link ObserverService} class provides methods for managing observer
  * operations in the TechQuiry application.
@@ -24,6 +25,7 @@ import com.aggelowe.techquiry.service.exception.ServiceException;
  * @since 0.0.1
  */
 @Service
+@RequiredArgsConstructor
 public class ObserverService {
 
 	/**
@@ -43,21 +45,6 @@ public class ObserverService {
 	 * objects.
 	 */
 	private final UserLoginDao userLoginDao;
-
-	/**
-	 * This constructor constructs a new {@link ObserverService} instance that is
-	 * handling the observer operations of the application.
-	 * 
-	 * @param observerDao  The observer data access object
-	 * @param inquiryDao   The inquiry data access object
-	 * @param userLoginDao The user login data access object
-	 */
-	@Autowired
-	public ObserverService(ObserverDao observerDao, InquiryDao inquiryDao, UserLoginDao userLoginDao) {
-		this.observerDao = observerDao;
-		this.inquiryDao = inquiryDao;
-		this.userLoginDao = userLoginDao;
-	}
 
 	/**
 	 * This method retrieves and returns the total count of observers to the inquiry

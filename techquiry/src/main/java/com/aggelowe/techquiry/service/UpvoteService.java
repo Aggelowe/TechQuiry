@@ -2,7 +2,6 @@ package com.aggelowe.techquiry.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.aggelowe.techquiry.database.dao.ResponseDao;
@@ -16,6 +15,8 @@ import com.aggelowe.techquiry.service.exception.EntityNotFoundException;
 import com.aggelowe.techquiry.service.exception.InternalErrorException;
 import com.aggelowe.techquiry.service.exception.ServiceException;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * The {@link UpvoteService} class provides methods for managing upvote
  * operations in the TechQuiry application.
@@ -24,6 +25,7 @@ import com.aggelowe.techquiry.service.exception.ServiceException;
  * @since 0.0.1
  */
 @Service
+@RequiredArgsConstructor
 public class UpvoteService {
 
 	/**
@@ -43,21 +45,6 @@ public class UpvoteService {
 	 * objects.
 	 */
 	private final UserLoginDao userLoginDao;
-
-	/**
-	 * This constructor constructs a new {@link UpvoteService} instance that is
-	 * handling the upvote operations of the application.
-	 * 
-	 * @param upvoteDao    The upvote data access object
-	 * @param responseDao  The response data access object
-	 * @param userLoginDao The user login data access object
-	 */
-	@Autowired
-	public UpvoteService(UpvoteDao upvoteDao, ResponseDao responseDao, UserLoginDao userLoginDao) {
-		this.upvoteDao = upvoteDao;
-		this.responseDao = responseDao;
-		this.userLoginDao = userLoginDao;
-	}
 
 	/**
 	 * This method retrieves and returns the total count of upvotes to the response

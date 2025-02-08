@@ -2,7 +2,6 @@ package com.aggelowe.techquiry.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.aggelowe.techquiry.database.dao.InquiryDao;
@@ -14,6 +13,8 @@ import com.aggelowe.techquiry.service.exception.EntityNotFoundException;
 import com.aggelowe.techquiry.service.exception.InternalErrorException;
 import com.aggelowe.techquiry.service.exception.ServiceException;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * The {@link ResponseService} class provides methods for managing response
  * operations in the TechQuiry application.
@@ -22,6 +23,7 @@ import com.aggelowe.techquiry.service.exception.ServiceException;
  * @since 0.0.1
  */
 @Service
+@RequiredArgsConstructor
 public class ResponseService {
 
 	/**
@@ -35,19 +37,6 @@ public class ResponseService {
 	 * objects.
 	 */
 	private final InquiryDao inquiryDao;
-
-	/**
-	 * This constructor constructs a new {@link ResponseService} instance that is
-	 * handling the response operations of the application.
-	 * 
-	 * @param responseDao The response data access object
-	 * @param inquiryDao  The inquiry data access object
-	 */
-	@Autowired
-	public ResponseService(ResponseDao responseDao, InquiryDao inquiryDao) {
-		this.responseDao = responseDao;
-		this.inquiryDao = inquiryDao;
-	}
 
 	/**
 	 * This method retrieves and returns the total count of responses to the inquiry

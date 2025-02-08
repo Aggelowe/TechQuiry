@@ -1,6 +1,5 @@
 package com.aggelowe.techquiry.service.action;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.aggelowe.techquiry.database.dao.ResponseDao;
@@ -17,6 +16,8 @@ import com.aggelowe.techquiry.service.exception.ServiceException;
 import com.aggelowe.techquiry.service.session.Authentication;
 import com.aggelowe.techquiry.service.session.SessionHelper;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * The {@link UpvoteActionService} class is a component of {@link UpvoteService}
  * whose methods provide different functionality for different users.
@@ -25,6 +26,7 @@ import com.aggelowe.techquiry.service.session.SessionHelper;
  * @since 0.0.1
  */
 @Service
+@RequiredArgsConstructor
 public class UpvoteActionService {
 
 	/**
@@ -43,21 +45,7 @@ public class UpvoteActionService {
 	 * The {@link SessionHelper} containing the information of the user currently
 	 * acting
 	 */
-	@Autowired
-	private SessionHelper sessionHelper;
-
-	/**
-	 * This constructor constructs a new {@link ObserverActionService} instance that
-	 * is handling the personalized upvote operations of the application.
-	 * 
-	 * @param upvoteDao   The upvote data access object
-	 * @param responseDao The response data access object
-	 */
-	@Autowired
-	public UpvoteActionService(UpvoteDao upvoteDao, ResponseDao responseDao) {
-		this.upvoteDao = upvoteDao;
-		this.responseDao = responseDao;
-	}
+	private final SessionHelper sessionHelper;
 
 	/**
 	 * This method inserts the {@link Upvote} object in the database with the given

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.aggelowe.techquiry.database.LocalResult;
@@ -13,6 +12,7 @@ import com.aggelowe.techquiry.database.entity.Response;
 import com.aggelowe.techquiry.database.exception.DataAccessException;
 import com.aggelowe.techquiry.database.exception.DatabaseException;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 /**
@@ -24,6 +24,7 @@ import lombok.extern.log4j.Log4j2;
  */
 @Component
 @Log4j2
+@RequiredArgsConstructor
 public final class ResponseDao {
 
 	/**
@@ -61,17 +62,6 @@ public final class ResponseDao {
 	 * The runner responsible for executing the SQL scripts.
 	 */
 	private final SQLRunner runner;
-
-	/**
-	 * This constructor constructs a new {@link ResponseDao} instance that is
-	 * responsible for handling the data access for {@link Response} objects.
-	 * 
-	 * @param runner The SQL script runner
-	 */
-	@Autowired
-	public ResponseDao(SQLRunner runner) {
-		this.runner = runner;
-	}
 
 	/**
 	 * This method returns the number of response entries inside the application

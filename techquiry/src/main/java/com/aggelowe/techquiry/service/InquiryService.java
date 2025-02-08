@@ -2,7 +2,6 @@ package com.aggelowe.techquiry.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.aggelowe.techquiry.database.dao.InquiryDao;
@@ -13,6 +12,8 @@ import com.aggelowe.techquiry.service.exception.InternalErrorException;
 import com.aggelowe.techquiry.service.exception.InvalidRequestException;
 import com.aggelowe.techquiry.service.exception.ServiceException;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * The {@link InquiryService} class provides methods for managing inquiry
  * operations in the TechQuiry application.
@@ -21,6 +22,7 @@ import com.aggelowe.techquiry.service.exception.ServiceException;
  * @since 0.0.1
  */
 @Service
+@RequiredArgsConstructor
 public class InquiryService {
 
 	/**
@@ -28,17 +30,6 @@ public class InquiryService {
 	 * objects.
 	 */
 	private final InquiryDao inquiryDao;
-
-	/**
-	 * This constructor constructs a new {@link InquiryService} instance that is
-	 * handling the inquiry operations of the application.
-	 * 
-	 * @param inquiryDao The inquiry data access object
-	 */
-	@Autowired
-	public InquiryService(InquiryDao inquiryDao) {
-		this.inquiryDao = inquiryDao;
-	}
 
 	/**
 	 * This method retrieves and returns the total count of inquiries.

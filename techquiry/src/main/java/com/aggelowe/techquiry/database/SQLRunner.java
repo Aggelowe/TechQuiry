@@ -15,12 +15,13 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.aggelowe.techquiry.database.exception.SQLRunnerException;
 import com.aggelowe.techquiry.database.exception.SQLRunnerExecuteException;
 import com.aggelowe.techquiry.database.exception.SQLRunnerLoadException;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * The {@link SQLRunner} class is responsible for executing the provided SQL
@@ -30,24 +31,13 @@ import com.aggelowe.techquiry.database.exception.SQLRunnerLoadException;
  * @since 0.0.1
  */
 @Component
+@RequiredArgsConstructor
 public final class SQLRunner {
 
 	/**
 	 * This object represents the connection with the SQLite database.
 	 */
 	private final DataSource dataSource;
-
-	/**
-	 * This constructor constructs a new {@link SQLRunner} instance with the
-	 * provided data source as the interface between the application and the
-	 * database.
-	 * 
-	 * @param dataSource The database data source
-	 */
-	@Autowired
-	public SQLRunner(DataSource dataSource) {
-		this.dataSource = dataSource;
-	}
 
 	/**
 	 * This method loads the SQL statements from the provided {@link InputStream}
@@ -129,7 +119,7 @@ public final class SQLRunner {
 	 *                                being loaded
 	 */
 	private List<PreparedStatement> loadStatements(Connection connection, InputStream stream) throws SQLRunnerLoadException {
-		List<PreparedStatement> statements = new LinkedList<PreparedStatement>();
+		List<PreparedStatement> statements = new LinkedList<>();
 		InputStreamReader reader = new InputStreamReader(stream);
 		StringBuilder commandBuilder = new StringBuilder();
 		int mode = 0;

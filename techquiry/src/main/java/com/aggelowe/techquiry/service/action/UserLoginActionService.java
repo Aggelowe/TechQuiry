@@ -4,7 +4,6 @@ import static com.aggelowe.techquiry.common.Constants.USERNAME_REGEX;
 
 import java.util.regex.Pattern;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.aggelowe.techquiry.common.SecurityUtils;
@@ -20,6 +19,8 @@ import com.aggelowe.techquiry.service.exception.ServiceException;
 import com.aggelowe.techquiry.service.session.Authentication;
 import com.aggelowe.techquiry.service.session.SessionHelper;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * The {@link UserLoginActionService} class is a component of
  * {@link UserLoginService} whose methods provide different functionality for
@@ -29,6 +30,7 @@ import com.aggelowe.techquiry.service.session.SessionHelper;
  * @since 0.0.1
  */
 @Service
+@RequiredArgsConstructor
 public class UserLoginActionService {
 
 	/**
@@ -41,19 +43,7 @@ public class UserLoginActionService {
 	 * The {@link SessionHelper} containing the information of the user currently
 	 * acting
 	 */
-	@Autowired
-	private SessionHelper sessionHelper;
-
-	/**
-	 * This constructor constructs a new {@link UserLoginActionService} instance
-	 * that is handling the personalized user login operations of the application.
-	 * 
-	 * @param userLoginDao The user login data access object
-	 */
-	@Autowired
-	public UserLoginActionService(UserLoginDao userLoginDao) {
-		this.userLoginDao = userLoginDao;
-	}
+	private final SessionHelper sessionHelper;
 
 	/**
 	 * This method inserts the given {@link UserLogin} object in the database
@@ -140,7 +130,7 @@ public class UserLoginActionService {
 		}
 		try {
 			UserLogin usernameLogin = userLoginDao.selectFromUsername(login.getUsername());
-			if (usernameLogin != null && usernameLogin.getUserId() != login.getUserId()) {
+			if (usernameLogin != null && !usernameLogin.getUserId().equals(login.getUserId())) {
 				throw new InvalidRequestException("The given username is not available!");
 			}
 			UserLogin copy = login.toBuilder().userId(current.getUserId()).build();

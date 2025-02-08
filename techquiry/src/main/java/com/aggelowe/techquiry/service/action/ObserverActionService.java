@@ -1,6 +1,5 @@
 package com.aggelowe.techquiry.service.action;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.aggelowe.techquiry.database.dao.InquiryDao;
@@ -17,6 +16,8 @@ import com.aggelowe.techquiry.service.exception.ServiceException;
 import com.aggelowe.techquiry.service.session.Authentication;
 import com.aggelowe.techquiry.service.session.SessionHelper;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * The {@link ObserverActionService} class is a component of
  * {@link ObserverService} whose methods provide different functionality for
@@ -26,6 +27,7 @@ import com.aggelowe.techquiry.service.session.SessionHelper;
  * @since 0.0.1
  */
 @Service
+@RequiredArgsConstructor
 public class ObserverActionService {
 
 	/**
@@ -44,22 +46,7 @@ public class ObserverActionService {
 	 * The {@link SessionHelper} containing the information of the user currently
 	 * acting
 	 */
-	@Autowired
-	private SessionHelper sessionHelper;
-
-	/**
-	 * This constructor constructs a new {@link ObserverActionService} instance that
-	 * is handling the personalized observer operations of the application.
-	 * 
-	 * @param observerDao  The observer data access object
-	 * @param inquiryDao   The inquiry data access object
-	 * @param userLoginDao The user login data access object
-	 */
-	@Autowired
-	public ObserverActionService(ObserverDao observerDao, InquiryDao inquiryDao) {
-		this.observerDao = observerDao;
-		this.inquiryDao = inquiryDao;
-	}
+	private final SessionHelper sessionHelper;
 
 	/**
 	 * This method inserts the {@link Observer} object in the database with the

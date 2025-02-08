@@ -9,6 +9,8 @@ import com.aggelowe.techquiry.service.exception.EntityNotFoundException;
 import com.aggelowe.techquiry.service.exception.InternalErrorException;
 import com.aggelowe.techquiry.service.exception.ServiceException;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * The {@link UserDataService} class provides methods for managing user data
  * operations in the TechQuiry application.
@@ -17,6 +19,7 @@ import com.aggelowe.techquiry.service.exception.ServiceException;
  * @since 0.0.1
  */
 @Service
+@RequiredArgsConstructor
 public class UserDataService {
 
 	/**
@@ -24,17 +27,7 @@ public class UserDataService {
 	 * objects.
 	 */
 	private final UserDataDao userDataDao;
-
-	/**
-	 * This constructor constructs a new {@link UserDataDao} instance that is
-	 * handling the user data operations of the application.
-	 * 
-	 * @param userDataDao The user data data access object
-	 */
-	public UserDataService(UserDataDao userDataDao) {
-		this.userDataDao = userDataDao;
-	}
-
+	
 	/**
 	 * This method returns the user data with the given user id.
 	 *

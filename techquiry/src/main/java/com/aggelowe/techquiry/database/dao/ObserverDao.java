@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.aggelowe.techquiry.common.SecurityUtils;
@@ -16,6 +15,7 @@ import com.aggelowe.techquiry.database.entity.UserLogin;
 import com.aggelowe.techquiry.database.exception.DataAccessException;
 import com.aggelowe.techquiry.database.exception.DatabaseException;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 /**
@@ -27,6 +27,7 @@ import lombok.extern.log4j.Log4j2;
  */
 @Component
 @Log4j2
+@RequiredArgsConstructor
 public final class ObserverDao {
 
 	/**
@@ -66,17 +67,6 @@ public final class ObserverDao {
 	 * The runner responsible for executing the SQL scripts.
 	 */
 	private final SQLRunner runner;
-
-	/**
-	 * This constructor constructs a new {@link ObserverDao} instance that is
-	 * responsible for handling the data access for {@link Observer} objects.
-	 * 
-	 * @param runner The SQL script runner
-	 */
-	@Autowired
-	public ObserverDao(SQLRunner runner) {
-		this.runner = runner;
-	}
 
 	/**
 	 * This method checks whether the given {@link Observer} object exists inside

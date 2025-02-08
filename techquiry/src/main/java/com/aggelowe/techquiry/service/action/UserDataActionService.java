@@ -1,6 +1,5 @@
 package com.aggelowe.techquiry.service.action;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.aggelowe.techquiry.database.dao.UserDataDao;
@@ -15,6 +14,8 @@ import com.aggelowe.techquiry.service.exception.ServiceException;
 import com.aggelowe.techquiry.service.session.Authentication;
 import com.aggelowe.techquiry.service.session.SessionHelper;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * The {@link UserDataActionService} class is a dependency of
  * {@link UserDataService} whose methods provide different functionality for
@@ -24,6 +25,7 @@ import com.aggelowe.techquiry.service.session.SessionHelper;
  * @since 0.0.1
  */
 @Service
+@RequiredArgsConstructor
 public class UserDataActionService {
 
 	/**
@@ -36,19 +38,7 @@ public class UserDataActionService {
 	 * The {@link SessionHelper} containing the information of the user currently
 	 * acting
 	 */
-	@Autowired
-	private SessionHelper sessionHelper;
-
-	/**
-	 * This constructor constructs a new {@link UserDataActionService} instance that
-	 * is handling the personalized user data operations of the application.
-	 * 
-	 * @param userDataDao The user data data access object
-	 */
-	@Autowired
-	public UserDataActionService(UserDataDao userDataDao) {
-		this.userDataDao = userDataDao;
-	}
+	private final SessionHelper sessionHelper;
 
 	/**
 	 * This method inserts the given {@link UserData} object in the database. The

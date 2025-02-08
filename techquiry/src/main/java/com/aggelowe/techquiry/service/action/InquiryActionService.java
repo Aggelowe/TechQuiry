@@ -2,7 +2,6 @@ package com.aggelowe.techquiry.service.action;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.aggelowe.techquiry.database.dao.InquiryDao;
@@ -19,6 +18,8 @@ import com.aggelowe.techquiry.service.exception.ServiceException;
 import com.aggelowe.techquiry.service.session.Authentication;
 import com.aggelowe.techquiry.service.session.SessionHelper;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * The {@link InquiryActionService} class is a component of
  * {@link InquiryService} whose methods provide different functionality for
@@ -28,6 +29,7 @@ import com.aggelowe.techquiry.service.session.SessionHelper;
  * @since 0.0.1
  */
 @Service
+@RequiredArgsConstructor
 public class InquiryActionService {
 
 	/**
@@ -46,21 +48,7 @@ public class InquiryActionService {
 	 * The {@link SessionHelper} containing the information of the user currently
 	 * acting
 	 */
-	@Autowired
-	private SessionHelper sessionHelper;
-
-	/**
-	 * This constructor constructs a new {@link InquiryActionService} instance that
-	 * is handling the personalized inquiry operations of the application.
-	 * 
-	 * @param inquiryDao   The inquiry data access object
-	 * @param userLoginDao The user login data access object
-	 */
-	@Autowired
-	public InquiryActionService(InquiryDao inquiryDao, UserLoginDao userLoginDao) {
-		this.inquiryDao = inquiryDao;
-		this.userLoginDao = userLoginDao;
-	}
+	private final SessionHelper sessionHelper;
 
 	/**
 	 * This method inserts the given {@link Inquiry} object in the database. The

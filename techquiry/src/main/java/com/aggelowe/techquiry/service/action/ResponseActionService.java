@@ -1,6 +1,5 @@
 package com.aggelowe.techquiry.service.action;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.aggelowe.techquiry.database.dao.InquiryDao;
@@ -17,6 +16,8 @@ import com.aggelowe.techquiry.service.exception.ServiceException;
 import com.aggelowe.techquiry.service.session.Authentication;
 import com.aggelowe.techquiry.service.session.SessionHelper;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * The {@link ResponseActionService} class is a component of
  * {@link ResponseService} whose methods provide different functionality for
@@ -26,6 +27,7 @@ import com.aggelowe.techquiry.service.session.SessionHelper;
  * @since 0.0.1
  */
 @Service
+@RequiredArgsConstructor
 public class ResponseActionService {
 
 	/**
@@ -44,21 +46,7 @@ public class ResponseActionService {
 	 * The {@link SessionHelper} containing the information of the user currently
 	 * acting
 	 */
-	@Autowired
-	private SessionHelper sessionHelper;
-
-	/**
-	 * This constructor constructs a new {@link ResponseActionService} instance that
-	 * is handling the personalized response operations of the application.
-	 * 
-	 * @param responseDao The response data access object
-	 * @param inquiryDao  The inquiry data access object
-	 */
-	@Autowired
-	public ResponseActionService(ResponseDao responseDao, InquiryDao inquiryDao) {
-		this.responseDao = responseDao;
-		this.inquiryDao = inquiryDao;
-	}
+	private final SessionHelper sessionHelper;
 
 	/**
 	 * This method inserts the given {@link Response} object in the database. The

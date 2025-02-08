@@ -1,11 +1,11 @@
 package com.aggelowe.techquiry.database;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.aggelowe.techquiry.common.Environment;
 import com.aggelowe.techquiry.database.exception.DatabaseException;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 /**
@@ -17,6 +17,7 @@ import lombok.extern.log4j.Log4j2;
  */
 @Component
 @Log4j2
+@RequiredArgsConstructor
 public final class DatabaseManager {
 
 	/**
@@ -29,19 +30,7 @@ public final class DatabaseManager {
 	 * database
 	 */
 	private final SQLRunner runner;
-
-	/**
-	 * This constructor constructs a new {@link DatabaseManager} instance with the
-	 * provided {@link SQLRunner} as the interface between the application and the
-	 * database.
-	 * 
-	 * @param runner The runner for interfacing with the database
-	 */
-	@Autowired
-	public DatabaseManager(SQLRunner runner) {
-		this.runner = runner;
-	}
-
+	
 	/**
 	 * This method applies the database schema to the database if the respective
 	 * environment variable is true.
