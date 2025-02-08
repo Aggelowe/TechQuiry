@@ -25,7 +25,7 @@ public class UserLogin {
 	/**
 	 * The unique id of the user
 	 */
-	private final int id;
+	private int id;
 
 	/**
 	 * The unique username chosen by the user

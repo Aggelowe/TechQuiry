@@ -63,11 +63,12 @@ public class InquiryActionService {
 	}
 
 	/**
-	 * This method inserts the given {@link Inquiry} object in the database
-	 *
+	 * This method inserts the given {@link Inquiry} object in the database. The
+	 * inquiry id and user id are automatically selected and are not carried over to
+	 * the database.
+	 * 
 	 * @param inquiry The inquiry object to create
-	 * @throws ForbiddenOperationException If the current user does not have the
-	 *                                     given user id
+	 * @throws ForbiddenOperationException If the current user is not logged in
 	 * @throws EntityNotFoundException     If the given user id does not correspond
 	 *                                     to a user login
 	 * @throws InvalidRequestException     If the given title or content are empty
@@ -77,7 +78,7 @@ public class InquiryActionService {
 	 */
 	public int createInquiry(Inquiry inquiry) throws ServiceException {
 		Authentication current = sessionHelper.getAuthentication();
-		if (current == null || current.getUserId() != inquiry.getUserId()) {
+		if (current == null) {
 			throw new ForbiddenOperationException("The requested inquiry creation is forbidden!");
 		}
 		String title = inquiry.getTitle();
@@ -85,12 +86,10 @@ public class InquiryActionService {
 		if (title.isEmpty() || content.isEmpty()) {
 			throw new InvalidRequestException("The given title and content name must not be empty!");
 		}
+		Inquiry copy = inquiry.copy();
+		copy.setUserId(current.getUserId());
 		try {
-			UserLogin userLogin = userLoginDao.select(inquiry.getUserId());
-			if (userLogin == null) {
-				throw new EntityNotFoundException("The given user id does not have a corresponding login!");
-			}
-			return inquiryDao.insert(inquiry);
+			return inquiryDao.insert(copy);
 		} catch (DatabaseException exception) {
 			throw new InternalErrorException("An internal error occured while creating the inquiry!", exception);
 		}
@@ -124,12 +123,13 @@ public class InquiryActionService {
 
 	/**
 	 * This method updates an existing inquiry with the data from the given
-	 * {@link Inquiry} object.
+	 * {@link Inquiry} object. The user id is automatically selected and is not
+	 * carried over to the database.
 	 * 
 	 * @param inquiry The inquiry object
 	 * @throws ForbiddenOperationException If the current user does not have the
-	 *                                     user id contained in the given inquiry or
-	 *                                     the inquiry contained in the database
+	 *                                     user id contained in the inquiry
+	 *                                     contained in the database
 	 * @throws EntityNotFoundException     If the given id does not correspond to an
 	 *                                     inquiry id
 	 * @throws InvalidRequestException     If the given title or content are empty
@@ -138,7 +138,7 @@ public class InquiryActionService {
 	 */
 	public void updateInquiry(Inquiry inquiry) throws ServiceException {
 		Authentication current = sessionHelper.getAuthentication();
-		if (current == null || current.getUserId() != inquiry.getUserId()) {
+		if (current == null) {
 			throw new ForbiddenOperationException("The requested inquiry update is forbidden!");
 		}
 		String title = inquiry.getTitle();
@@ -147,14 +147,16 @@ public class InquiryActionService {
 			throw new InvalidRequestException("The given title and content name must not be empty!");
 		}
 		try {
-			Inquiry idInquiry = inquiryDao.select(inquiry.getId());
-			if (idInquiry == null) {
+			Inquiry previous = inquiryDao.select(inquiry.getId());
+			if (previous == null) {
 				throw new EntityNotFoundException("The requested inquiry does not exist!");
 			}
-			if (current.getUserId() != idInquiry.getUserId()) {
+			if (current.getUserId() != previous.getUserId()) {
 				throw new ForbiddenOperationException("The requested inquiry update is forbidden!");
 			}
-			inquiryDao.update(inquiry);
+			Inquiry copy = inquiry.copy();
+			copy.setUserId(current.getUserId());
+			inquiryDao.update(copy);
 		} catch (DatabaseException exception) {
 			throw new InternalErrorException("An internal error occured while creating the inquiry!", exception);
 		}

@@ -4,9 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.aggelowe.techquiry.database.dao.UserDataDao;
-import com.aggelowe.techquiry.database.dao.UserLoginDao;
 import com.aggelowe.techquiry.database.entity.UserData;
-import com.aggelowe.techquiry.database.entity.UserLogin;
 import com.aggelowe.techquiry.database.exception.DatabaseException;
 import com.aggelowe.techquiry.service.UserDataService;
 import com.aggelowe.techquiry.service.exception.EntityNotFoundException;
@@ -35,12 +33,6 @@ public class UserDataActionService {
 	private final UserDataDao userDataDao;
 
 	/**
-	 * The object responsible for handling the data access for {@link UserLogin }
-	 * objects.
-	 */
-	private final UserLoginDao userLoginDao;
-
-	/**
 	 * The {@link SessionHelper} containing the information of the user currently
 	 * acting
 	 */
@@ -51,23 +43,19 @@ public class UserDataActionService {
 	 * This constructor constructs a new {@link UserDataActionService} instance that
 	 * is handling the personalized user data operations of the application.
 	 * 
-	 * @param userDataDao  The user data data access object
-	 * @param userLoginDao The user login data access object
+	 * @param userDataDao The user data data access object
 	 */
 	@Autowired
-	public UserDataActionService(UserDataDao userDataDao, UserLoginDao userLoginDao) {
+	public UserDataActionService(UserDataDao userDataDao) {
 		this.userDataDao = userDataDao;
-		this.userLoginDao = userLoginDao;
 	}
 
 	/**
-	 * This method inserts the given {@link UserData} object in the database
+	 * This method inserts the given {@link UserData} object in the database. The
+	 * user id is automatically selected.
 	 *
 	 * @param data The user data object to create
-	 * @throws ForbiddenOperationException If the current user does not have the
-	 *                                     given id
-	 * @throws EntityNotFoundException     If the given id does not correspond to a
-	 *                                     user login id
+	 * @throws ForbiddenOperationException If the current user is not logged in
 	 * @throws InvalidRequestException     If the given first or last name are empty
 	 *                                     or if the given id is not available
 	 * @throws InternalErrorException      If an internal error occurs while
@@ -76,25 +64,22 @@ public class UserDataActionService {
 	 */
 	public void createData(UserData data) throws ServiceException {
 		Authentication current = sessionHelper.getAuthentication();
-		if (current == null || current.getUserId() != data.getId()) {
+		if (current == null) {
 			throw new ForbiddenOperationException("The requested user data creation is forbidden!");
 		}
-		int id = data.getId();
 		String firstName = data.getFirstName();
 		String lastName = data.getLastName();
 		if (firstName.isEmpty() || lastName.isEmpty()) {
 			throw new InvalidRequestException("The given first and last name must not be empty!");
 		}
 		try {
-			UserLogin userLogin = userLoginDao.select(data.getId());
-			if (userLogin == null) {
-				throw new EntityNotFoundException("The given id does not have a corresponding login!");
-			}
-			UserData userData = userDataDao.select(id);
+			UserData userData = userDataDao.select(current.getUserId());
 			if (userData != null) {
-				throw new EntityNotFoundException("The given id is not available!");
+				throw new InvalidRequestException("The given id is not available!");
 			}
-			userDataDao.insert(data);
+			UserData copy = data.copy();
+			copy.setId(current.getUserId());
+			userDataDao.insert(copy);
 		} catch (DatabaseException exception) {
 			throw new InternalErrorException("An internal error occured while creating the user!", exception);
 		}
@@ -128,22 +113,20 @@ public class UserDataActionService {
 
 	/**
 	 * This method updates an existing user data with the data from the given
-	 * {@link UserData} object.
+	 * {@link UserData} object. The user id is automatically selected.
 	 * 
 	 * @param data The user data
-	 * @throws ForbiddenOperationException If the current user does not have the
-	 *                                     given id
-	 * @throws EntityNotFoundException     If the given id does not correspond to a
-	 *                                     user login id
+	 * @throws ForbiddenOperationException If the current user is not logged in
+	 * @throws EntityNotFoundException     If the current user id does not match
+	 *                                     with a user data entry
 	 * @throws InvalidRequestException     If the given first or last name are empty
-	 *                                     or if the given id is not available
 	 * @throws InternalErrorException      If an internal error occurred while
 	 *                                     updating the user data
 	 * 
 	 */
 	public void updateData(UserData data) throws ServiceException {
 		Authentication current = sessionHelper.getAuthentication();
-		if (current == null || current.getUserId() != data.getId()) {
+		if (current == null) {
 			throw new ForbiddenOperationException("The requested user update is forbidden!");
 		}
 		String firstName = data.getFirstName();
@@ -151,13 +134,14 @@ public class UserDataActionService {
 		if (firstName.isEmpty() || lastName.isEmpty()) {
 			throw new InvalidRequestException("The given first and last name must not be empty!");
 		}
-
 		try {
-			UserData userData = userDataDao.select(data.getId());
+			UserData userData = userDataDao.select(current.getUserId());
 			if (userData == null) {
-				throw new EntityNotFoundException("The requested user does not exist!");
+				throw new EntityNotFoundException("The requested user data do not exist!");
 			}
-			userDataDao.update(data);
+			UserData copy = data.copy();
+			copy.setId(current.getUserId());
+			userDataDao.update(copy);
 		} catch (DatabaseException exception) {
 			throw new InternalErrorException("An internal error occured while getting the user!", exception);
 		}

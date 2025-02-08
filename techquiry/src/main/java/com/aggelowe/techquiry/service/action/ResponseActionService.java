@@ -5,10 +5,8 @@ import org.springframework.stereotype.Service;
 
 import com.aggelowe.techquiry.database.dao.InquiryDao;
 import com.aggelowe.techquiry.database.dao.ResponseDao;
-import com.aggelowe.techquiry.database.dao.UserLoginDao;
 import com.aggelowe.techquiry.database.entity.Inquiry;
 import com.aggelowe.techquiry.database.entity.Response;
-import com.aggelowe.techquiry.database.entity.UserLogin;
 import com.aggelowe.techquiry.database.exception.DatabaseException;
 import com.aggelowe.techquiry.service.ResponseService;
 import com.aggelowe.techquiry.service.exception.EntityNotFoundException;
@@ -43,12 +41,6 @@ public class ResponseActionService {
 	private final InquiryDao inquiryDao;
 
 	/**
-	 * The object responsible for handling the data access for {@link UserLogin}
-	 * objects.
-	 */
-	private final UserLoginDao userLoginDao;
-
-	/**
 	 * The {@link SessionHelper} containing the information of the user currently
 	 * acting
 	 */
@@ -59,27 +51,25 @@ public class ResponseActionService {
 	 * This constructor constructs a new {@link ResponseActionService} instance that
 	 * is handling the personalized response operations of the application.
 	 * 
-	 * @param responseDao  The response data access object
-	 * @param inquiryDao   The inquiry data access object
-	 * @param userLoginDao The user login data access object
+	 * @param responseDao The response data access object
+	 * @param inquiryDao  The inquiry data access object
 	 */
 	@Autowired
-	public ResponseActionService(ResponseDao responseDao, InquiryDao inquiryDao, UserLoginDao userLoginDao) {
+	public ResponseActionService(ResponseDao responseDao, InquiryDao inquiryDao) {
 		this.responseDao = responseDao;
 		this.inquiryDao = inquiryDao;
-		this.userLoginDao = userLoginDao;
 	}
 
 	/**
-	 * This method inserts the given {@link Response} object in the database
+	 * This method inserts the given {@link Response} object in the database. The
+	 * inquiry id and user id are automatically selected and are not carried over to
+	 * the database.
 	 *
 	 * @param response The response object to create
 	 * @return The response id of the created {@link Response}
-	 * @throws ForbiddenOperationException If the current user does not have the
-	 *                                     given user id
-	 * @throws EntityNotFoundException     If the given user id or inquiry id do not
-	 *                                     correspond to a user login or inquiry
-	 *                                     respectively
+	 * @throws ForbiddenOperationException If the current user is not logged in
+	 * @throws EntityNotFoundException     If the given inquiry id does not
+	 *                                     correspond to a inquiry
 	 * @throws InvalidRequestException     If the given content is empty
 	 * @throws InternalErrorException      If an internal error occurs while
 	 *                                     creating the response
@@ -87,7 +77,7 @@ public class ResponseActionService {
 	 */
 	public int createResponse(Response response) throws ServiceException {
 		Authentication current = sessionHelper.getAuthentication();
-		if (current == null || current.getUserId() != response.getUserId()) {
+		if (current == null) {
 			throw new ForbiddenOperationException("The requested response creation is forbidden!");
 		}
 		String content = response.getContent();
@@ -95,15 +85,13 @@ public class ResponseActionService {
 			throw new InvalidRequestException("The given content name must not be empty!");
 		}
 		try {
-			UserLogin userLogin = userLoginDao.select(response.getUserId());
-			if (userLogin == null) {
-				throw new EntityNotFoundException("The given user id does not have a corresponding login!");
-			}
 			Inquiry inquiry = inquiryDao.select(response.getInquiryId());
 			if (inquiry == null) {
 				throw new EntityNotFoundException("The given inquiry id does not have a corresponding inquiry!");
 			}
-			return responseDao.insert(response);
+			Response copy = response.copy();
+			copy.setUserId(current.getUserId());
+			return responseDao.insert(copy);
 		} catch (DatabaseException exception) {
 			throw new InternalErrorException("An internal error occured while creating the response!", exception);
 		}
@@ -137,22 +125,23 @@ public class ResponseActionService {
 
 	/**
 	 * This method updates an existing response with the data from the given
-	 * {@link Response} object.
+	 * {@link Response} object. The user id is automatically selected and is not
+	 * carried over to the database.
 	 * 
 	 * @param response The response object
 	 * @throws ForbiddenOperationException If the current user does not have the
-	 *                                     user id contained in the given response
-	 *                                     or the response contained in the database
-	 * @throws EntityNotFoundException     If the given user id, inquiry id or
-	 *                                     response id do not correspond to a user
-	 *                                     login, inquiry or response respectively
+	 *                                     user id contained in the the response
+	 *                                     contained in the database
+	 * @throws EntityNotFoundException     If the given inquiry id or response id do
+	 *                                     not correspond to an inquiry or response
+	 *                                     respectively
 	 * @throws InvalidRequestException     If the given content is empty
 	 * @throws InternalErrorException      If an internal error occurred while
 	 *                                     updating the response
 	 */
 	public void updateResponse(Response response) throws ServiceException {
 		Authentication current = sessionHelper.getAuthentication();
-		if (current == null || current.getUserId() != response.getUserId()) {
+		if (current == null) {
 			throw new ForbiddenOperationException("The requested response update is forbidden!");
 		}
 		String content = response.getContent();
@@ -167,14 +156,12 @@ public class ResponseActionService {
 			if (current.getUserId() != previous.getUserId()) {
 				throw new ForbiddenOperationException("The requested response update is forbidden!");
 			}
-			UserLogin userLogin = userLoginDao.select(response.getUserId());
-			if (userLogin == null) {
-				throw new EntityNotFoundException("The given user id does not have a corresponding login!");
-			}
 			Inquiry inquiry = inquiryDao.select(response.getInquiryId());
 			if (inquiry == null) {
 				throw new EntityNotFoundException("The given inquiry id does not have a corresponding inquiry!");
 			}
+			Response copy = response.copy();
+			copy.setUserId(current.getUserId());
 			responseDao.update(response);
 		} catch (DatabaseException exception) {
 			throw new InternalErrorException("An internal error occured while creating the inquiry!", exception);

@@ -159,7 +159,7 @@ public class ResponseServiceTest {
 	@Test
 	public void testCreateResponseSuccess() {
 		sessionHelper.setAuthentication(new Authentication(1));
-		Response target = new Response(0, 1, 1, true, "Example Response");
+		Response target = new Response(0, 1, 0, true, "Example Response");
 		int id = assertDoesNotThrow(() -> responseActionService.createResponse(target));
 		assertEquals(3, id);
 		assertDoesNotThrow(() -> {
@@ -182,18 +182,13 @@ public class ResponseServiceTest {
 	@Test
 	public void testCreateResponseException() {
 		sessionHelper.setAuthentication(null);
-		Response target0 = new Response(0, 2, 1, true, "Fail Response");
+		Response target0 = new Response(0, 2, 0, true, "Fail Response");
 		assertThrows(ForbiddenOperationException.class, () -> responseActionService.createResponse(target0));
-		sessionHelper.setAuthentication(new Authentication(0));
-		assertThrows(ForbiddenOperationException.class, () -> responseActionService.createResponse(target0));
-		Response target1 = new Response(0, 2, 2, true, "Fail Response");
-		sessionHelper.setAuthentication(new Authentication(2));
-		assertThrows(EntityNotFoundException.class, () -> responseActionService.createResponse(target1));
-		Response target2 = new Response(0, 3, 1, true, "Fail Response");
+		Response target1 = new Response(0, 3, 0, true, "Fail Response");
 		sessionHelper.setAuthentication(new Authentication(1));
-		assertThrows(EntityNotFoundException.class, () -> responseActionService.createResponse(target2));
-		Response target3 = new Response(0, 2, 1, true, "");
-		assertThrows(InvalidRequestException.class, () -> responseActionService.createResponse(target3));
+		assertThrows(EntityNotFoundException.class, () -> responseActionService.createResponse(target1));
+		Response target2 = new Response(0, 2, 0, true, "");
+		assertThrows(InvalidRequestException.class, () -> responseActionService.createResponse(target2));
 	}
 
 	@Test
@@ -248,14 +243,13 @@ public class ResponseServiceTest {
 		assertThrows(ForbiddenOperationException.class, () -> responseActionService.updateResponse(target0));
 		sessionHelper.setAuthentication(new Authentication(1));
 		assertThrows(ForbiddenOperationException.class, () -> responseActionService.updateResponse(target0));
-		Response target1 = new Response(0, 1, 2, false, "Fail Response");
-		sessionHelper.setAuthentication(new Authentication(2));
-		assertThrows(EntityNotFoundException.class, () -> responseActionService.createResponse(target1));
-		Response target2 = new Response(0, 3, 0, false, "Fail Response");
+		Response target1 = new Response(3, 1, 0, false, "Fail Response");
 		sessionHelper.setAuthentication(new Authentication(0));
-		assertThrows(EntityNotFoundException.class, () -> responseActionService.createResponse(target2));
+		assertThrows(EntityNotFoundException.class, () -> responseActionService.updateResponse(target1));
+		Response target2 = new Response(0, 3, 0, false, "Fail Response");
+		assertThrows(EntityNotFoundException.class, () -> responseActionService.updateResponse(target2));
 		Response target3 = new Response(0, 1, 0, false, "");
-		assertThrows(InvalidRequestException.class, () -> responseActionService.createResponse(target3));
+		assertThrows(InvalidRequestException.class, () -> responseActionService.updateResponse(target3));
 	}
 
 }

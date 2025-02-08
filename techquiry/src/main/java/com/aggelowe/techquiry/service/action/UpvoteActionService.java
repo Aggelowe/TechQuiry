@@ -5,10 +5,8 @@ import org.springframework.stereotype.Service;
 
 import com.aggelowe.techquiry.database.dao.ResponseDao;
 import com.aggelowe.techquiry.database.dao.UpvoteDao;
-import com.aggelowe.techquiry.database.dao.UserLoginDao;
 import com.aggelowe.techquiry.database.entity.Response;
 import com.aggelowe.techquiry.database.entity.Upvote;
-import com.aggelowe.techquiry.database.entity.UserLogin;
 import com.aggelowe.techquiry.database.exception.DatabaseException;
 import com.aggelowe.techquiry.service.UpvoteService;
 import com.aggelowe.techquiry.service.exception.EntityNotFoundException;
@@ -42,12 +40,6 @@ public class UpvoteActionService {
 	private final ResponseDao responseDao;
 
 	/**
-	 * The object responsible for handling the data access for {@link UserLogin}
-	 * objects.
-	 */
-	private final UserLoginDao userLoginDao;
-
-	/**
 	 * The {@link SessionHelper} containing the information of the user currently
 	 * acting
 	 */
@@ -58,44 +50,38 @@ public class UpvoteActionService {
 	 * This constructor constructs a new {@link ObserverActionService} instance that
 	 * is handling the personalized upvote operations of the application.
 	 * 
-	 * @param upvoteDao    The upvote data access object
-	 * @param responseDao  The response data access object
-	 * @param userLoginDao The user login data access object
+	 * @param upvoteDao   The upvote data access object
+	 * @param responseDao The response data access object
 	 */
 	@Autowired
-	public UpvoteActionService(UpvoteDao upvoteDao, ResponseDao responseDao, UserLoginDao userLoginDao) {
+	public UpvoteActionService(UpvoteDao upvoteDao, ResponseDao responseDao) {
 		this.upvoteDao = upvoteDao;
 		this.responseDao = responseDao;
-		this.userLoginDao = userLoginDao;
 	}
 
 	/**
-	 * This method inserts the given {@link Upvote} object in the database
+	 * This method inserts the {@link Upvote} object in the database with the given
+	 * response id and the user id of the current user session.
 	 *
-	 * @param upvote The upvote object to create
-	 * @throws ForbiddenOperationException If the current user does not have the
-	 *                                     given user id
-	 * @throws EntityNotFoundException     If the given user id or response id do
-	 *                                     not correspond to a user login or
-	 *                                     response respectively
+	 * @param responseId The responseId of the response to upvote
+	 * @throws ForbiddenOperationException If the current user is not logged in
+	 * @throws EntityNotFoundException     If the given response id does not
+	 *                                     correspond to a response
 	 * @throws InvalidRequestException     If the given upvote already exists
 	 * @throws InternalErrorException      If an internal error occurs while
 	 *                                     creating the upvote
 	 */
-	public void createUpvote(Upvote upvote) throws ServiceException {
+	public void createUpvote(int responseId) throws ServiceException {
 		Authentication current = sessionHelper.getAuthentication();
-		if (current == null || current.getUserId() != upvote.getUserId()) {
+		if (current == null) {
 			throw new ForbiddenOperationException("The requested upvote creation is forbidden!");
 		}
 		try {
-			UserLogin userLogin = userLoginDao.select(upvote.getUserId());
-			if (userLogin == null) {
-				throw new EntityNotFoundException("The given user id does not have a corresponding login!");
-			}
-			Response response = responseDao.select(upvote.getResponseId());
+			Response response = responseDao.select(responseId);
 			if (response == null) {
 				throw new EntityNotFoundException("The given response id does not have a corresponding response!");
 			}
+			Upvote upvote = new Upvote(responseId, current.getUserId());
 			if (upvoteDao.check(upvote)) {
 				throw new InvalidRequestException("The given upvote already exists!");
 			}
@@ -106,20 +92,21 @@ public class UpvoteActionService {
 	}
 
 	/**
-	 * This method deletes the upvote with the specified information.
+	 * This method deletes the {@link Upvote} object in the database with the given
+	 * response id and the user id of the current user session.
 	 *
-	 * @param upvote The upvote information
-	 * @throws ForbiddenOperationException If the current user does not have the
-	 *                                     given user id
+	 * @param responseId The responseId of the response to stop upvoting
+	 * @throws ForbiddenOperationException If the current user is not logged in
 	 * @throws EntityNotFoundException     If the requested upvote does not exist
 	 * @throws InternalErrorException      If an internal error occurred while
 	 *                                     deleting the upvote
 	 */
-	public void deleteUpvote(Upvote upvote) throws ServiceException {
+	public void deleteUpvote(int responseId) throws ServiceException {
 		Authentication current = sessionHelper.getAuthentication();
-		if (current == null || current.getUserId() != upvote.getUserId()) {
+		if (current == null) {
 			throw new ForbiddenOperationException("The requested upvote deletion is forbidden!");
 		}
+		Upvote upvote = new Upvote(responseId, current.getUserId());
 		try {
 			if (!upvoteDao.check(upvote)) {
 				throw new EntityNotFoundException("The requested upvote does not exist!");

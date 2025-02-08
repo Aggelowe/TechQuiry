@@ -5,10 +5,8 @@ import org.springframework.stereotype.Service;
 
 import com.aggelowe.techquiry.database.dao.InquiryDao;
 import com.aggelowe.techquiry.database.dao.ObserverDao;
-import com.aggelowe.techquiry.database.dao.UserLoginDao;
 import com.aggelowe.techquiry.database.entity.Inquiry;
 import com.aggelowe.techquiry.database.entity.Observer;
-import com.aggelowe.techquiry.database.entity.UserLogin;
 import com.aggelowe.techquiry.database.exception.DatabaseException;
 import com.aggelowe.techquiry.service.ObserverService;
 import com.aggelowe.techquiry.service.exception.EntityNotFoundException;
@@ -43,12 +41,6 @@ public class ObserverActionService {
 	private final InquiryDao inquiryDao;
 
 	/**
-	 * The object responsible for handling the data access for {@link UserLogin}
-	 * objects.
-	 */
-	private final UserLoginDao userLoginDao;
-
-	/**
 	 * The {@link SessionHelper} containing the information of the user currently
 	 * acting
 	 */
@@ -64,39 +56,34 @@ public class ObserverActionService {
 	 * @param userLoginDao The user login data access object
 	 */
 	@Autowired
-	public ObserverActionService(ObserverDao observerDao, InquiryDao inquiryDao, UserLoginDao userLoginDao) {
+	public ObserverActionService(ObserverDao observerDao, InquiryDao inquiryDao) {
 		this.observerDao = observerDao;
 		this.inquiryDao = inquiryDao;
-		this.userLoginDao = userLoginDao;
 	}
 
 	/**
-	 * This method inserts the given {@link Observer} object in the database
+	 * This method inserts the {@link Observer} object in the database with the
+	 * given inquiry id and the user id of the current user session.
 	 *
-	 * @param observer The observer object to create
-	 * @throws ForbiddenOperationException If the current user does not have the
-	 *                                     given user id
-	 * @throws EntityNotFoundException     If the given user id or inquiry id do not
-	 *                                     correspond to a user login or inquiry
-	 *                                     respectively
+	 * @param inquiryId The inquiry id of the inquiry to observe
+	 * @throws ForbiddenOperationException If the current user is not logged in
+	 * @throws EntityNotFoundException     If the given inquiry id does not
+	 *                                     correspond to an inquiry
 	 * @throws InvalidRequestException     If the given observer already exists
 	 * @throws InternalErrorException      If an internal error occurs while
 	 *                                     creating the observer
 	 */
-	public void createObserver(Observer observer) throws ServiceException {
+	public void createObserver(int inquiryId) throws ServiceException {
 		Authentication current = sessionHelper.getAuthentication();
-		if (current == null || current.getUserId() != observer.getUserId()) {
+		if (current == null) {
 			throw new ForbiddenOperationException("The requested observer creation is forbidden!");
 		}
 		try {
-			UserLogin userLogin = userLoginDao.select(observer.getUserId());
-			if (userLogin == null) {
-				throw new EntityNotFoundException("The given user id does not have a corresponding login!");
-			}
-			Inquiry inquiry = inquiryDao.select(observer.getInquiryId());
+			Inquiry inquiry = inquiryDao.select(inquiryId);
 			if (inquiry == null) {
 				throw new EntityNotFoundException("The given inquiry id does not have a corresponding inquiry!");
 			}
+			Observer observer = new Observer(inquiryId, current.getUserId());
 			if (observerDao.check(observer)) {
 				throw new InvalidRequestException("The given observer already exists!");
 			}
@@ -107,20 +94,21 @@ public class ObserverActionService {
 	}
 
 	/**
-	 * This method deletes the observer with the specified information.
+	 * This method deletes the {@link Observer} object in the database with the
+	 * given inquiry id and the user id of the current user session.
 	 *
-	 * @param observer The observer information
-	 * @throws ForbiddenOperationException If the current user does not have the
-	 *                                     given user id
+	 * @param inquiryId The inquiry id of the inquiry to stop observing
+	 * @throws ForbiddenOperationException If the current user is not logged in
 	 * @throws EntityNotFoundException     If the requested observer does not exist
 	 * @throws InternalErrorException      If an internal error occurred while
 	 *                                     deleting the observer
 	 */
-	public void deleteObserver(Observer observer) throws ServiceException {
+	public void deleteObserver(int inquiryId) throws ServiceException {
 		Authentication current = sessionHelper.getAuthentication();
-		if (current == null || current.getUserId() != observer.getUserId()) {
+		if (current == null) {
 			throw new ForbiddenOperationException("The requested observer deletion is forbidden!");
 		}
+		Observer observer = new Observer(inquiryId, current.getUserId());
 		try {
 			if (!observerDao.check(observer)) {
 				throw new EntityNotFoundException("The requested observer does not exist!");

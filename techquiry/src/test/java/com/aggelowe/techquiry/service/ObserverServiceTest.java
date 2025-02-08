@@ -26,7 +26,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.aggelowe.techquiry.common.SecurityUtils;
 import com.aggelowe.techquiry.database.common.TestAppConfiguration;
 import com.aggelowe.techquiry.database.entity.Inquiry;
-import com.aggelowe.techquiry.database.entity.Observer;
 import com.aggelowe.techquiry.database.entity.UserLogin;
 import com.aggelowe.techquiry.service.action.ObserverActionService;
 import com.aggelowe.techquiry.service.exception.EntityNotFoundException;
@@ -161,8 +160,7 @@ public class ObserverServiceTest {
 	@Test
 	public void testCreateObserverSuccess() {
 		sessionHelper.setAuthentication(new Authentication(1));
-		Observer target = new Observer(2, 1);
-		assertDoesNotThrow(() -> observerActionService.createObserver(target));
+		assertDoesNotThrow(() -> observerActionService.createObserver(2));
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
 				Statement statement = connection.createStatement();
@@ -179,24 +177,16 @@ public class ObserverServiceTest {
 	@Test
 	public void testCreateObserverException() {
 		sessionHelper.setAuthentication(null);
-		Observer target0 = new Observer(2, 1);
-		assertThrows(ForbiddenOperationException.class, () -> observerActionService.createObserver(target0));
-		sessionHelper.setAuthentication(new Authentication(0));
-		assertThrows(ForbiddenOperationException.class, () -> observerActionService.createObserver(target0));
-		Observer target1 = new Observer(2, 2);
-		sessionHelper.setAuthentication(new Authentication(2));
-		assertThrows(EntityNotFoundException.class, () -> observerActionService.createObserver(target1));
-		Observer target2 = new Observer(3, 1);
+		assertThrows(ForbiddenOperationException.class, () -> observerActionService.createObserver(2));
 		sessionHelper.setAuthentication(new Authentication(1));
-		assertThrows(EntityNotFoundException.class, () -> observerActionService.createObserver(target2));
-		Observer target3 = new Observer(1, 1);
-		assertThrows(InvalidRequestException.class, () -> observerActionService.createObserver(target3));
+		assertThrows(EntityNotFoundException.class, () -> observerActionService.createObserver(3));
+		assertThrows(InvalidRequestException.class, () -> observerActionService.createObserver(1));
 	}
 
 	@Test
 	public void testDeleteObserverSuccess() {
 		sessionHelper.setAuthentication(new Authentication(1));
-		assertDoesNotThrow(() -> observerActionService.deleteObserver(new Observer(1, 1)));
+		assertDoesNotThrow(() -> observerActionService.deleteObserver(1));
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
 				Statement statement = connection.createStatement();
@@ -211,13 +201,9 @@ public class ObserverServiceTest {
 	@Test
 	public void testDeleteObserverException() {
 		sessionHelper.setAuthentication(null);
-		Observer target0 = new Observer(1, 1);
-		assertThrows(ForbiddenOperationException.class, () -> observerActionService.createObserver(target0));
-		sessionHelper.setAuthentication(new Authentication(0));
-		assertThrows(ForbiddenOperationException.class, () -> observerActionService.createObserver(target0));
-		Observer target1 = new Observer(2, 1);
+		assertThrows(ForbiddenOperationException.class, () -> observerActionService.deleteObserver(1));
 		sessionHelper.setAuthentication(new Authentication(1));
-		assertThrows(EntityNotFoundException.class, () -> observerActionService.deleteObserver(target1));
+		assertThrows(EntityNotFoundException.class, () -> observerActionService.deleteObserver(2));
 	}
 
 }

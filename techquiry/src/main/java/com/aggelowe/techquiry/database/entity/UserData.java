@@ -26,7 +26,8 @@ public class UserData {
 	/**
 	 * The unique id of the user
 	 */
-	private final int id;
+	@NonNull
+	private Integer id;
 
 	/**
 	 * The first name of the user

@@ -26,7 +26,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.aggelowe.techquiry.common.SecurityUtils;
 import com.aggelowe.techquiry.database.common.TestAppConfiguration;
 import com.aggelowe.techquiry.database.entity.Response;
-import com.aggelowe.techquiry.database.entity.Upvote;
 import com.aggelowe.techquiry.database.entity.UserLogin;
 import com.aggelowe.techquiry.service.action.UpvoteActionService;
 import com.aggelowe.techquiry.service.exception.EntityNotFoundException;
@@ -179,8 +178,7 @@ public class UpvoteServiceTest {
 	@Test
 	public void testCreateUpvoteSuccess() {
 		sessionHelper.setAuthentication(new Authentication(1));
-		Upvote target = new Upvote(2, 1);
-		assertDoesNotThrow(() -> upvoteActionService.createUpvote(target));
+		assertDoesNotThrow(() -> upvoteActionService.createUpvote(2));
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
 				Statement statement = connection.createStatement();
@@ -197,24 +195,16 @@ public class UpvoteServiceTest {
 	@Test
 	public void testCreateUpvoteException() {
 		sessionHelper.setAuthentication(null);
-		Upvote target0 = new Upvote(2, 1);
-		assertThrows(ForbiddenOperationException.class, () -> upvoteActionService.createUpvote(target0));
-		sessionHelper.setAuthentication(new Authentication(0));
-		assertThrows(ForbiddenOperationException.class, () -> upvoteActionService.createUpvote(target0));
-		Upvote target1 = new Upvote(2, 2);
-		sessionHelper.setAuthentication(new Authentication(2));
-		assertThrows(EntityNotFoundException.class, () -> upvoteActionService.createUpvote(target1));
-		Upvote target2 = new Upvote(3, 1);
+		assertThrows(ForbiddenOperationException.class, () -> upvoteActionService.createUpvote(2));
 		sessionHelper.setAuthentication(new Authentication(1));
-		assertThrows(EntityNotFoundException.class, () -> upvoteActionService.createUpvote(target2));
-		Upvote target3 = new Upvote(1, 1);
-		assertThrows(InvalidRequestException.class, () -> upvoteActionService.createUpvote(target3));
+		assertThrows(EntityNotFoundException.class, () -> upvoteActionService.createUpvote(3));
+		assertThrows(InvalidRequestException.class, () -> upvoteActionService.createUpvote(1));
 	}
 
 	@Test
 	public void testDeleteUpvoteSuccess() {
 		sessionHelper.setAuthentication(new Authentication(0));
-		assertDoesNotThrow(() -> upvoteActionService.deleteUpvote(new Upvote(0, 0)));
+		assertDoesNotThrow(() -> upvoteActionService.deleteUpvote(0));
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
 				Statement statement = connection.createStatement();
@@ -229,13 +219,9 @@ public class UpvoteServiceTest {
 	@Test
 	public void testDeleteUpvoteException() {
 		sessionHelper.setAuthentication(null);
-		Upvote target0 = new Upvote(0, 0);
-		assertThrows(ForbiddenOperationException.class, () -> upvoteActionService.deleteUpvote(target0));
-		sessionHelper.setAuthentication(new Authentication(1));
-		assertThrows(ForbiddenOperationException.class, () -> upvoteActionService.deleteUpvote(target0));
-		Upvote target1 = new Upvote(2, 0);
+		assertThrows(ForbiddenOperationException.class, () -> upvoteActionService.deleteUpvote(0));
 		sessionHelper.setAuthentication(new Authentication(0));
-		assertThrows(EntityNotFoundException.class, () -> upvoteActionService.deleteUpvote(target1));
+		assertThrows(EntityNotFoundException.class, () -> upvoteActionService.deleteUpvote(2));
 	}
 
 }

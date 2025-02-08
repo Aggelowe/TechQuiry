@@ -90,20 +90,20 @@ public class UserLoginActionService {
 	}
 
 	/**
-	 * This method deletes the user login of the logged in user.
+	 * This method deletes the user login with the specified user id.
 	 *
+	 * @param id The user id
 	 * @throws ForbiddenOperationException If the current user does not have the
 	 *                                     given id
 	 * @throws EntityNotFoundException     If the requested user does not exist
 	 * @throws InternalErrorException      If an internal error occurred while
 	 *                                     deleting the user
 	 */
-	public void deleteLogin() throws ServiceException {
+	public void deleteLogin(int id) throws ServiceException {
 		Authentication current = sessionHelper.getAuthentication();
-		if (current == null) {
+		if (current == null || current.getUserId() != id) {
 			throw new ForbiddenOperationException("The requested user deletion is forbidden!");
 		}
-		int id = current.getUserId();
 		try {
 			UserLogin login = userLoginDao.select(id);
 			if (login == null) {
@@ -118,13 +118,10 @@ public class UserLoginActionService {
 
 	/**
 	 * This method updates an existing user login with the data from the given
-	 * {@link UserLogin} object.
+	 * {@link UserLogin} object. The user id is automatically selected.
 	 * 
 	 * @param login The user login
-	 * @throws ForbiddenOperationException If the current user does not have the
-	 *                                     same id as the one contained in the given
-	 *                                     login.
-	 * @throws EntityNotFoundException     If the requested user does not exist
+	 * @throws ForbiddenOperationException If the current user is not logged in
 	 * @throws InvalidRequestException     If the given username does not abide by
 	 *                                     the requirements.
 	 * @throws InternalErrorException      If an internal error occurred while
@@ -133,7 +130,7 @@ public class UserLoginActionService {
 	 */
 	public void updateLogin(UserLogin login) throws ServiceException {
 		Authentication current = sessionHelper.getAuthentication();
-		if (current == null || current.getUserId() != login.getId()) {
+		if (current == null) {
 			throw new ForbiddenOperationException("The requested user update is forbidden!");
 		}
 		String username = login.getUsername();
@@ -142,15 +139,13 @@ public class UserLoginActionService {
 			throw new InvalidRequestException("The given username does not abide by the requirements!");
 		}
 		try {
-			UserLogin idLogin = userLoginDao.select(login.getId());
-			if (idLogin == null) {
-				throw new EntityNotFoundException("The requested user does not exist!");
-			}
 			UserLogin usernameLogin = userLoginDao.selectFromUsername(login.getUsername());
-			if (usernameLogin != null) {
+			if (usernameLogin != null && usernameLogin.getId() != login.getId()) {
 				throw new InvalidRequestException("The given username is not available!");
 			}
-			userLoginDao.update(login);
+			UserLogin copy = login.copy();
+			copy.setId(current.getUserId());
+			userLoginDao.update(copy);
 		} catch (DatabaseException exception) {
 			throw new InternalErrorException("An internal error occured while getting the user!", exception);
 		}

@@ -111,7 +111,7 @@ public class UserDataServiceTest {
 
 	@Test
 	public void testCreateDataSuccess() {
-		UserData target = new UserData(2, "Charlie", "Brown", null);
+		UserData target = new UserData(0, "Charlie", "Brown", null);
 		sessionHelper.setAuthentication(new Authentication(2));
 		assertDoesNotThrow(() -> userDataActionService.createData(target));
 		assertDoesNotThrow(() -> {
@@ -131,22 +131,17 @@ public class UserDataServiceTest {
 
 	@Test
 	public void testCreateDataException() {
-		UserData target0 = new UserData(2, "Charlie", "Brown", null);
+		UserData target0 = new UserData(0, "Charlie", "Brown", null);
 		sessionHelper.setAuthentication(null);
 		assertThrows(ForbiddenOperationException.class, () -> userDataActionService.createData(target0));
-		sessionHelper.setAuthentication(new Authentication(0));
-		assertThrows(ForbiddenOperationException.class, () -> userDataActionService.createData(target0));
-		UserData target1 = new UserData(2, "", "Brown", null);
+		UserData target1 = new UserData(0, "", "Brown", null);
 		sessionHelper.setAuthentication(new Authentication(2));
 		assertThrows(InvalidRequestException.class, () -> userDataActionService.createData(target1));
-		UserData target2 = new UserData(2, "Charlie", "", null);
+		UserData target2 = new UserData(0, "Charlie", "", null);
 		assertThrows(InvalidRequestException.class, () -> userDataActionService.createData(target2));
 		sessionHelper.setAuthentication(new Authentication(1));
-		UserData target3 = new UserData(1, "Charlie", "Brown", null);
+		UserData target3 = new UserData(0, "Charlie", "Brown", null);
 		assertThrows(InvalidRequestException.class, () -> userDataActionService.createData(target3));
-		UserData target4 = new UserData(3, "Charlie", "Brown", null);
-		sessionHelper.setAuthentication(new Authentication(3));
-		assertThrows(EntityNotFoundException.class, () -> userDataActionService.createData(target4));
 	}
 
 	@Test
@@ -176,7 +171,7 @@ public class UserDataServiceTest {
 
 	@Test
 	public void testUpdateDataSuccess() {
-		UserData target = new UserData(1, "David", "Dawson", new byte[2]);
+		UserData target = new UserData(0, "David", "Dawson", new byte[2]);
 		sessionHelper.setAuthentication(new Authentication(1));
 		assertDoesNotThrow(() -> userDataActionService.updateData(target));
 		assertDoesNotThrow(() -> {
@@ -199,14 +194,12 @@ public class UserDataServiceTest {
 		UserData target0 = new UserData(1, "David", "Dawson", new byte[2]);
 		sessionHelper.setAuthentication(null);
 		assertThrows(ForbiddenOperationException.class, () -> userDataActionService.updateData(target0));
-		sessionHelper.setAuthentication(new Authentication(0));
-		assertThrows(ForbiddenOperationException.class, () -> userDataActionService.updateData(target0));
-		UserData target1 = new UserData(1, "", "Brown", null);
+		UserData target1 = new UserData(0, "", "Brown", null);
 		sessionHelper.setAuthentication(new Authentication(1));
 		assertThrows(InvalidRequestException.class, () -> userDataActionService.updateData(target1));
-		UserData target2 = new UserData(1, "Charlie", "", null);
+		UserData target2 = new UserData(0, "Charlie", "", null);
 		assertThrows(InvalidRequestException.class, () -> userDataActionService.updateData(target2));
-		UserData target3 = new UserData(2, "Charlie", "Brown", null);
+		UserData target3 = new UserData(0, "Charlie", "Brown", null);
 		sessionHelper.setAuthentication(new Authentication(2));
 		assertThrows(EntityNotFoundException.class, () -> userDataActionService.updateData(target3));
 
