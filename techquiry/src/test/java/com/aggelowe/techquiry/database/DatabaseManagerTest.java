@@ -21,7 +21,7 @@ import com.aggelowe.techquiry.database.common.TestAppConfiguration;
 
 @SpringBootTest(classes = TestAppConfiguration.class)
 @ExtendWith(SpringExtension.class)
-public class DatabaseManagerTest {
+class DatabaseManagerTest {
 
 	@Autowired
 	DataSource dataSource;
@@ -30,7 +30,7 @@ public class DatabaseManagerTest {
 	DatabaseManager databaseManager;
 
 	@Test
-	public void testCreateSchemaSuccess() {
+	void testCreateSchemaSuccess() {
 		assertDoesNotThrow(() -> databaseManager.createSchema());
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {

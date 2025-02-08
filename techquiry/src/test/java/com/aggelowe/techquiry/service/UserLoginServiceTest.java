@@ -36,7 +36,7 @@ import com.aggelowe.techquiry.service.session.SessionHelper;
 
 @SpringBootTest(classes = TestAppConfiguration.class)
 @ExtendWith(SpringExtension.class)
-public class UserLoginServiceTest {
+class UserLoginServiceTest {
 
 	@Autowired
 	DataSource dataSource;
@@ -51,7 +51,7 @@ public class UserLoginServiceTest {
 	SessionHelper sessionHelper;
 
 	@BeforeEach
-	public void initialize() {
+	void initialize() {
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
 				Statement statement = connection.createStatement();
@@ -73,7 +73,7 @@ public class UserLoginServiceTest {
 	}
 
 	@AfterEach
-	public void destroy() {
+	void destroy() {
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
 				Statement statement = connection.createStatement();
@@ -84,13 +84,13 @@ public class UserLoginServiceTest {
 	}
 
 	@Test
-	public void testGetLoginCountSuccess() {
+	void testGetLoginCountSuccess() {
 		int count = assertDoesNotThrow(() -> userLoginService.getLoginCount());
 		assertEquals(3, count);
 	}
 
 	@Test
-	public void testGetLoginRangeSuccess() {
+	void testGetLoginRangeSuccess() {
 		List<UserLogin> userLogins = assertDoesNotThrow(() -> userLoginService.getLoginRange(2, 1));
 		assertEquals(1, userLogins.size());
 		UserLogin userLogin = userLogins.get(0);
@@ -101,7 +101,7 @@ public class UserLoginServiceTest {
 	}
 
 	@Test
-	public void testGetLoginByUserIdSuccess() {
+	void testGetLoginByUserIdSuccess() {
 		UserLogin userLogin = assertDoesNotThrow(() -> userLoginService.getLoginByUserId(1));
 		assertEquals(1, userLogin.getUserId());
 		assertEquals("bob", userLogin.getUsername());
@@ -110,12 +110,12 @@ public class UserLoginServiceTest {
 	}
 
 	@Test
-	public void testGetLoginByUserIdException() {
+	void testGetLoginByUserIdException() {
 		assertThrows(EntityNotFoundException.class, () -> userLoginService.getLoginByUserId(3));
 	}
 
 	@Test
-	public void testGetLoginByUsernameSuccess() {
+	void testGetLoginByUsernameSuccess() {
 		UserLogin userLogin = assertDoesNotThrow(() -> userLoginService.getLoginByUsername("bob"));
 		assertEquals(1, userLogin.getUserId());
 		assertEquals("bob", userLogin.getUsername());
@@ -124,12 +124,12 @@ public class UserLoginServiceTest {
 	}
 
 	@Test
-	public void testGetLoginByUsernameException() {
+	void testGetLoginByUsernameException() {
 		assertThrows(EntityNotFoundException.class, () -> userLoginService.getLoginByUsername("david"));
 	}
 
 	@Test
-	public void testCreateLoginSuccess() {
+	void testCreateLoginSuccess() {
 		UserLogin target = new UserLogin(0, "david", "extra");
 		sessionHelper.setAuthentication(null);
 		int id = assertDoesNotThrow(() -> userLoginActionService.createLogin(target));
@@ -152,7 +152,7 @@ public class UserLoginServiceTest {
 	}
 
 	@Test
-	public void testCreateLoginException() {
+	void testCreateLoginException() {
 		UserLogin target0 = new UserLogin(0, "emily", "password");
 		sessionHelper.setAuthentication(new Authentication(0));
 		assertThrows(ForbiddenOperationException.class, () -> userLoginActionService.createLogin(target0));
@@ -168,7 +168,7 @@ public class UserLoginServiceTest {
 	}
 
 	@Test
-	public void testDeleteLoginSuccess() {
+	void testDeleteLoginSuccess() {
 		sessionHelper.setAuthentication(new Authentication(1));
 		assertDoesNotThrow(() -> userLoginActionService.deleteLogin(1));
 		assertDoesNotThrow(() -> {
@@ -183,7 +183,7 @@ public class UserLoginServiceTest {
 	}
 
 	@Test
-	public void testDeleteLoginException() {
+	void testDeleteLoginException() {
 		sessionHelper.setAuthentication(null);
 		assertThrows(ForbiddenOperationException.class, () -> userLoginActionService.deleteLogin(1));
 		sessionHelper.setAuthentication(new Authentication(1));
@@ -193,7 +193,7 @@ public class UserLoginServiceTest {
 	}
 
 	@Test
-	public void testUpdateLoginSuccess() {
+	void testUpdateLoginSuccess() {
 		UserLogin login = new UserLogin(0, "david", "extra");
 		sessionHelper.setAuthentication(new Authentication(2));
 		assertDoesNotThrow(() -> userLoginActionService.updateLogin(login));
@@ -214,7 +214,7 @@ public class UserLoginServiceTest {
 	}
 
 	@Test
-	public void testUpdateLoginException() {
+	void testUpdateLoginException() {
 		UserLogin target0 = new UserLogin(2, "david", "extra");
 		sessionHelper.setAuthentication(null);
 		assertThrows(ForbiddenOperationException.class, () -> userLoginActionService.updateLogin(target0));
@@ -226,7 +226,7 @@ public class UserLoginServiceTest {
 	}
 
 	@Test
-	public void testAuthenticateUserSuccess() {
+	void testAuthenticateUserSuccess() {
 		sessionHelper.setAuthentication(null);
 		assertDoesNotThrow(() -> userLoginActionService.authenticateUser("bob", "pass"));
 		Authentication current = sessionHelper.getAuthentication();
@@ -235,7 +235,7 @@ public class UserLoginServiceTest {
 	}
 
 	@Test
-	public void testAuthenticateUserException() {
+	void testAuthenticateUserException() {
 		sessionHelper.setAuthentication(new Authentication(2));
 		assertThrows(ForbiddenOperationException.class, () -> userLoginActionService.authenticateUser("bob", "pass"));
 		sessionHelper.setAuthentication(null);
@@ -245,7 +245,7 @@ public class UserLoginServiceTest {
 	}
 
 	@Test
-	public void testLogoutUserSuccess() {
+	void testLogoutUserSuccess() {
 		sessionHelper.setAuthentication(new Authentication(1));
 		assertDoesNotThrow(() -> userLoginActionService.logoutUser());
 		Authentication current = sessionHelper.getAuthentication();
@@ -253,7 +253,7 @@ public class UserLoginServiceTest {
 	}
 
 	@Test
-	public void testLogoutUserException() {
+	void testLogoutUserException() {
 		sessionHelper.setAuthentication(null);
 		assertThrows(ForbiddenOperationException.class, () -> userLoginActionService.logoutUser());
 	}

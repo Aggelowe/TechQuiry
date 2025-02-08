@@ -36,7 +36,7 @@ import com.aggelowe.techquiry.service.session.SessionHelper;
 
 @SpringBootTest(classes = TestAppConfiguration.class)
 @ExtendWith(SpringExtension.class)
-public class ObserverServiceTest {
+class ObserverServiceTest {
 
 	@Autowired
 	DataSource dataSource;
@@ -51,7 +51,7 @@ public class ObserverServiceTest {
 	SessionHelper sessionHelper;
 
 	@BeforeEach
-	public void initialize() {
+	void initialize() {
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
 				Statement statement = connection.createStatement();
@@ -101,7 +101,7 @@ public class ObserverServiceTest {
 	}
 
 	@AfterEach
-	public void destroy() {
+	void destroy() {
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
 				Statement statement = connection.createStatement();
@@ -114,18 +114,18 @@ public class ObserverServiceTest {
 	}
 
 	@Test
-	public void testGetObserverCountByInquiryIdSuccess() {
+	void testGetObserverCountByInquiryIdSuccess() {
 		int count = assertDoesNotThrow(() -> observerService.getObserverCountByInquiryId(0));
 		assertEquals(2, count);
 	}
 
 	@Test
-	public void testGetObserverCountByInquiryIdException() {
+	void testGetObserverCountByInquiryIdException() {
 		assertThrows(EntityNotFoundException.class, () -> observerService.getObserverCountByInquiryId(3));
 	}
 
 	@Test
-	public void testGetObserverUserLoginListByInquiryIdSuccess() {
+	void testGetObserverUserLoginListByInquiryIdSuccess() {
 		List<UserLogin> logins = assertDoesNotThrow(() -> observerService.getObserverUserLoginListByInquiryId(1));
 		assertEquals(1, logins.size());
 		UserLogin userLogin = logins.getFirst();
@@ -136,12 +136,12 @@ public class ObserverServiceTest {
 	}
 
 	@Test
-	public void testGetObserverUserLoginListByInquiryIdException() {
+	void testGetObserverUserLoginListByInquiryIdException() {
 		assertThrows(EntityNotFoundException.class, () -> observerService.getObserverUserLoginListByInquiryId(3));
 	}
 
 	@Test
-	public void testGetObservedInquiryListByUserIdSuccess() {
+	void testGetObservedInquiryListByUserIdSuccess() {
 		List<Inquiry> inquiries = assertDoesNotThrow(() -> observerService.getObservedInquiryListByUserId(1));
 		assertEquals(2, inquiries.size());
 		Inquiry inquiry = inquiries.getFirst();
@@ -153,12 +153,12 @@ public class ObserverServiceTest {
 	}
 
 	@Test
-	public void testGetObservedInquiryListByUserIdException() {
+	void testGetObservedInquiryListByUserIdException() {
 		assertThrows(EntityNotFoundException.class, () -> observerService.getObservedInquiryListByUserId(2));
 	}
 
 	@Test
-	public void testCreateObserverSuccess() {
+	void testCreateObserverSuccess() {
 		sessionHelper.setAuthentication(new Authentication(1));
 		assertDoesNotThrow(() -> observerActionService.createObserver(2));
 		assertDoesNotThrow(() -> {
@@ -175,7 +175,7 @@ public class ObserverServiceTest {
 	}
 
 	@Test
-	public void testCreateObserverException() {
+	void testCreateObserverException() {
 		sessionHelper.setAuthentication(null);
 		assertThrows(ForbiddenOperationException.class, () -> observerActionService.createObserver(2));
 		sessionHelper.setAuthentication(new Authentication(1));
@@ -184,7 +184,7 @@ public class ObserverServiceTest {
 	}
 
 	@Test
-	public void testDeleteObserverSuccess() {
+	void testDeleteObserverSuccess() {
 		sessionHelper.setAuthentication(new Authentication(1));
 		assertDoesNotThrow(() -> observerActionService.deleteObserver(1));
 		assertDoesNotThrow(() -> {
@@ -199,7 +199,7 @@ public class ObserverServiceTest {
 	}
 
 	@Test
-	public void testDeleteObserverException() {
+	void testDeleteObserverException() {
 		sessionHelper.setAuthentication(null);
 		assertThrows(ForbiddenOperationException.class, () -> observerActionService.deleteObserver(1));
 		sessionHelper.setAuthentication(new Authentication(1));

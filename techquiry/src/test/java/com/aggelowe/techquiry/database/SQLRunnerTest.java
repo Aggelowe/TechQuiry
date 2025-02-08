@@ -31,7 +31,7 @@ import com.aggelowe.techquiry.database.exception.SQLRunnerLoadException;
 
 @SpringBootTest(classes = TestAppConfiguration.class)
 @ExtendWith(SpringExtension.class)
-public class SQLRunnerTest {
+class SQLRunnerTest {
 
 	@Autowired
 	DataSource dataSource;
@@ -40,7 +40,7 @@ public class SQLRunnerTest {
 	SQLRunner runner;
 
 	@BeforeEach
-	public void initialize() {
+	void initialize() {
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
 				Statement statement = connection.createStatement();
@@ -53,7 +53,7 @@ public class SQLRunnerTest {
 	}
 
 	@AfterEach
-	public void destroy() {
+	void destroy() {
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
 				Statement statement = connection.createStatement();
@@ -64,7 +64,7 @@ public class SQLRunnerTest {
 	}
 
 	@Test
-	public void testRunStatementSuccess() {
+	void testRunStatementSuccess() {
 		String sql = "SELECT * FROM test WHERE id = ?";
 		LocalResult result = assertDoesNotThrow(() -> runner.runStatement(sql, 0));
 		assertNotNull(result);
@@ -74,7 +74,7 @@ public class SQLRunnerTest {
 	}
 
 	@Test
-	public void testRunStatementException() {
+	void testRunStatementException() {
 		String false0 = "SELECT * FROM false";
 		assertThrows(SQLRunnerExecuteException.class, () -> runner.runStatement(false0));
 		String false1 = "SLECT *";
@@ -84,7 +84,7 @@ public class SQLRunnerTest {
 	}
 
 	@Test
-	public void testRunScriptSuccess() {
+	void testRunScriptSuccess() {
 		String sql = "INSERT INTO test (id, username) /* Comment 1 */ VALUES (?, ?);;\n SELECT * -- Comment 2 \n FROM test WHERE id = ?";
 		InputStream stream = new ByteArrayInputStream(sql.getBytes());
 		List<LocalResult> results = assertDoesNotThrow(() -> runner.runScript(stream, 2, "Charlie", 1));
@@ -98,7 +98,7 @@ public class SQLRunnerTest {
 	}
 
 	@Test
-	public void testRunScriptException() {
+	void testRunScriptException() {
 		String false0 = "SLECT *; INSERT INTO test (id, username) VALUES (?, ?);";
 		InputStream stream0 = new ByteArrayInputStream(false0.getBytes());
 		assertThrows(SQLRunnerLoadException.class, () -> runner.runScript(stream0));

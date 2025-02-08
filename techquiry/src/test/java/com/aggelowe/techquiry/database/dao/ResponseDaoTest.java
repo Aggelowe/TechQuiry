@@ -28,7 +28,7 @@ import com.aggelowe.techquiry.database.exception.SQLRunnerExecuteException;
 
 @SpringBootTest(classes = TestAppConfiguration.class)
 @ExtendWith(SpringExtension.class)
-public class ResponseDaoTest {
+class ResponseDaoTest {
 
 	@Autowired
 	DataSource dataSource;
@@ -37,7 +37,7 @@ public class ResponseDaoTest {
 	ResponseDao responseDao;
 
 	@BeforeEach
-	public void initialize() {
+	void initialize() {
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
 				Statement statement = connection.createStatement();
@@ -90,7 +90,7 @@ public class ResponseDaoTest {
 	}
 
 	@AfterEach
-	public void destroy() {
+	void destroy() {
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
 				Statement statement = connection.createStatement();
@@ -103,7 +103,7 @@ public class ResponseDaoTest {
 	}
 
 	@Test
-	public void testCountFromInquiryIdSuccess() {
+	void testCountFromInquiryIdSuccess() {
 		int count0 = assertDoesNotThrow(() -> responseDao.countFromInquiryId(1));
 		assertEquals(0, count0);
 		int count1 = assertDoesNotThrow(() -> responseDao.countFromInquiryId(2));
@@ -111,7 +111,7 @@ public class ResponseDaoTest {
 	}
 
 	@Test
-	public void testDeleteSuccess() {
+	void testDeleteSuccess() {
 		assertDoesNotThrow(() -> responseDao.delete(1));
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
@@ -125,7 +125,7 @@ public class ResponseDaoTest {
 	}
 
 	@Test
-	public void testInsertSuccess() {
+	void testInsertSuccess() {
 		int id = assertDoesNotThrow(() -> responseDao.insert(new Response(0, 1, 1, true, "Example Response")));
 		assertEquals(3, id);
 		assertDoesNotThrow(() -> {
@@ -146,12 +146,12 @@ public class ResponseDaoTest {
 	}
 
 	@Test
-	public void testInsertException() {
+	void testInsertException() {
 		assertThrows(SQLRunnerExecuteException.class, () -> responseDao.insert(new Response(2, 3, 1, true, "Example Response")));
 	}
 
 	@Test
-	public void testSelectFromInquiryIdSuccess() {
+	void testSelectFromInquiryIdSuccess() {
 		List<Response> responses = assertDoesNotThrow(() -> responseDao.selectFromInquiryId(2));
 		assertEquals(2, responses.size());
 		Response response = responses.getFirst();
@@ -163,7 +163,7 @@ public class ResponseDaoTest {
 	}
 
 	@Test
-	public void testSelectSuccess() {
+	void testSelectSuccess() {
 		Response response = assertDoesNotThrow(() -> responseDao.select(1));
 		assertEquals(1, response.getResponseId());
 		assertEquals(2, response.getInquiryId());
@@ -173,7 +173,7 @@ public class ResponseDaoTest {
 	}
 
 	@Test
-	public void testUpdateSuccess() {
+	void testUpdateSuccess() {
 		assertDoesNotThrow(() -> responseDao.update(new Response(0, 1, 1, false, "Updated Response")));
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
@@ -192,7 +192,7 @@ public class ResponseDaoTest {
 	}
 
 	@Test
-	public void testUpdateException() {
+	void testUpdateException() {
 		assertThrows(SQLRunnerExecuteException.class, () -> responseDao.update(new Response(0, 3, 2, false, "Fail Response")));
 	}
 

@@ -36,7 +36,7 @@ import com.aggelowe.techquiry.service.session.SessionHelper;
 
 @SpringBootTest(classes = TestAppConfiguration.class)
 @ExtendWith(SpringExtension.class)
-public class UpvoteServiceTest {
+class UpvoteServiceTest {
 
 	@Autowired
 	DataSource dataSource;
@@ -51,7 +51,7 @@ public class UpvoteServiceTest {
 	SessionHelper sessionHelper;
 
 	@BeforeEach
-	public void initialize() {
+	void initialize() {
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
 				Statement statement = connection.createStatement();
@@ -118,7 +118,7 @@ public class UpvoteServiceTest {
 	}
 
 	@AfterEach
-	public void destroy() {
+	void destroy() {
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
 				Statement statement = connection.createStatement();
@@ -132,18 +132,18 @@ public class UpvoteServiceTest {
 	}
 
 	@Test
-	public void testGetUpvoteCountByResponseIdSuccess() {
+	void testGetUpvoteCountByResponseIdSuccess() {
 		int count = assertDoesNotThrow(() -> upvoteService.getUpvoteCountByResponseId(1));
 		assertEquals(2, count);
 	}
 
 	@Test
-	public void testGetUpvoteCountByResponseIdException() {
+	void testGetUpvoteCountByResponseIdException() {
 		assertThrows(EntityNotFoundException.class, () -> upvoteService.getUpvoteCountByResponseId(3));
 	}
 
 	@Test
-	public void testGetUpvoteUserLoginListByResponseIdSuccess() {
+	void testGetUpvoteUserLoginListByResponseIdSuccess() {
 		List<UserLogin> logins = assertDoesNotThrow(() -> upvoteService.getUpvoteUserLoginListByResponseId(0));
 		assertEquals(1, logins.size());
 		UserLogin userLogin = logins.getFirst();
@@ -154,12 +154,12 @@ public class UpvoteServiceTest {
 	}
 
 	@Test
-	public void testGetUpvoteUserLoginListByResponseIdException() {
+	void testGetUpvoteUserLoginListByResponseIdException() {
 		assertThrows(EntityNotFoundException.class, () -> upvoteService.getUpvoteUserLoginListByResponseId(3));
 	}
 
 	@Test
-	public void testGetUpvotedResponseListByUserIdSuccess() {
+	void testGetUpvotedResponseListByUserIdSuccess() {
 		List<Response> responses = assertDoesNotThrow(() -> upvoteService.getUpvotedResponseListByUserId(1));
 		assertEquals(1, responses.size());
 		Response response = responses.getFirst();
@@ -171,12 +171,12 @@ public class UpvoteServiceTest {
 	}
 
 	@Test
-	public void testGetUpvotedResponseListByUserIdException() {
+	void testGetUpvotedResponseListByUserIdException() {
 		assertThrows(EntityNotFoundException.class, () -> upvoteService.getUpvotedResponseListByUserId(2));
 	}
 
 	@Test
-	public void testCreateUpvoteSuccess() {
+	void testCreateUpvoteSuccess() {
 		sessionHelper.setAuthentication(new Authentication(1));
 		assertDoesNotThrow(() -> upvoteActionService.createUpvote(2));
 		assertDoesNotThrow(() -> {
@@ -193,7 +193,7 @@ public class UpvoteServiceTest {
 	}
 
 	@Test
-	public void testCreateUpvoteException() {
+	void testCreateUpvoteException() {
 		sessionHelper.setAuthentication(null);
 		assertThrows(ForbiddenOperationException.class, () -> upvoteActionService.createUpvote(2));
 		sessionHelper.setAuthentication(new Authentication(1));
@@ -202,7 +202,7 @@ public class UpvoteServiceTest {
 	}
 
 	@Test
-	public void testDeleteUpvoteSuccess() {
+	void testDeleteUpvoteSuccess() {
 		sessionHelper.setAuthentication(new Authentication(0));
 		assertDoesNotThrow(() -> upvoteActionService.deleteUpvote(0));
 		assertDoesNotThrow(() -> {
@@ -217,7 +217,7 @@ public class UpvoteServiceTest {
 	}
 
 	@Test
-	public void testDeleteUpvoteException() {
+	void testDeleteUpvoteException() {
 		sessionHelper.setAuthentication(null);
 		assertThrows(ForbiddenOperationException.class, () -> upvoteActionService.deleteUpvote(0));
 		sessionHelper.setAuthentication(new Authentication(0));

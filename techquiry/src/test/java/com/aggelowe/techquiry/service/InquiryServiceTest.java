@@ -33,7 +33,7 @@ import com.aggelowe.techquiry.service.session.SessionHelper;
 
 @SpringBootTest(classes = TestAppConfiguration.class)
 @ExtendWith(SpringExtension.class)
-public class InquiryServiceTest {
+class InquiryServiceTest {
 
 	@Autowired
 	DataSource dataSource;
@@ -48,7 +48,7 @@ public class InquiryServiceTest {
 	SessionHelper sessionHelper;
 
 	@BeforeEach
-	public void initialize() {
+	void initialize() {
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
 				Statement statement = connection.createStatement();
@@ -84,7 +84,7 @@ public class InquiryServiceTest {
 	}
 
 	@AfterEach
-	public void destroy() {
+	void destroy() {
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
 				Statement statement = connection.createStatement();
@@ -96,13 +96,13 @@ public class InquiryServiceTest {
 	}
 
 	@Test
-	public void testGetInquiryCountSuccess() {
+	void testGetInquiryCountSuccess() {
 		int count = assertDoesNotThrow(() -> inquiryService.getInquiryCount());
 		assertEquals(3, count);
 	}
 
 	@Test
-	public void testGetInquiryRangeSuccess() {
+	void testGetInquiryRangeSuccess() {
 		List<Inquiry> inquiries = assertDoesNotThrow(() -> inquiryService.getInquiryRange(2, 1));
 		assertEquals(1, inquiries.size());
 		Inquiry inquiry = inquiries.get(0);
@@ -114,7 +114,7 @@ public class InquiryServiceTest {
 	}
 
 	@Test
-	public void testGetInquiryByInquiryIdSuccess() {
+	void testGetInquiryByInquiryIdSuccess() {
 		Inquiry inquiry = assertDoesNotThrow(() -> inquiryService.getInquiryByInquiryId(1));
 		assertEquals(1, inquiry.getInquiryId());
 		assertEquals(0, inquiry.getUserId());
@@ -124,12 +124,12 @@ public class InquiryServiceTest {
 	}
 
 	@Test
-	public void testGetInquiryByInquiryIdException() {
+	void testGetInquiryByInquiryIdException() {
 		assertThrows(EntityNotFoundException.class, () -> inquiryService.getInquiryByInquiryId(3));
 	}
 
 	@Test
-	public void testGetInquiryListByUserIdSuccess() {
+	void testGetInquiryListByUserIdSuccess() {
 		sessionHelper.setAuthentication(null);
 		List<Inquiry> inquiries0 = assertDoesNotThrow(() -> inquiryActionService.getInquiryListByUserId(0));
 		assertEquals(1, inquiries0.size());
@@ -145,13 +145,13 @@ public class InquiryServiceTest {
 	}
 
 	@Test
-	public void testGetInquiryListByUserIdException() {
+	void testGetInquiryListByUserIdException() {
 		sessionHelper.setAuthentication(null);
 		assertThrows(EntityNotFoundException.class, () -> inquiryActionService.getInquiryListByUserId(3));
 	}
 
 	@Test
-	public void testCreateInquirySuccess() {
+	void testCreateInquirySuccess() {
 		sessionHelper.setAuthentication(new Authentication(1));
 		Inquiry target = new Inquiry(0, 0, "Success", "Success Content", false);
 		int id = assertDoesNotThrow(() -> inquiryActionService.createInquiry(target));
@@ -174,7 +174,7 @@ public class InquiryServiceTest {
 	}
 
 	@Test
-	public void testCreateInquiryException() {
+	void testCreateInquiryException() {
 		sessionHelper.setAuthentication(null);
 		Inquiry target0 = new Inquiry(0, 0, "Fail", "Fail Content", true);
 		assertThrows(ForbiddenOperationException.class, () -> inquiryActionService.createInquiry(target0));
@@ -186,7 +186,7 @@ public class InquiryServiceTest {
 	}
 
 	@Test
-	public void testDeleteInquirySuccess() {
+	void testDeleteInquirySuccess() {
 		sessionHelper.setAuthentication(new Authentication(0));
 		assertDoesNotThrow(() -> inquiryActionService.deleteInquiry(1));
 		assertDoesNotThrow(() -> {
@@ -201,7 +201,7 @@ public class InquiryServiceTest {
 	}
 
 	@Test
-	public void testDeleteInquiryException() {
+	void testDeleteInquiryException() {
 		sessionHelper.setAuthentication(null);
 		assertThrows(ForbiddenOperationException.class, () -> inquiryActionService.deleteInquiry(1));
 		sessionHelper.setAuthentication(new Authentication(1));
@@ -210,7 +210,7 @@ public class InquiryServiceTest {
 	}
 
 	@Test
-	public void testUpdateInquirySuccess() {
+	void testUpdateInquirySuccess() {
 		sessionHelper.setAuthentication(new Authentication(0));
 		Inquiry target = new Inquiry(1, 1, "Updated", "Updated Content", false);
 		assertDoesNotThrow(() -> inquiryActionService.updateInquiry(target));
@@ -231,7 +231,7 @@ public class InquiryServiceTest {
 	}
 
 	@Test
-	public void testUpdateInquiryException() {
+	void testUpdateInquiryException() {
 		Inquiry target0 = new Inquiry(0, 0, "Fail", "Fail Content", true);
 		sessionHelper.setAuthentication(null);
 		assertThrows(ForbiddenOperationException.class, () -> inquiryActionService.updateInquiry(target0));

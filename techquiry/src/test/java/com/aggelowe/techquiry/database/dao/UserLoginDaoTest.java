@@ -30,7 +30,7 @@ import com.aggelowe.techquiry.database.exception.SQLRunnerExecuteException;
 
 @SpringBootTest(classes = TestAppConfiguration.class)
 @ExtendWith(SpringExtension.class)
-public class UserLoginDaoTest {
+class UserLoginDaoTest {
 
 	@Autowired
 	DataSource dataSource;
@@ -39,7 +39,7 @@ public class UserLoginDaoTest {
 	UserLoginDao userLoginDao;
 
 	@BeforeEach
-	public void initialize() {
+	void initialize() {
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
 				Statement statement = connection.createStatement();
@@ -61,7 +61,7 @@ public class UserLoginDaoTest {
 	}
 
 	@AfterEach
-	public void destroy() {
+	void destroy() {
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
 				Statement statement = connection.createStatement();
@@ -72,13 +72,13 @@ public class UserLoginDaoTest {
 	}
 
 	@Test
-	public void testCountSuccess() {
+	void testCountSuccess() {
 		int count = assertDoesNotThrow(() -> userLoginDao.count());
 		assertEquals(3, count);
 	}
 
 	@Test
-	public void testDeleteSuccess() {
+	void testDeleteSuccess() {
 		assertDoesNotThrow(() -> userLoginDao.delete(1));
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
@@ -92,7 +92,7 @@ public class UserLoginDaoTest {
 	}
 
 	@Test
-	public void testInsertSuccess() {
+	void testInsertSuccess() {
 		int id = assertDoesNotThrow(() -> userLoginDao.insert(new UserLogin(0, "david", new byte[4], new byte[2])));
 		assertEquals(3, id);
 		assertDoesNotThrow(() -> {
@@ -112,12 +112,12 @@ public class UserLoginDaoTest {
 	}
 
 	@Test
-	public void testInsertException() {
+	void testInsertException() {
 		assertThrows(SQLRunnerExecuteException.class, () -> userLoginDao.insert(new UserLogin(3, "charlie", new byte[4], new byte[2])));
 	}
 
 	@Test
-	public void testRangeSuccess() {
+	void testRangeSuccess() {
 		List<UserLogin> userLogins = assertDoesNotThrow(() -> userLoginDao.range(2, 1));
 		assertEquals(2, userLogins.size());
 		UserLogin userLogin0 = userLogins.get(0);
@@ -130,7 +130,7 @@ public class UserLoginDaoTest {
 	}
 
 	@Test
-	public void testSelectSuccess() {
+	void testSelectSuccess() {
 		UserLogin userLogin = assertDoesNotThrow(() -> userLoginDao.select(1));
 		assertEquals(1, userLogin.getUserId());
 		assertEquals("bob", userLogin.getUsername());
@@ -139,7 +139,7 @@ public class UserLoginDaoTest {
 	}
 
 	@Test
-	public void testUpdateSuccess() {
+	void testUpdateSuccess() {
 		assertDoesNotThrow(() -> userLoginDao.update(new UserLogin(2, "david", new byte[4], new byte[2])));
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
@@ -156,7 +156,7 @@ public class UserLoginDaoTest {
 	}
 
 	@Test
-	public void testUpdateException() {
+	void testUpdateException() {
 		assertThrows(SQLRunnerExecuteException.class, () -> userLoginDao.update(new UserLogin(2, "alice", new byte[4], new byte[2])));
 	}
 

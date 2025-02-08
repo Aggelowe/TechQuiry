@@ -33,7 +33,7 @@ import com.aggelowe.techquiry.service.session.SessionHelper;
 
 @SpringBootTest(classes = TestAppConfiguration.class)
 @ExtendWith(SpringExtension.class)
-public class ResponseServiceTest {
+class ResponseServiceTest {
 
 	@Autowired
 	DataSource dataSource;
@@ -48,7 +48,7 @@ public class ResponseServiceTest {
 	SessionHelper sessionHelper;
 
 	@BeforeEach
-	public void initialize() {
+	void initialize() {
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
 				Statement statement = connection.createStatement();
@@ -101,7 +101,7 @@ public class ResponseServiceTest {
 	}
 
 	@AfterEach
-	public void destroy() {
+	void destroy() {
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
 				Statement statement = connection.createStatement();
@@ -114,18 +114,18 @@ public class ResponseServiceTest {
 	}
 
 	@Test
-	public void testGetResponseCountByInquiryIdSuccess() {
+	void testGetResponseCountByInquiryIdSuccess() {
 		int count = assertDoesNotThrow(() -> responseService.getResponseCountByInquiryId(2));
 		assertEquals(2, count);
 	}
 
 	@Test
-	public void testGetResponseCountByInquiryIdException() {
+	void testGetResponseCountByInquiryIdException() {
 		assertThrows(EntityNotFoundException.class, () -> responseService.getResponseCountByInquiryId(3));
 	}
 
 	@Test
-	public void testGetResponseListByInquiryIdSuccess() {
+	void testGetResponseListByInquiryIdSuccess() {
 		List<Response> responses = assertDoesNotThrow(() -> responseService.getResponseListByInquiryId(2));
 		assertEquals(2, responses.size());
 		Response response = responses.getFirst();
@@ -137,12 +137,12 @@ public class ResponseServiceTest {
 	}
 
 	@Test
-	public void testGetResponseListByInquiryIdException() {
+	void testGetResponseListByInquiryIdException() {
 		assertThrows(EntityNotFoundException.class, () -> responseService.getResponseListByInquiryId(3));
 	}
 
 	@Test
-	public void testGetResponseByResponseIdSuccess() {
+	void testGetResponseByResponseIdSuccess() {
 		Response response = assertDoesNotThrow(() -> responseService.getResponseByResponseId(1));
 		assertEquals(1, response.getResponseId());
 		assertEquals(2, response.getInquiryId());
@@ -152,12 +152,12 @@ public class ResponseServiceTest {
 	}
 
 	@Test
-	public void testGetResponseByResponseIdException() {
+	void testGetResponseByResponseIdException() {
 		assertThrows(EntityNotFoundException.class, () -> responseService.getResponseByResponseId(3));
 	}
 
 	@Test
-	public void testCreateResponseSuccess() {
+	void testCreateResponseSuccess() {
 		sessionHelper.setAuthentication(new Authentication(1));
 		Response target = new Response(0, 1, 0, true, "Example Response");
 		int id = assertDoesNotThrow(() -> responseActionService.createResponse(target));
@@ -180,7 +180,7 @@ public class ResponseServiceTest {
 	}
 
 	@Test
-	public void testCreateResponseException() {
+	void testCreateResponseException() {
 		sessionHelper.setAuthentication(null);
 		Response target0 = new Response(0, 2, 0, true, "Fail Response");
 		assertThrows(ForbiddenOperationException.class, () -> responseActionService.createResponse(target0));
@@ -192,7 +192,7 @@ public class ResponseServiceTest {
 	}
 
 	@Test
-	public void testDeleteResponseSuccess() {
+	void testDeleteResponseSuccess() {
 		sessionHelper.setAuthentication(new Authentication(1));
 		assertDoesNotThrow(() -> responseActionService.deleteResponse(1));
 		assertDoesNotThrow(() -> {
@@ -207,7 +207,7 @@ public class ResponseServiceTest {
 	}
 
 	@Test
-	public void testDeleteResponseException() {
+	void testDeleteResponseException() {
 		sessionHelper.setAuthentication(null);
 		assertThrows(ForbiddenOperationException.class, () -> responseActionService.deleteResponse(1));
 		sessionHelper.setAuthentication(new Authentication(0));
@@ -216,7 +216,7 @@ public class ResponseServiceTest {
 	}
 
 	@Test
-	public void testUpdateResponseSuccess() {
+	void testUpdateResponseSuccess() {
 		sessionHelper.setAuthentication(new Authentication(0));
 		Response target = new Response(0, 1, 0, false, "Updated Response");
 		assertDoesNotThrow(() -> responseActionService.updateResponse(target));
@@ -237,7 +237,7 @@ public class ResponseServiceTest {
 	}
 
 	@Test
-	public void testUpdateResponseException() {
+	void testUpdateResponseException() {
 		sessionHelper.setAuthentication(null);
 		Response target0 = new Response(0, 1, 0, false, "Fail Response");
 		assertThrows(ForbiddenOperationException.class, () -> responseActionService.updateResponse(target0));

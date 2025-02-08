@@ -34,7 +34,7 @@ import com.aggelowe.techquiry.service.session.SessionHelper;
 
 @SpringBootTest(classes = TestAppConfiguration.class)
 @ExtendWith(SpringExtension.class)
-public class UserDataServiceTest {
+class UserDataServiceTest {
 
 	@Autowired
 	DataSource dataSource;
@@ -49,7 +49,7 @@ public class UserDataServiceTest {
 	SessionHelper sessionHelper;
 
 	@BeforeEach
-	public void initialize() {
+	void initialize() {
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
 				Statement statement = connection.createStatement();
@@ -84,7 +84,7 @@ public class UserDataServiceTest {
 	}
 
 	@AfterEach
-	public void destroy() {
+	void destroy() {
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
 				Statement statement = connection.createStatement();
@@ -96,7 +96,7 @@ public class UserDataServiceTest {
 	}
 
 	@Test
-	public void testGetDataByUserIdSuccess() {
+	void testGetDataByUserIdSuccess() {
 		UserData userData = assertDoesNotThrow(() -> userDataService.getDataByUserId(1));
 		assertEquals(1, userData.getUserId());
 		assertEquals("Bob", userData.getFirstName());
@@ -105,12 +105,12 @@ public class UserDataServiceTest {
 	}
 
 	@Test
-	public void testGetDataByUserIdException() {
+	void testGetDataByUserIdException() {
 		assertThrows(EntityNotFoundException.class, () -> userDataService.getDataByUserId(2));
 	}
 
 	@Test
-	public void testCreateDataSuccess() {
+	void testCreateDataSuccess() {
 		UserData target = new UserData(0, "Charlie", "Brown", null);
 		sessionHelper.setAuthentication(new Authentication(2));
 		assertDoesNotThrow(() -> userDataActionService.createData(target));
@@ -130,7 +130,7 @@ public class UserDataServiceTest {
 	}
 
 	@Test
-	public void testCreateDataException() {
+	void testCreateDataException() {
 		UserData target0 = new UserData(0, "Charlie", "Brown", null);
 		sessionHelper.setAuthentication(null);
 		assertThrows(ForbiddenOperationException.class, () -> userDataActionService.createData(target0));
@@ -145,7 +145,7 @@ public class UserDataServiceTest {
 	}
 
 	@Test
-	public void testDeleteDataSuccess() {
+	void testDeleteDataSuccess() {
 		sessionHelper.setAuthentication(new Authentication(1));
 		assertDoesNotThrow(() -> userDataActionService.deleteData(1));
 		assertDoesNotThrow(() -> {
@@ -160,7 +160,7 @@ public class UserDataServiceTest {
 	}
 
 	@Test
-	public void testDeleteDataException() {
+	void testDeleteDataException() {
 		sessionHelper.setAuthentication(null);
 		assertThrows(ForbiddenOperationException.class, () -> userDataActionService.deleteData(1));
 		sessionHelper.setAuthentication(new Authentication(1));
@@ -170,7 +170,7 @@ public class UserDataServiceTest {
 	}
 
 	@Test
-	public void testUpdateDataSuccess() {
+	void testUpdateDataSuccess() {
 		UserData target = new UserData(0, "David", "Dawson", new byte[2]);
 		sessionHelper.setAuthentication(new Authentication(1));
 		assertDoesNotThrow(() -> userDataActionService.updateData(target));
@@ -190,7 +190,7 @@ public class UserDataServiceTest {
 	}
 
 	@Test
-	public void testUpdateDataException() {
+	void testUpdateDataException() {
 		UserData target0 = new UserData(1, "David", "Dawson", new byte[2]);
 		sessionHelper.setAuthentication(null);
 		assertThrows(ForbiddenOperationException.class, () -> userDataActionService.updateData(target0));

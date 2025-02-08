@@ -28,7 +28,7 @@ import com.aggelowe.techquiry.database.exception.SQLRunnerExecuteException;
 
 @SpringBootTest(classes = TestAppConfiguration.class)
 @ExtendWith(SpringExtension.class)
-public class InquiryDaoTest {
+class InquiryDaoTest {
 
 	@Autowired
 	DataSource dataSource;
@@ -37,7 +37,7 @@ public class InquiryDaoTest {
 	InquiryDao inquiryDao;
 
 	@BeforeEach
-	public void initialize() {
+	void initialize() {
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
 				Statement statement = connection.createStatement();
@@ -73,7 +73,7 @@ public class InquiryDaoTest {
 	}
 
 	@AfterEach
-	public void destroy() {
+	void destroy() {
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
 				Statement statement = connection.createStatement();
@@ -85,13 +85,13 @@ public class InquiryDaoTest {
 	}
 
 	@Test
-	public void testCountSuccess() {
+	void testCountSuccess() {
 		int count = assertDoesNotThrow(() -> inquiryDao.count());
 		assertEquals(3, count);
 	}
 
 	@Test
-	public void testDeleteSuccess() {
+	void testDeleteSuccess() {
 		assertDoesNotThrow(() -> inquiryDao.delete(1));
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
@@ -105,7 +105,7 @@ public class InquiryDaoTest {
 	}
 
 	@Test
-	public void testInsertSuccess() {
+	void testInsertSuccess() {
 		int id = assertDoesNotThrow(() -> inquiryDao.insert(new Inquiry(0, 0, "Success", "Success Content", false)));
 		assertEquals(3, id);
 		assertDoesNotThrow(() -> {
@@ -126,12 +126,12 @@ public class InquiryDaoTest {
 	}
 
 	@Test
-	public void testInsertException() {
+	void testInsertException() {
 		assertThrows(SQLRunnerExecuteException.class, () -> inquiryDao.insert(new Inquiry(3, 2, "Fail", "Fail Content", true)));
 	}
 
 	@Test
-	public void testRangeSuccess() {
+	void testRangeSuccess() {
 		List<Inquiry> inquiries = assertDoesNotThrow(() -> inquiryDao.range(2, 1));
 		assertEquals(2, inquiries.size());
 		Inquiry inquiry0 = inquiries.get(0);
@@ -145,7 +145,7 @@ public class InquiryDaoTest {
 	}
 
 	@Test
-	public void testSelectFromUserIdNonAnonymousSuccess() {
+	void testSelectFromUserIdNonAnonymousSuccess() {
 		List<Inquiry> inquiries0 = assertDoesNotThrow(() -> inquiryDao.selectFromUserIdNonAnonymous(0));
 		assertEquals(1, inquiries0.size());
 		Inquiry inquiry = inquiries0.get(0);
@@ -159,7 +159,7 @@ public class InquiryDaoTest {
 	}
 
 	@Test
-	public void testSelectFromUserIdSuccess() {
+	void testSelectFromUserIdSuccess() {
 		List<Inquiry> inquiries0 = assertDoesNotThrow(() -> inquiryDao.selectFromUserId(0));
 		assertEquals(2, inquiries0.size());
 		Inquiry inquiry0 = inquiries0.get(0);
@@ -179,7 +179,7 @@ public class InquiryDaoTest {
 	}
 
 	@Test
-	public void testSelectSuccess() {
+	void testSelectSuccess() {
 		Inquiry inquiry = assertDoesNotThrow(() -> inquiryDao.select(1));
 		assertEquals(1, inquiry.getInquiryId());
 		assertEquals(0, inquiry.getUserId());
@@ -189,7 +189,7 @@ public class InquiryDaoTest {
 	}
 
 	@Test
-	public void testUpdateSuccess() {
+	void testUpdateSuccess() {
 		assertDoesNotThrow(() -> inquiryDao.update(new Inquiry(0, 1, "Updated", "Updated Content", false)));
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
@@ -208,7 +208,7 @@ public class InquiryDaoTest {
 	}
 
 	@Test
-	public void testUpdateException() {
+	void testUpdateException() {
 		assertThrows(SQLRunnerExecuteException.class, () -> inquiryDao.update(new Inquiry(0, 3, "Fail", "Fail Content", false)));
 	}
 

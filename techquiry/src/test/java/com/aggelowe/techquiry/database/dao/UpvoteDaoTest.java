@@ -32,7 +32,7 @@ import com.aggelowe.techquiry.database.exception.SQLRunnerExecuteException;
 
 @SpringBootTest(classes = TestAppConfiguration.class)
 @ExtendWith(SpringExtension.class)
-public class UpvoteDaoTest {
+class UpvoteDaoTest {
 
 	@Autowired
 	DataSource dataSource;
@@ -41,7 +41,7 @@ public class UpvoteDaoTest {
 	UpvoteDao upvoteDao;
 
 	@BeforeEach
-	public void initialize() {
+	void initialize() {
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
 				Statement statement = connection.createStatement();
@@ -108,7 +108,7 @@ public class UpvoteDaoTest {
 	}
 
 	@AfterEach
-	public void destroy() {
+	void destroy() {
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
 				Statement statement = connection.createStatement();
@@ -122,7 +122,7 @@ public class UpvoteDaoTest {
 	}
 
 	@Test
-	public void testCheckSuccess() {
+	void testCheckSuccess() {
 		Upvote target0 = new Upvote(0, 0);
 		assertTrue(assertDoesNotThrow(() -> upvoteDao.check(target0)));
 		Upvote target1 = new Upvote(2, 0);
@@ -130,7 +130,7 @@ public class UpvoteDaoTest {
 	}
 
 	@Test
-	public void testCountFromResponseIdSuccess() {
+	void testCountFromResponseIdSuccess() {
 		int count0 = assertDoesNotThrow(() -> upvoteDao.countFromResponseId(0));
 		assertEquals(1, count0);
 		int count1 = assertDoesNotThrow(() -> upvoteDao.countFromResponseId(2));
@@ -138,7 +138,7 @@ public class UpvoteDaoTest {
 	}
 
 	@Test
-	public void testDeleteSuccess() {
+	void testDeleteSuccess() {
 		assertDoesNotThrow(() -> upvoteDao.delete(new Upvote(0, 0)));
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
@@ -152,7 +152,7 @@ public class UpvoteDaoTest {
 	}
 
 	@Test
-	public void testInsertSuccess() {
+	void testInsertSuccess() {
 		assertDoesNotThrow(() -> upvoteDao.insert(new Upvote(2, 1)));
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
@@ -168,13 +168,13 @@ public class UpvoteDaoTest {
 	}
 
 	@Test
-	public void testInsertException() {
+	void testInsertException() {
 		assertThrows(SQLRunnerExecuteException.class, () -> upvoteDao.insert(new Upvote(0, 0)));
 		assertThrows(SQLRunnerExecuteException.class, () -> upvoteDao.insert(new Upvote(3, 2)));
 	}
 
 	@Test
-	public void testSelectFromResponseIdSuccess() {
+	void testSelectFromResponseIdSuccess() {
 		List<UserLogin> upvotes = assertDoesNotThrow(() -> upvoteDao.selectFromResponseId(0));
 		assertEquals(1, upvotes.size());
 		UserLogin userLogin = upvotes.getFirst();
@@ -185,7 +185,7 @@ public class UpvoteDaoTest {
 	}
 
 	@Test
-	public void testSelectFromUserIdSuccess() {
+	void testSelectFromUserIdSuccess() {
 		List<Response> upvotes = assertDoesNotThrow(() -> upvoteDao.selectFromUserId(1));
 		assertEquals(1, upvotes.size());
 		Response response = upvotes.getFirst();

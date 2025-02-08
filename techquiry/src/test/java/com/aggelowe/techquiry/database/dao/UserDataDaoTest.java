@@ -28,7 +28,7 @@ import com.aggelowe.techquiry.database.exception.SQLRunnerExecuteException;
 
 @SpringBootTest(classes = TestAppConfiguration.class)
 @ExtendWith(SpringExtension.class)
-public class UserDataDaoTest {
+class UserDataDaoTest {
 
 	@Autowired
 	DataSource dataSource;
@@ -37,7 +37,7 @@ public class UserDataDaoTest {
 	UserDataDao userDataDao;
 
 	@BeforeEach
-	public void initialize() {
+	void initialize() {
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
 				Statement statement = connection.createStatement();
@@ -72,7 +72,7 @@ public class UserDataDaoTest {
 	}
 
 	@AfterEach
-	public void destroy() {
+	void destroy() {
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
 				Statement statement = connection.createStatement();
@@ -84,7 +84,7 @@ public class UserDataDaoTest {
 	}
 
 	@Test
-	public void testDeleteSuccess() {
+	void testDeleteSuccess() {
 		assertDoesNotThrow(() -> userDataDao.delete(1));
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
@@ -98,7 +98,7 @@ public class UserDataDaoTest {
 	}
 
 	@Test
-	public void testInsertSuccess() {
+	void testInsertSuccess() {
 		assertDoesNotThrow(() -> userDataDao.insert(new UserData(2, "Charlie", "Brown")));
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
@@ -117,13 +117,13 @@ public class UserDataDaoTest {
 	}
 
 	@Test
-	public void testInsertException() {
+	void testInsertException() {
 		assertThrows(SQLRunnerExecuteException.class, () -> userDataDao.insert(new UserData(1, "Charlie", "Brown")));
 		assertThrows(SQLRunnerExecuteException.class, () -> userDataDao.insert(new UserData(3, "Charlie", "Brown")));
 	}
 
 	@Test
-	public void testSelectSuccess() {
+	void testSelectSuccess() {
 		UserData userData = assertDoesNotThrow(() -> userDataDao.select(1));
 		assertEquals(1, userData.getUserId());
 		assertEquals("Bob", userData.getFirstName());
@@ -132,7 +132,7 @@ public class UserDataDaoTest {
 	}
 
 	@Test
-	public void testUpdateSuccess() {
+	void testUpdateSuccess() {
 		assertDoesNotThrow(() -> userDataDao.update(new UserData(1, "David", "Dawson")));
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {

@@ -32,7 +32,7 @@ import com.aggelowe.techquiry.database.exception.SQLRunnerExecuteException;
 
 @SpringBootTest(classes = TestAppConfiguration.class)
 @ExtendWith(SpringExtension.class)
-public class ObserverDaoTest {
+class ObserverDaoTest {
 
 	@Autowired
 	DataSource dataSource;
@@ -41,7 +41,7 @@ public class ObserverDaoTest {
 	ObserverDao observerDao;
 
 	@BeforeEach
-	public void initialize() {
+	void initialize() {
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
 				Statement statement = connection.createStatement();
@@ -91,7 +91,7 @@ public class ObserverDaoTest {
 	}
 
 	@AfterEach
-	public void destroy() {
+	void destroy() {
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
 				Statement statement = connection.createStatement();
@@ -104,7 +104,7 @@ public class ObserverDaoTest {
 	}
 
 	@Test
-	public void testCheckSuccess() {
+	void testCheckSuccess() {
 		Observer target0 = new Observer(0, 0);
 		assertTrue(assertDoesNotThrow(() -> observerDao.check(target0)));
 		Observer target1 = new Observer(2, 0);
@@ -112,7 +112,7 @@ public class ObserverDaoTest {
 	}
 
 	@Test
-	public void testCountFromInquiryIdSuccess() {
+	void testCountFromInquiryIdSuccess() {
 		int count0 = assertDoesNotThrow(() -> observerDao.countFromInquiryId(0));
 		assertEquals(2, count0);
 		int count1 = assertDoesNotThrow(() -> observerDao.countFromInquiryId(2));
@@ -120,7 +120,7 @@ public class ObserverDaoTest {
 	}
 
 	@Test
-	public void testDeleteSuccess() {
+	void testDeleteSuccess() {
 		assertDoesNotThrow(() -> observerDao.delete(new Observer(1, 1)));
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
@@ -134,7 +134,7 @@ public class ObserverDaoTest {
 	}
 
 	@Test
-	public void testInsertSuccess() {
+	void testInsertSuccess() {
 		assertDoesNotThrow(() -> observerDao.insert(new Observer(2, 1)));
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
@@ -150,13 +150,13 @@ public class ObserverDaoTest {
 	}
 
 	@Test
-	public void testInsertException() {
+	void testInsertException() {
 		assertThrows(SQLRunnerExecuteException.class, () -> observerDao.insert(new Observer(0, 0)));
 		assertThrows(SQLRunnerExecuteException.class, () -> observerDao.insert(new Observer(3, 2)));
 	}
 
 	@Test
-	public void testSelectFromInquiryIdSuccess() {
+	void testSelectFromInquiryIdSuccess() {
 		List<UserLogin> observers = assertDoesNotThrow(() -> observerDao.selectFromInquiryId(1));
 		assertEquals(1, observers.size());
 		UserLogin userLogin = observers.getFirst();
@@ -167,7 +167,7 @@ public class ObserverDaoTest {
 	}
 
 	@Test
-	public void testSelectFromUserIdSuccess() {
+	void testSelectFromUserIdSuccess() {
 		List<Inquiry> observers = assertDoesNotThrow(() -> observerDao.selectFromUserId(1));
 		assertEquals(2, observers.size());
 		Inquiry inquiry = observers.getFirst();		
