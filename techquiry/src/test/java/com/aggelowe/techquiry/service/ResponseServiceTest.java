@@ -218,7 +218,7 @@ class ResponseServiceTest {
 	@Test
 	void testUpdateResponseSuccess() {
 		sessionHelper.setAuthentication(new Authentication(0));
-		Response target = new Response(0, 1, 0, false, "Updated Response");
+		Response target = new Response(0, 1, 1, false, "Updated Response");
 		assertDoesNotThrow(() -> responseActionService.updateResponse(target));
 		assertDoesNotThrow(() -> {
 			try (Connection connection = dataSource.getConnection()) {
@@ -228,7 +228,7 @@ class ResponseServiceTest {
 				assertNotNull(result);
 				assertTrue(result.next());
 				assertEquals(0, result.getInt("response_id"));
-				assertEquals(1, result.getInt("inquiry_id"));
+				assertEquals(0, result.getInt("inquiry_id"));
 				assertEquals(0, result.getInt("user_id"));
 				assertEquals(false, result.getBoolean("anonymous"));
 				assertEquals("Updated Response", result.getString("content"));
@@ -246,10 +246,8 @@ class ResponseServiceTest {
 		Response target1 = new Response(3, 1, 0, false, "Fail Response");
 		sessionHelper.setAuthentication(new Authentication(0));
 		assertThrows(EntityNotFoundException.class, () -> responseActionService.updateResponse(target1));
-		Response target2 = new Response(0, 3, 0, false, "Fail Response");
-		assertThrows(EntityNotFoundException.class, () -> responseActionService.updateResponse(target2));
-		Response target3 = new Response(0, 1, 0, false, "");
-		assertThrows(InvalidRequestException.class, () -> responseActionService.updateResponse(target3));
+		Response target2 = new Response(0, 1, 0, false, "");
+		assertThrows(InvalidRequestException.class, () -> responseActionService.updateResponse(target2));
 	}
 
 }

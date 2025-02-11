@@ -21,7 +21,7 @@ public class InquiryMapper {
 	/**
 	 * This method maps the given {@link Inquiry} to a {@link InquiryDto} object.
 	 * 
-	 * @param userData The inquiry entity to map
+	 * @param inquiry The inquiry entity to map
 	 * @return The inquiry DTO
 	 */
 	public InquiryDto toDto(Inquiry inquiry) {
@@ -35,7 +35,7 @@ public class InquiryMapper {
 	 * This method creates a new {@link Inquiry} object based on the data of the
 	 * given {@link InquiryDto}.
 	 * 
-	 * @param userDataDto The data transfer object to map
+	 * @param inquiryDto The data transfer object to map
 	 * @return The new inquiry entity
 	 * @throws MissingValueException If the title, content or anonymous flag in the
 	 *                               DTO are missing

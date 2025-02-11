@@ -50,8 +50,8 @@ public class ResponseActionService {
 
 	/**
 	 * This method inserts the given {@link Response} object in the database. The
-	 * inquiry id and user id are automatically selected and are not carried over to
-	 * the database.
+	 * response id and user id are automatically selected and are not carried over
+	 * to the database.
 	 *
 	 * @param response The response object to create
 	 * @return The response id of the created {@link Response}
@@ -112,16 +112,15 @@ public class ResponseActionService {
 
 	/**
 	 * This method updates an existing response with the data from the given
-	 * {@link Response} object. The user id is automatically selected and is not
-	 * carried over to the database.
+	 * {@link Response} object. The inquiry id and user id are automatically
+	 * selected and is not carried over to the database.
 	 * 
 	 * @param response The response object
 	 * @throws ForbiddenOperationException If the current user does not have the
 	 *                                     user id contained in the the response
 	 *                                     contained in the database
-	 * @throws EntityNotFoundException     If the given inquiry id or response id do
-	 *                                     not correspond to an inquiry or response
-	 *                                     respectively
+	 * @throws EntityNotFoundException     If the given inquiry id do not correspond
+	 *                                     to an inquiry
 	 * @throws InvalidRequestException     If the given content is empty
 	 * @throws InternalErrorException      If an internal error occurred while
 	 *                                     updating the response
@@ -143,11 +142,7 @@ public class ResponseActionService {
 			if (current.getUserId() != previous.getUserId()) {
 				throw new ForbiddenOperationException("The requested response update is forbidden!");
 			}
-			Inquiry inquiry = inquiryDao.select(response.getInquiryId());
-			if (inquiry == null) {
-				throw new EntityNotFoundException("The given inquiry id does not have a corresponding inquiry!");
-			}
-			Response copy = response.toBuilder().userId(current.getUserId()).build();
+			Response copy = response.toBuilder().userId(current.getUserId()).inquiryId(previous.getResponseId()).build();
 			responseDao.update(copy);
 		} catch (DatabaseException exception) {
 			throw new InternalErrorException("An internal error occured while creating the inquiry!", exception);
