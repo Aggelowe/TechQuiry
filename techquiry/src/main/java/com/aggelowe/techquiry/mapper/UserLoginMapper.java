@@ -38,6 +38,8 @@ public class UserLoginMapper {
 	 * @param userLoginDto The data transfer object to map
 	 * @param userId       The id to assign to the new user
 	 * @return The new user login entity
+	 * @throws MissingValueException If the username or password in the DTO are
+	 *                               missing
 	 */
 	public UserLogin toEntity(UserLoginDto userLoginDto, int userId) throws MapperException {
 		String username = userLoginDto.getUsername();

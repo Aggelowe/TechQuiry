@@ -158,6 +158,18 @@ class ObserverServiceTest {
 	}
 
 	@Test
+	void testCheckObserverSuccess() {
+		sessionHelper.setAuthentication(new Authentication(1));
+		assertEquals(true, assertDoesNotThrow(() -> observerActionService.checkObserver(0)));
+	}
+
+	@Test
+	void testCheckObserverException() {
+		sessionHelper.setAuthentication(null);
+		assertThrows(ForbiddenOperationException.class, () -> observerActionService.checkObserver(0));
+	}
+
+	@Test
 	void testCreateObserverSuccess() {
 		sessionHelper.setAuthentication(new Authentication(1));
 		assertDoesNotThrow(() -> observerActionService.createObserver(2));

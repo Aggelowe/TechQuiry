@@ -37,6 +37,8 @@ public class UserDataMapper {
 	 * @param userDataDto The data transfer object to map
 	 * @param userId      The id to assign to the new user
 	 * @return The new user data entity
+	 * @throws MissingValueException If the first or last name in the DTO are
+	 *                               missing
 	 */
 	public UserData toEntity(UserDataDto userDataDto, int userId) throws MapperException {
 		String firstName = userDataDto.getFirstName();

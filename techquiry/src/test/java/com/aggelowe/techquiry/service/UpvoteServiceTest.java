@@ -176,6 +176,18 @@ class UpvoteServiceTest {
 	}
 
 	@Test
+	void testCheckUpvoteSuccess() {
+		sessionHelper.setAuthentication(new Authentication(1));
+		assertEquals(true, assertDoesNotThrow(() -> upvoteActionService.checkUpvote(1)));
+	}
+
+	@Test
+	void testCheckUpvoteException() {
+		sessionHelper.setAuthentication(null);
+		assertThrows(ForbiddenOperationException.class, () -> upvoteActionService.checkUpvote(1));
+	}
+
+	@Test
 	void testCreateUpvoteSuccess() {
 		sessionHelper.setAuthentication(new Authentication(1));
 		assertDoesNotThrow(() -> upvoteActionService.createUpvote(2));

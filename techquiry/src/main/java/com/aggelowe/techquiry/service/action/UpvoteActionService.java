@@ -48,6 +48,29 @@ public class UpvoteActionService {
 	private final SessionHelper sessionHelper;
 
 	/**
+	 * This method returns whether the user that is currently logged in is upvoting
+	 * the response with the given response id.
+	 * 
+	 * @param responseId The response id of the response to check
+	 * @return Whether the logged in user is upvoting the given response
+	 * @throws ForbiddenOperationException If the current user is not logged in
+	 * @throws InternalErrorException      If an internal error occurs while
+	 *                                     checking the upvote
+	 */
+	public boolean checkUpvote(int responseId) throws ServiceException {
+		Authentication current = sessionHelper.getAuthentication();
+		if (current == null) {
+			throw new ForbiddenOperationException("The requested upvote check is forbidden!");
+		}
+		Upvote upvote = new Upvote(responseId, current.getUserId());
+		try {
+			return upvoteDao.check(upvote);
+		} catch (DatabaseException exception) {
+			throw new InternalErrorException("An internal error occured while checking the upvote!", exception);
+		}
+	}
+
+	/**
 	 * This method inserts the {@link Upvote} object in the database with the given
 	 * response id and the user id of the current user session.
 	 *

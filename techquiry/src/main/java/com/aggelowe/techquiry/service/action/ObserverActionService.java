@@ -49,6 +49,29 @@ public class ObserverActionService {
 	private final SessionHelper sessionHelper;
 
 	/**
+	 * This method returns whether the user that is currently logged in is observing
+	 * the inquiry with the given inquiry id.
+	 * 
+	 * @param inquiryId The inquiry id of the inquiry to check
+	 * @return Whether the logged in user is observing the given inquiry
+	 * @throws ForbiddenOperationException If the current user is not logged in
+	 * @throws InternalErrorException      If an internal error occurs while
+	 *                                     checking the observer
+	 */
+	public boolean checkObserver(int inquiryId) throws ServiceException {
+		Authentication current = sessionHelper.getAuthentication();
+		if (current == null) {
+			throw new ForbiddenOperationException("The requested observer check is forbidden!");
+		}
+		Observer observer = new Observer(inquiryId, current.getUserId());
+		try {
+			return observerDao.check(observer);
+		} catch (DatabaseException exception) {
+			throw new InternalErrorException("An internal error occured while checking the observer!", exception);
+		}
+	}
+
+	/**
 	 * This method inserts the {@link Observer} object in the database with the
 	 * given inquiry id and the user id of the current user session.
 	 *
