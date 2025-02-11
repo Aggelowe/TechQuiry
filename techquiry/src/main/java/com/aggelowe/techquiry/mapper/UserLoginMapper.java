@@ -27,8 +27,9 @@ public class UserLoginMapper {
 	 * @return The user login DTO
 	 */
 	public UserLoginDto toDto(UserLogin userLogin) {
+		Integer userId = userLogin.getUserId();
 		String username = userLogin.getUsername();
-		return UserLoginDto.builder().username(username).build();
+		return UserLoginDto.builder().userId(userId).username(username).build();
 	}
 
 	/**

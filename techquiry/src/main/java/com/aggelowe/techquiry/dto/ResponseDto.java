@@ -1,5 +1,8 @@
 package com.aggelowe.techquiry.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -21,13 +24,33 @@ import lombok.ToString;
 public class ResponseDto {
 
 	/**
-	 * The content of the response
+	 * The unique id of the response
 	 */
-	private String content;
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	private Integer responseId;
+
+	/**
+	 * The id of the parent inquiry
+	 */
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	private Integer inquiryId;
+
+	/**
+	 * The user id of the author
+	 */
+	@ToString.Exclude
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	private Integer userId;
 
 	/**
 	 * Whether the author is anonymous
 	 */
 	private Boolean anonymous;
+
+	/**
+	 * The content of the response
+	 */
+	private String content;
 
 }

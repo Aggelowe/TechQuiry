@@ -25,9 +25,10 @@ public class UserDataMapper {
 	 * @return The user data DTO
 	 */
 	public UserDataDto toDto(UserData userData) {
+		Integer userId = userData.getUserId();
 		String firstName = userData.getFirstName();
 		String lastName = userData.getLastName();
-		return UserDataDto.builder().firstName(firstName).lastName(lastName).build();
+		return new UserDataDto(userId, firstName, lastName);
 	}
 
 	/**

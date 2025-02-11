@@ -1,5 +1,7 @@
 package com.aggelowe.techquiry.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -19,7 +21,13 @@ import lombok.ToString;
 @EqualsAndHashCode
 @ToString
 public class UserDataDto {
-	
+
+	/**
+	 * The unique id of the user
+	 */
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	private Integer userId;
+
 	/**
 	 * The first name of the user
 	 */

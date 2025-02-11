@@ -23,6 +23,12 @@ import lombok.ToString;
 public class UserLoginDto {
 
 	/**
+	 * The unique id of the user
+	 */
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	private Integer userId;
+
+	/**
 	 * The unique username of the user
 	 */
 	private String username;
@@ -31,6 +37,7 @@ public class UserLoginDto {
 	 * The password of the user in plaintext
 	 */
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	@ToString.Exclude
 	private String password;
 
 }

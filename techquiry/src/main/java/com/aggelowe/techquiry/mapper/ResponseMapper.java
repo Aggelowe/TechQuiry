@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import com.aggelowe.techquiry.database.entity.Response;
 import com.aggelowe.techquiry.database.entity.Response.ResponseBuilder;
 import com.aggelowe.techquiry.dto.ResponseDto;
+import com.aggelowe.techquiry.dto.ResponseDto.ResponseDtoBuilder;
 import com.aggelowe.techquiry.mapper.exception.MapperException;
 import com.aggelowe.techquiry.mapper.exception.MissingValueException;
 
@@ -25,9 +26,16 @@ public class ResponseMapper {
 	 * @return The response DTO
 	 */
 	public ResponseDto toDto(Response response) {
-		String content = response.getContent();
-		Boolean anonymous = response.getAnonymous();
-		return ResponseDto.builder().content(content).anonymous(anonymous).build();
+		ResponseDtoBuilder builder = ResponseDto.builder();
+		builder.responseId(response.getResponseId());
+		builder.inquiryId(response.getInquiryId());
+		builder.content(response.getContent());
+		boolean anonymous = response.getAnonymous();
+		builder.anonymous(anonymous);
+		if (!anonymous) {
+			builder.userId(response.getUserId());
+		}
+		return builder.build();
 	}
 
 	/**

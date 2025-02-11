@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import com.aggelowe.techquiry.database.entity.Inquiry;
 import com.aggelowe.techquiry.database.entity.Inquiry.InquiryBuilder;
 import com.aggelowe.techquiry.dto.InquiryDto;
+import com.aggelowe.techquiry.dto.InquiryDto.InquiryDtoBuilder;
 import com.aggelowe.techquiry.mapper.exception.MapperException;
 import com.aggelowe.techquiry.mapper.exception.MissingValueException;
 
@@ -25,10 +26,16 @@ public class InquiryMapper {
 	 * @return The inquiry DTO
 	 */
 	public InquiryDto toDto(Inquiry inquiry) {
-		String title = inquiry.getTitle();
-		String content = inquiry.getContent();
-		Boolean anonymous = inquiry.getAnonymous();
-		return InquiryDto.builder().title(title).content(content).anonymous(anonymous).build();
+		InquiryDtoBuilder builder = InquiryDto.builder();
+		builder.inquiryId(inquiry.getInquiryId());
+		builder.title(inquiry.getTitle());
+		builder.content(inquiry.getContent());
+		boolean anonymous = inquiry.getAnonymous();
+		builder.anonymous(anonymous);
+		if (!anonymous) {
+			builder.userId(inquiry.getUserId());
+		}
+		return builder.build();
 	}
 
 	/**
