@@ -43,7 +43,7 @@ public class UserLoginMapper {
 		String username = userLoginDto.getUsername();
 		String password = userLoginDto.getPassword();
 		if (username == null || password == null) {
-			throw new MissingValueException("");
+			throw new MissingValueException("The username and/or password value is missing!");
 		}
 		return new UserLogin(userId, username, password);
 	}

@@ -1,13 +1,12 @@
 package com.aggelowe.techquiry.database.entity;
 
-import com.aggelowe.techquiry.common.SecurityUtils;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 /**
  * The {@link UserData} class represents a user data entry of the TechQuiry
@@ -21,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @EqualsAndHashCode
+@ToString
 public class UserData {
 
 	/**
@@ -44,18 +44,7 @@ public class UserData {
 	/**
 	 * The icon of the user's profile
 	 */
+	@ToString.Exclude
 	private byte[] icon;
-
-	/**
-	 * This method returns the object as a string containing the user id, the first
-	 * name, the last name and the profile icon.
-	 */
-	@Override
-	public String toString() {
-		return "UserData(id=" + userId + 
-				", firstName=" + firstName + 
-				", lastName=" + lastName + 
-				", icon=" + (icon == null ? "null" : SecurityUtils.encodeBase64(icon)) + ")";
-	}
 
 }
