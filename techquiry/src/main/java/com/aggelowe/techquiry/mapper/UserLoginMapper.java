@@ -36,18 +36,17 @@ public class UserLoginMapper {
 	 * given {@link UserLoginDto}.
 	 * 
 	 * @param userLoginDto The data transfer object to map
-	 * @param userId       The id to assign to the new user
 	 * @return The new user login entity
 	 * @throws MissingValueException If the username or password in the DTO are
 	 *                               missing
 	 */
-	public UserLogin toEntity(UserLoginDto userLoginDto, int userId) throws MapperException {
+	public UserLogin toEntity(UserLoginDto userLoginDto) throws MapperException {
 		String username = userLoginDto.getUsername();
 		String password = userLoginDto.getPassword();
 		if (username == null || password == null) {
 			throw new MissingValueException("The username and/or password value is missing!");
 		}
-		return new UserLogin(userId, username, password);
+		return new UserLogin(0, username, password);
 	}
 
 	/**
