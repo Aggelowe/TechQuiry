@@ -25,7 +25,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.aggelowe.techquiry.common.SecurityUtils;
-import com.aggelowe.techquiry.database.common.TestAppConfiguration;
+import com.aggelowe.techquiry.common.TestAppConfiguration;
 import com.aggelowe.techquiry.database.entity.UserLogin;
 import com.aggelowe.techquiry.service.action.UserLoginActionService;
 import com.aggelowe.techquiry.service.exception.EntityNotFoundException;

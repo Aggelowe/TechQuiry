@@ -1,4 +1,4 @@
-package com.aggelowe.techquiry.database.common;
+package com.aggelowe.techquiry.common;
 
 import javax.sql.DataSource;
 
@@ -12,7 +12,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration
-@ComponentScan({ "com.aggelowe.techquiry.database", "com.aggelowe.techquiry.service" })
+@ComponentScan({ "com.aggelowe.techquiry.database", "com.aggelowe.techquiry.service", "com.aggelowe.techquiry.mapper" })
 public class TestAppConfiguration {
 
 	@Primary
