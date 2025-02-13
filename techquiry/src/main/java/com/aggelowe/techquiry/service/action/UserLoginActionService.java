@@ -68,15 +68,19 @@ public class UserLoginActionService {
 		if (!pattern.matcher(username).matches()) {
 			throw new InvalidRequestException("The given username does not abide by the requirements!");
 		}
+		int userId;
 		try {
 			UserLogin userLogin = userLoginDao.selectFromUsername(login.getUsername());
 			if (userLogin != null) {
 				throw new InvalidRequestException("The given username is not available!");
 			}
-			return userLoginDao.insert(login);
+			userId = userLoginDao.insert(login);
 		} catch (DatabaseException exception) {
 			throw new InternalErrorException("An internal error occured while creating the user!", exception);
 		}
+		Authentication authentication = new Authentication(userId);
+		sessionHelper.setAuthentication(authentication);
+		return userId;
 	}
 
 	/**
@@ -108,10 +112,13 @@ public class UserLoginActionService {
 
 	/**
 	 * This method updates an existing user login with the data from the given
-	 * {@link UserLogin} object. The user id is automatically selected.
+	 * {@link UserLogin} object.
 	 * 
 	 * @param login The user login
-	 * @throws ForbiddenOperationException If the current user is not logged in
+	 * @throws ForbiddenOperationException If the current user does not have the
+	 *                                     same id as the one contained in the given
+	 *                                     login.
+	 * @throws EntityNotFoundException     If the requested user does not exist
 	 * @throws InvalidRequestException     If the given username does not abide by
 	 *                                     the requirements.
 	 * @throws InternalErrorException      If an internal error occurred while
@@ -120,7 +127,7 @@ public class UserLoginActionService {
 	 */
 	public void updateLogin(UserLogin login) throws ServiceException {
 		Authentication current = sessionHelper.getAuthentication();
-		if (current == null) {
+		if (current == null || current.getUserId() != login.getUserId()) {
 			throw new ForbiddenOperationException("The requested user update is forbidden!");
 		}
 		String username = login.getUsername();
@@ -129,12 +136,15 @@ public class UserLoginActionService {
 			throw new InvalidRequestException("The given username does not abide by the requirements!");
 		}
 		try {
+			UserLogin idLogin = userLoginDao.select(login.getUserId());
+			if (idLogin == null) {
+				throw new EntityNotFoundException("The requested user does not exist!");
+			}
 			UserLogin usernameLogin = userLoginDao.selectFromUsername(login.getUsername());
-			if (usernameLogin != null && !usernameLogin.getUserId().equals(login.getUserId())) {
+			if (usernameLogin != null) {
 				throw new InvalidRequestException("The given username is not available!");
 			}
-			UserLogin copy = login.toBuilder().userId(current.getUserId()).build();
-			userLoginDao.update(copy);
+			userLoginDao.update(login);
 		} catch (DatabaseException exception) {
 			throw new InternalErrorException("An internal error occured while getting the user!", exception);
 		}
@@ -146,15 +156,19 @@ public class UserLoginActionService {
 	 * 
 	 * @param username The username of the user
 	 * @param password The password of the user
+	 * @return The id of the logged in {@link UserLogin}
 	 * @throws ForbiddenOperationException If there is an active session
 	 * @throws InvalidRequestException     If the username or password is incorrect
 	 * @throws InternalErrorException      If an internal error occurs while
 	 *                                     authenticating
 	 */
-	public void authenticateUser(String username, String password) throws ServiceException {
+	public int authenticateUser(String username, String password) throws ServiceException {
 		Authentication current = sessionHelper.getAuthentication();
 		if (current != null) {
 			throw new ForbiddenOperationException("Logging in with an active session is forbidden!");
+		}
+		if (username == null || password == null) {
+			throw new InvalidRequestException("The username and/or password is NULL!");
 		}
 		UserLogin login;
 		try {
@@ -171,6 +185,7 @@ public class UserLoginActionService {
 			int userId = login.getUserId();
 			Authentication authentication = new Authentication(userId);
 			sessionHelper.setAuthentication(authentication);
+			return userId;
 		} else {
 			throw new InvalidRequestException("The username or password is incorrect!");
 		}

@@ -194,7 +194,7 @@ class UserLoginServiceTest {
 
 	@Test
 	void testUpdateLoginSuccess() {
-		UserLogin login = new UserLogin(0, "david", "extra");
+		UserLogin login = new UserLogin(2, "david", "extra");
 		sessionHelper.setAuthentication(new Authentication(2));
 		assertDoesNotThrow(() -> userLoginActionService.updateLogin(login));
 		assertDoesNotThrow(() -> {
@@ -215,14 +215,19 @@ class UserLoginServiceTest {
 
 	@Test
 	void testUpdateLoginException() {
-		UserLogin target0 = new UserLogin(2, "david", "extra");
+		UserLogin target = new UserLogin(2, "david", "extra");
 		sessionHelper.setAuthentication(null);
-		assertThrows(ForbiddenOperationException.class, () -> userLoginActionService.updateLogin(target0));
-		UserLogin target1 = new UserLogin(2, "em", "password");
+		assertThrows(ForbiddenOperationException.class, () -> userLoginActionService.updateLogin(target));
+		sessionHelper.setAuthentication(new Authentication(1));
+		assertThrows(ForbiddenOperationException.class, () -> userLoginActionService.updateLogin(target));
+		UserLogin login0 = new UserLogin(3, "david", "extra");
+		sessionHelper.setAuthentication(new Authentication(3));
+		assertThrows(EntityNotFoundException.class, () -> userLoginActionService.updateLogin(login0));
+		UserLogin login1 = new UserLogin(2, "em", "password");
 		sessionHelper.setAuthentication(new Authentication(2));
-		assertThrows(InvalidRequestException.class, () -> userLoginActionService.updateLogin(target1));
-		UserLogin target2 = new UserLogin(2, "alice", "password");
-		assertThrows(InvalidRequestException.class, () -> userLoginActionService.updateLogin(target2));
+		assertThrows(InvalidRequestException.class, () -> userLoginActionService.updateLogin(login1));
+		UserLogin login2 = new UserLogin(2, "alice", "password");
+		assertThrows(InvalidRequestException.class, () -> userLoginActionService.updateLogin(login2));
 	}
 
 	@Test

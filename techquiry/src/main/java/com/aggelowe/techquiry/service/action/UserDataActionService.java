@@ -102,20 +102,22 @@ public class UserDataActionService {
 
 	/**
 	 * This method updates an existing user data with the data from the given
-	 * {@link UserData} object. The user id is automatically selected.
+	 * {@link UserData} object.
 	 * 
 	 * @param data The user data
-	 * @throws ForbiddenOperationException If the current user is not logged in
-	 * @throws EntityNotFoundException     If the current user id does not match
-	 *                                     with a user data entry
+	 * @throws ForbiddenOperationException If the current user does not have the
+	 *                                     given id
+	 * @throws EntityNotFoundException     If the given id does not correspond to a
+	 *                                     user login id
 	 * @throws InvalidRequestException     If the given first or last name are empty
+	 *                                     or if the given id is not available
 	 * @throws InternalErrorException      If an internal error occurred while
 	 *                                     updating the user data
 	 * 
 	 */
 	public void updateData(UserData data) throws ServiceException {
 		Authentication current = sessionHelper.getAuthentication();
-		if (current == null) {
+		if (current == null || current.getUserId() != data.getUserId()) {
 			throw new ForbiddenOperationException("The requested user update is forbidden!");
 		}
 		String firstName = data.getFirstName();
@@ -124,12 +126,11 @@ public class UserDataActionService {
 			throw new InvalidRequestException("The given first and last name must not be empty!");
 		}
 		try {
-			UserData userData = userDataDao.select(current.getUserId());
+			UserData userData = userDataDao.select(data.getUserId());
 			if (userData == null) {
-				throw new EntityNotFoundException("The requested user data do not exist!");
+				throw new EntityNotFoundException("The requested user does not exist!");
 			}
-			UserData copy = data.toBuilder().userId(current.getUserId()).build();
-			userDataDao.update(copy);
+			userDataDao.update(data);
 		} catch (DatabaseException exception) {
 			throw new InternalErrorException("An internal error occured while getting the user!", exception);
 		}

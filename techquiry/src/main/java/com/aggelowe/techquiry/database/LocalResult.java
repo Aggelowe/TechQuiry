@@ -1,6 +1,5 @@
 package com.aggelowe.techquiry.database;
 
-import java.sql.Blob;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -82,13 +81,6 @@ public class LocalResult implements Iterable<Map<String, Object>> {
 				int type = meta.getColumnType(i);
 				Object value = resultSet.getObject(i);
 				value = switch (type) {
-					case Types.BLOB: {
-						if (value != null) {
-							Blob blob = (Blob) value;
-							yield blob.getBytes(1, (int) blob.length());
-						}
-						yield null;
-					}
 					case Types.DATE: {
 						yield value != null ? ((Date) value).toLocalDate() : null;
 					}
