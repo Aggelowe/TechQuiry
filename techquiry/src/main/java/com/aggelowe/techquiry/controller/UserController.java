@@ -34,6 +34,7 @@ import com.aggelowe.techquiry.service.ObserverService;
 import com.aggelowe.techquiry.service.UpvoteService;
 import com.aggelowe.techquiry.service.UserDataService;
 import com.aggelowe.techquiry.service.UserLoginService;
+import com.aggelowe.techquiry.service.action.InquiryActionService;
 import com.aggelowe.techquiry.service.action.UserDataActionService;
 import com.aggelowe.techquiry.service.action.UserLoginActionService;
 import com.aggelowe.techquiry.service.exception.ServiceException;
@@ -55,14 +56,14 @@ import lombok.extern.log4j.Log4j2;
 public class UserController {
 
 	/**
-	 * The service for managing general {@link UserLogin} operations in the
-	 * TechQuiry application.
+	 * The service responsible for managing general {@link UserLogin} operations in
+	 * the TechQuiry application.
 	 */
 	private final UserLoginService userLoginService;
 
 	/**
-	 * The service for managing personal {@link UserLogin} operations in the
-	 * TechQuiry application.
+	 * The service responsible for managing personal {@link UserLogin} operations in
+	 * the TechQuiry application.
 	 */
 	private final UserLoginActionService userLoginActionService;
 
@@ -73,14 +74,14 @@ public class UserController {
 	private final UserLoginMapper userLoginMapper;
 
 	/**
-	 * The service for managing general {@link UserData} operations in the TechQuiry
-	 * application.
+	 * The service responsible for managing general {@link UserData} operations in
+	 * the TechQuiry application.
 	 */
 	private final UserDataService userDataService;
 
 	/**
-	 * The service for managing personal {@link UserData} operations in the
-	 * TechQuiry application.
+	 * The service responsible for managing personal {@link UserData} operations in
+	 * the TechQuiry application.
 	 */
 	private final UserDataActionService userDataActionService;
 
@@ -91,10 +92,16 @@ public class UserController {
 	private final UserDataMapper userDataMapper;
 
 	/**
-	 * The service for managing general {@link Observer} operations in the TechQuiry
-	 * application.
+	 * The service responsible for managing general {@link Observer} operations in
+	 * the TechQuiry application.
 	 */
 	private final ObserverService observerService;
+
+	/**
+	 * The service responsible for managing personal {@link Inquiry} operations in
+	 * the TechQuiry application.
+	 */
+	private final InquiryActionService inquiryActionService;
 
 	/**
 	 * The mapper responsible for mapping {@link Inquiry} and {@link InquiryDto}
@@ -103,8 +110,8 @@ public class UserController {
 	private final InquiryMapper inquiryMapper;
 
 	/**
-	 * The service for managing general {@link Upvote} operations in the TechQuiry
-	 * application.
+	 * The service responsible for managing general {@link Upvote} operations in the
+	 * TechQuiry application.
 	 */
 	private final UpvoteService upvoteService;
 
@@ -133,7 +140,7 @@ public class UserController {
 	 * user logins.
 	 * 
 	 * @param count The count of user logins in the range
-	 * @param page  The rage page of user logins
+	 * @param page  The page of user logins
 	 * @return The response with the requested user range.
 	 * @throws ServiceException If an exception occurs while getting the range
 	 */
@@ -151,12 +158,9 @@ public class UserController {
 	 * 
 	 * @param userLoginDto The DTO containing the user data
 	 * @return The user id of the user login
-	 * @throws ServiceException      If an exception occurs while creating the user
-	 *                               login
-	 * @throws MapperException       If the required data contained in the received
-	 *                               user login DTO are missing.
-	 * @throws MissingValueException If the data provided to the method are
-	 *                               incomplete
+	 * @throws ServiceException If an exception occurs while creating the user login
+	 * @throws MapperException  If the required data contained in the received user
+	 *                          login DTO are missing.
 	 */
 	@PostMapping("/create")
 	public ResponseEntity<Integer> createUserLogin(@RequestBody UserLoginDto userLoginDto) throws ServiceException, MapperException {
@@ -254,6 +258,22 @@ public class UserController {
 		UserLogin login = userLoginMapper.updateEntity(userLoginDto, original);
 		userLoginActionService.updateLogin(login);
 		return ResponseEntity.noContent().build();
+	}
+
+	/**
+	 * This method will respond to the received request with the list of inquiries
+	 * that the user with the given user id has posted.
+	 * 
+	 * @param userId The id of the user to get the inquiries
+	 * @return The response with the requested list of inquiries
+	 * @throws ServiceException If an exception occurs while getting the inquiries
+	 */
+	@PostMapping("/id/{userId}/inquiries")
+	public ResponseEntity<List<InquiryDto>> getInquiries(@PathVariable int userId) throws ServiceException {
+		log.debug("Requested posted inquiries of user " + userId);
+		List<Inquiry> entities = inquiryActionService.getInquiryListByUserId(userId);
+		List<InquiryDto> list = entities.stream().map(inquiryMapper::toDto).toList();
+		return ResponseEntity.ok(list);
 	}
 
 	/**
