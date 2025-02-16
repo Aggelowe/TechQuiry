@@ -14,14 +14,24 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.aggelowe.techquiry.database.entity.Inquiry;
+import com.aggelowe.techquiry.database.entity.Observer;
+import com.aggelowe.techquiry.database.entity.Response;
+import com.aggelowe.techquiry.database.entity.Upvote;
 import com.aggelowe.techquiry.database.entity.UserData;
 import com.aggelowe.techquiry.database.entity.UserLogin;
+import com.aggelowe.techquiry.dto.InquiryDto;
+import com.aggelowe.techquiry.dto.ResponseDto;
 import com.aggelowe.techquiry.dto.UserDataDto;
 import com.aggelowe.techquiry.dto.UserLoginDto;
+import com.aggelowe.techquiry.mapper.InquiryMapper;
+import com.aggelowe.techquiry.mapper.ResponseMapper;
 import com.aggelowe.techquiry.mapper.UserDataMapper;
 import com.aggelowe.techquiry.mapper.UserLoginMapper;
 import com.aggelowe.techquiry.mapper.exception.MapperException;
 import com.aggelowe.techquiry.mapper.exception.MissingValueException;
+import com.aggelowe.techquiry.service.ObserverService;
+import com.aggelowe.techquiry.service.UpvoteService;
 import com.aggelowe.techquiry.service.UserDataService;
 import com.aggelowe.techquiry.service.UserLoginService;
 import com.aggelowe.techquiry.service.action.UserDataActionService;
@@ -81,6 +91,30 @@ public class UserController {
 	private final UserDataMapper userDataMapper;
 
 	/**
+	 * The service for managing general {@link Observer} operations in the TechQuiry
+	 * application.
+	 */
+	private final ObserverService observerService;
+
+	/**
+	 * The mapper responsible for mapping {@link Inquiry} and {@link InquiryDto}
+	 * objects.
+	 */
+	private final InquiryMapper inquiryMapper;
+
+	/**
+	 * The service for managing general {@link Upvote} operations in the TechQuiry
+	 * application.
+	 */
+	private final UpvoteService upvoteService;
+
+	/**
+	 * The mapper responsible for mapping {@link Response} and {@link ResponseDto}
+	 * objects.
+	 */
+	private final ResponseMapper responseMapper;
+
+	/**
 	 * This method will respond to the received request with the number of user
 	 * logins in the database.
 	 * 
@@ -109,38 +143,6 @@ public class UserController {
 		List<UserLogin> entities = userLoginService.getLoginRange(count, page);
 		List<UserLoginDto> range = entities.stream().map(userLoginMapper::toDto).toList();
 		return ResponseEntity.ok(range);
-	}
-
-	/**
-	 * This method will respond to the received request with the user login with the
-	 * given user id.
-	 * 
-	 * @param userId The user id of the user login to select
-	 * @return The response with the requested user login
-	 * @throws ServiceException If an exception occurs while getting the user login
-	 */
-	@PostMapping("/id/{userId}")
-	public ResponseEntity<UserLoginDto> getUserLogin(@PathVariable int userId) throws ServiceException {
-		log.debug("Requested user login with id " + userId);
-		UserLogin entity = userLoginService.getLoginByUserId(userId);
-		UserLoginDto loginDto = userLoginMapper.toDto(entity);
-		return ResponseEntity.ok(loginDto);
-	}
-
-	/**
-	 * This method will respond to the received request with the user login with the
-	 * given username.
-	 * 
-	 * @param username The username of the user login to select
-	 * @return The response with the requested user login
-	 * @throws ServiceException If an exception occurs while getting the user login
-	 */
-	@PostMapping("/username/{username}")
-	public ResponseEntity<UserLoginDto> getUserLogin(@PathVariable String username) throws ServiceException {
-		log.debug("Requested user login with username " + username);
-		UserLogin entity = userLoginService.getLoginByUsername(username);
-		UserLoginDto loginDto = userLoginMapper.toDto(entity);
-		return ResponseEntity.ok(loginDto);
 	}
 
 	/**
@@ -194,6 +196,38 @@ public class UserController {
 	}
 
 	/**
+	 * This method will respond to the received request with the user login with the
+	 * given username.
+	 * 
+	 * @param username The username of the user login to select
+	 * @return The response with the requested user login
+	 * @throws ServiceException If an exception occurs while getting the user login
+	 */
+	@PostMapping("/u/{username}")
+	public ResponseEntity<UserLoginDto> getUserLogin(@PathVariable String username) throws ServiceException {
+		log.debug("Requested user login with username " + username);
+		UserLogin entity = userLoginService.getLoginByUsername(username);
+		UserLoginDto loginDto = userLoginMapper.toDto(entity);
+		return ResponseEntity.ok(loginDto);
+	}
+
+	/**
+	 * This method will respond to the received request with the user login with the
+	 * given user id.
+	 * 
+	 * @param userId The user id of the user login to select
+	 * @return The response with the requested user login
+	 * @throws ServiceException If an exception occurs while getting the user login
+	 */
+	@PostMapping("/id/{userId}")
+	public ResponseEntity<UserLoginDto> getUserLogin(@PathVariable int userId) throws ServiceException {
+		log.debug("Requested user login with id " + userId);
+		UserLogin entity = userLoginService.getLoginByUserId(userId);
+		UserLoginDto loginDto = userLoginMapper.toDto(entity);
+		return ResponseEntity.ok(loginDto);
+	}
+
+	/**
 	 * This method will delete the user with the given user id from the server.
 	 * 
 	 * @param userId The user id of the user login to delete
@@ -223,42 +257,35 @@ public class UserController {
 	}
 
 	/**
-	 * This method will respond to the received request with the user data with the
-	 * given user id.
+	 * This method will respond to the received request with the list of inquiries
+	 * that the user with the given user id is observing.
 	 * 
-	 * @param userId The user id of the user data to select
-	 * @return The response with the requested user data
-	 * @throws ServiceException If an exception occurs while getting the user data
+	 * @param userId The id of the user to get the observed inquiries
+	 * @return The response with the requested list of inquiries
+	 * @throws ServiceException If an exception occurs while getting the inquiries
 	 */
-	@PostMapping("/id/{userId}/data")
-	public ResponseEntity<UserDataDto> getUserData(@PathVariable int userId) throws ServiceException {
-		log.debug("Requested user data with id " + userId);
-		UserData entity = userDataService.getDataByUserId(userId);
-		UserDataDto dataDto = userDataMapper.toDto(entity);
-		return ResponseEntity.ok(dataDto);
+	@PostMapping("/id/{userId}/observed")
+	public ResponseEntity<List<InquiryDto>> getObservedInquiries(@PathVariable int userId) throws ServiceException {
+		log.debug("Requested observed inquiries of user " + userId);
+		List<Inquiry> entities = observerService.getObservedInquiryListByUserId(userId);
+		List<InquiryDto> list = entities.stream().map(inquiryMapper::toDto).toList();
+		return ResponseEntity.ok(list);
 	}
 
 	/**
-	 * This method will respond to the received request with the user icon with the
-	 * given user id.
+	 * This method will respond to the received request with the list of responses
+	 * that the user with the given user id has upvoted.
 	 * 
-	 * @param userId The user id of the user data to select
-	 * @return The response with the requested user icon
-	 * @throws ServiceException If an exception occurs while getting the user icon
+	 * @param userId The id of the user to get the upvoted responses
+	 * @return The response with the requested list of responses
+	 * @throws ServiceException If an exception occurs while getting the responses
 	 */
-	@GetMapping("/id/{userId}/icon")
-	public ResponseEntity<byte[]> getUserIcon(@PathVariable int userId) throws ServiceException {
-		log.debug("Requested user icon with id " + userId);
-		UserData entity = userDataService.getDataByUserId(userId);
-		byte[] image = entity.getIcon();
-		HttpHeaders headers = new HttpHeaders();
-		if (image == null) {
-			headers.setLocation(URI.create("/static/user-default.png"));
-			return new ResponseEntity<>(headers, HttpStatus.FOUND);
-		} else {
-			headers.setContentType(MediaType.IMAGE_PNG);
-			return new ResponseEntity<>(image, headers, HttpStatus.OK);
-		}
+	@PostMapping("/id/{userId}/upvotes")
+	public ResponseEntity<List<ResponseDto>> getUpvotedResponses(@PathVariable int userId) throws ServiceException {
+		log.debug("Requested upvoted responses of user " + userId);
+		List<Response> entities = upvoteService.getUpvotedResponseListByUserId(userId);
+		List<ResponseDto> list = entities.stream().map(responseMapper::toDto).toList();
+		return ResponseEntity.ok(list);
 	}
 
 	/**
@@ -282,16 +309,19 @@ public class UserController {
 	}
 
 	/**
-	 * This method will delete the user data with the given user id from the server.
+	 * This method will respond to the received request with the user data with the
+	 * given user id.
 	 * 
-	 * @param userId The user id of the user data to delete
-	 * @throws ServiceException If an exception occurs while deleting the user data
+	 * @param userId The user id of the user data to select
+	 * @return The response with the requested user data
+	 * @throws ServiceException If an exception occurs while getting the user data
 	 */
-	@PostMapping("/id/{userId}/data/delete")
-	public ResponseEntity<Void> deleteUserData(@PathVariable int userId) throws ServiceException {
-		log.debug("Requested user data deletion with user id " + userId);
-		userDataActionService.deleteData(userId);
-		return ResponseEntity.noContent().build();
+	@PostMapping("/data/id/{userId}")
+	public ResponseEntity<UserDataDto> getUserData(@PathVariable int userId) throws ServiceException {
+		log.debug("Requested user data with id " + userId);
+		UserData entity = userDataService.getDataByUserId(userId);
+		UserDataDto dataDto = userDataMapper.toDto(entity);
+		return ResponseEntity.ok(dataDto);
 	}
 
 	/**
@@ -301,7 +331,7 @@ public class UserController {
 	 * @param userDataDto The DTO containing the user data
 	 * @throws ServiceException If an exception occurs while updating the user data
 	 */
-	@PostMapping("/id/{userId}/data/update")
+	@PostMapping("/data/id/{userId}/update")
 	public ResponseEntity<Void> updateUserData(@PathVariable int userId, @RequestBody UserDataDto userDataDto) throws ServiceException {
 		log.debug("Requested user data update with user id " + userId + " and data " + userDataDto);
 		UserData original = userDataService.getDataByUserId(userId);
@@ -311,13 +341,49 @@ public class UserController {
 	}
 
 	/**
+	 * This method will delete the user data with the given user id from the server.
+	 * 
+	 * @param userId The user id of the user data to delete
+	 * @throws ServiceException If an exception occurs while deleting the user data
+	 */
+	@PostMapping("/data/id/{userId}/delete")
+	public ResponseEntity<Void> deleteUserData(@PathVariable int userId) throws ServiceException {
+		log.debug("Requested user data deletion with user id " + userId);
+		userDataActionService.deleteData(userId);
+		return ResponseEntity.noContent().build();
+	}
+
+	/**
+	 * This method will respond to the received request with the user icon with the
+	 * given user id.
+	 * 
+	 * @param userId The user id of the user data to select
+	 * @return The response with the requested user icon
+	 * @throws ServiceException If an exception occurs while getting the user icon
+	 */
+	@GetMapping("/icon/id/{userId}")
+	public ResponseEntity<byte[]> getUserIcon(@PathVariable int userId) throws ServiceException {
+		log.debug("Requested user icon with id " + userId);
+		UserData entity = userDataService.getDataByUserId(userId);
+		byte[] image = entity.getIcon();
+		HttpHeaders headers = new HttpHeaders();
+		if (image == null) {
+			headers.setLocation(URI.create("/static/user-default.png"));
+			return new ResponseEntity<>(headers, HttpStatus.FOUND);
+		} else {
+			headers.setContentType(MediaType.IMAGE_PNG);
+			return new ResponseEntity<>(image, headers, HttpStatus.OK);
+		}
+	}
+
+	/**
 	 * This method will update the user icon with the given user id in the server.
 	 * 
 	 * @param userId The user id of the user icon to update
 	 * @param icon   The user icon binary data
 	 * @throws ServiceException If an exception occurs while updating the user icon
 	 */
-	@PostMapping("/id/{userId}/icon/update")
+	@PostMapping("/icon/id/{userId}/update")
 	public ResponseEntity<Void> updateUserIcon(@PathVariable int userId, @RequestBody byte[] icon) throws ServiceException {
 		log.debug("Requested user icon update with user id " + userId);
 		UserData original = userDataService.getDataByUserId(userId);
@@ -332,7 +398,7 @@ public class UserController {
 	 * @param userId The user id of the user icon to delete
 	 * @throws ServiceException If an exception occurs while deleting the user icon
 	 */
-	@PostMapping("/id/{userId}/icon/delete")
+	@PostMapping("/icon/id/{userId}/delete")
 	public ResponseEntity<Void> deleteUserIcon(@PathVariable int userId) throws ServiceException {
 		log.debug("Requested user icon deletion with user id " + userId);
 		UserData original = userDataService.getDataByUserId(userId);

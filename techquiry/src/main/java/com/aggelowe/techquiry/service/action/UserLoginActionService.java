@@ -141,7 +141,7 @@ public class UserLoginActionService {
 				throw new EntityNotFoundException("The requested user does not exist!");
 			}
 			UserLogin usernameLogin = userLoginDao.selectFromUsername(login.getUsername());
-			if (usernameLogin != null) {
+			if (usernameLogin != null && !usernameLogin.getUserId().equals(login.getUserId())) {
 				throw new InvalidRequestException("The given username is not available!");
 			}
 			userLoginDao.update(login);
