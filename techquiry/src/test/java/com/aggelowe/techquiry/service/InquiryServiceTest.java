@@ -23,7 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.aggelowe.techquiry.common.TestAppConfiguration;
-import com.aggelowe.techquiry.database.entity.Inquiry;
+import com.aggelowe.techquiry.entity.Inquiry;
 import com.aggelowe.techquiry.service.action.InquiryActionService;
 import com.aggelowe.techquiry.service.exception.EntityNotFoundException;
 import com.aggelowe.techquiry.service.exception.ForbiddenOperationException;

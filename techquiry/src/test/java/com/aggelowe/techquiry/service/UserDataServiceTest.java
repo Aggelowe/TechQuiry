@@ -24,7 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.aggelowe.techquiry.common.TestAppConfiguration;
-import com.aggelowe.techquiry.database.entity.UserData;
+import com.aggelowe.techquiry.entity.UserData;
 import com.aggelowe.techquiry.service.action.UserDataActionService;
 import com.aggelowe.techquiry.service.exception.EntityNotFoundException;
 import com.aggelowe.techquiry.service.exception.ForbiddenOperationException;

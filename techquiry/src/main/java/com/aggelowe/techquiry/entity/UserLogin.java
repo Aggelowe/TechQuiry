@@ -1,4 +1,4 @@
-package com.aggelowe.techquiry.database.entity;
+package com.aggelowe.techquiry.entity;
 
 import com.aggelowe.techquiry.common.SecurityUtils;
 

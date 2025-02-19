@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.aggelowe.techquiry.database.entity.Response;
-import com.aggelowe.techquiry.database.entity.Upvote;
-import com.aggelowe.techquiry.database.entity.UserLogin;
 import com.aggelowe.techquiry.dto.ResponseDto;
 import com.aggelowe.techquiry.dto.UserLoginDto;
+import com.aggelowe.techquiry.entity.Response;
+import com.aggelowe.techquiry.entity.Upvote;
+import com.aggelowe.techquiry.entity.UserLogin;
 import com.aggelowe.techquiry.mapper.ResponseMapper;
 import com.aggelowe.techquiry.mapper.UserLoginMapper;
 import com.aggelowe.techquiry.service.ResponseService;

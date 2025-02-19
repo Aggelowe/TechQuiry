@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.aggelowe.techquiry.database.dao.InquiryDao;
-import com.aggelowe.techquiry.database.entity.Inquiry;
 import com.aggelowe.techquiry.database.exception.DatabaseException;
+import com.aggelowe.techquiry.entity.Inquiry;
 import com.aggelowe.techquiry.service.exception.EntityNotFoundException;
 import com.aggelowe.techquiry.service.exception.InternalErrorException;
 import com.aggelowe.techquiry.service.exception.InvalidRequestException;

@@ -3,9 +3,9 @@ package com.aggelowe.techquiry.mapper;
 import org.springframework.stereotype.Component;
 
 import com.aggelowe.techquiry.common.SecurityUtils;
-import com.aggelowe.techquiry.database.entity.UserLogin;
-import com.aggelowe.techquiry.database.entity.UserLogin.UserLoginBuilder;
 import com.aggelowe.techquiry.dto.UserLoginDto;
+import com.aggelowe.techquiry.entity.UserLogin;
+import com.aggelowe.techquiry.entity.UserLogin.UserLoginBuilder;
 import com.aggelowe.techquiry.mapper.exception.MapperException;
 import com.aggelowe.techquiry.mapper.exception.MissingValueException;
 

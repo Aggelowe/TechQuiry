@@ -26,7 +26,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.aggelowe.techquiry.common.SecurityUtils;
 import com.aggelowe.techquiry.common.TestAppConfiguration;
-import com.aggelowe.techquiry.database.entity.UserLogin;
+import com.aggelowe.techquiry.entity.UserLogin;
 import com.aggelowe.techquiry.service.action.UserLoginActionService;
 import com.aggelowe.techquiry.service.exception.EntityNotFoundException;
 import com.aggelowe.techquiry.service.exception.ForbiddenOperationException;
@@ -64,9 +64,12 @@ class UserLoginServiceTest {
 								PRIMARY KEY('user_id')
 						);
 						""");
-				statement.execute("INSERT INTO user_login(user_id, username, password_hash, password_salt) VALUES(0, 'alice', '5wq4WUIgP1dwqcr2Bela/SHzJwyUvIqo89/vHk565Lc=', 'nGxxd6QsFeF/cBeR5tgiIA==');");
-				statement.execute("INSERT INTO user_login(user_id, username, password_hash, password_salt) VALUES(1, 'bob', 'ptp5i/V5DHjaOsFQfCo7NseUflYX45loc9DTSPrl+NU=', 'Fw7zNLq9p0L1bT68ifEz9g==');");
-				statement.execute("INSERT INTO user_login(user_id, username, password_hash, password_salt) VALUES(2, 'charlie', 'dm2H/fl9TtxWBKW5dN5nh9MRUNTbWuFM3xquxwQ+VC4=', 'jgKZJ7psArGnRao9N464eg==');");
+				statement.execute(
+						"INSERT INTO user_login(user_id, username, password_hash, password_salt) VALUES(0, 'alice', '5wq4WUIgP1dwqcr2Bela/SHzJwyUvIqo89/vHk565Lc=', 'nGxxd6QsFeF/cBeR5tgiIA==');");
+				statement.execute(
+						"INSERT INTO user_login(user_id, username, password_hash, password_salt) VALUES(1, 'bob', 'ptp5i/V5DHjaOsFQfCo7NseUflYX45loc9DTSPrl+NU=', 'Fw7zNLq9p0L1bT68ifEz9g==');");
+				statement.execute(
+						"INSERT INTO user_login(user_id, username, password_hash, password_salt) VALUES(2, 'charlie', 'dm2H/fl9TtxWBKW5dN5nh9MRUNTbWuFM3xquxwQ+VC4=', 'jgKZJ7psArGnRao9N464eg==');");
 				connection.commit();
 			}
 		});
@@ -228,6 +231,22 @@ class UserLoginServiceTest {
 		assertThrows(InvalidRequestException.class, () -> userLoginActionService.updateLogin(login1));
 		UserLogin login2 = new UserLogin(2, "alice", "password");
 		assertThrows(InvalidRequestException.class, () -> userLoginActionService.updateLogin(login2));
+	}
+
+	@Test
+	void testGetCurrentLoginSuccess() {
+		sessionHelper.setAuthentication(new Authentication(1));
+		UserLogin userLogin = assertDoesNotThrow(() -> userLoginActionService.getCurrentLogin());
+		assertEquals(1, userLogin.getUserId());
+		assertEquals("bob", userLogin.getUsername());
+		assertArrayEquals(SecurityUtils.decodeBase64("ptp5i/V5DHjaOsFQfCo7NseUflYX45loc9DTSPrl+NU="), userLogin.getPasswordHash());
+		assertArrayEquals(SecurityUtils.decodeBase64("Fw7zNLq9p0L1bT68ifEz9g=="), userLogin.getPasswordSalt());
+	}
+
+	@Test
+	void testGetCurrentLoginException() {
+		sessionHelper.setAuthentication(null);
+		assertThrows(ForbiddenOperationException.class, () -> userLoginActionService.getCurrentLogin());
 	}
 
 	@Test

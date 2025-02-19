@@ -25,8 +25,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.aggelowe.techquiry.common.SecurityUtils;
 import com.aggelowe.techquiry.common.TestAppConfiguration;
-import com.aggelowe.techquiry.database.entity.Response;
-import com.aggelowe.techquiry.database.entity.UserLogin;
+import com.aggelowe.techquiry.entity.Response;
+import com.aggelowe.techquiry.entity.UserLogin;
 import com.aggelowe.techquiry.service.action.UpvoteActionService;
 import com.aggelowe.techquiry.service.exception.EntityNotFoundException;
 import com.aggelowe.techquiry.service.exception.ForbiddenOperationException;

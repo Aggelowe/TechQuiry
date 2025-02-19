@@ -1,4 +1,4 @@
-package com.aggelowe.techquiry.database.entity;
+package com.aggelowe.techquiry.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

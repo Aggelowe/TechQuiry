@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.aggelowe.techquiry.common.SecurityUtils;
 import com.aggelowe.techquiry.database.dao.UserLoginDao;
-import com.aggelowe.techquiry.database.entity.UserLogin;
 import com.aggelowe.techquiry.database.exception.DatabaseException;
+import com.aggelowe.techquiry.entity.UserLogin;
 import com.aggelowe.techquiry.service.UserLoginService;
 import com.aggelowe.techquiry.service.exception.EntityNotFoundException;
 import com.aggelowe.techquiry.service.exception.ForbiddenOperationException;
@@ -151,18 +151,44 @@ public class UserLoginActionService {
 	}
 
 	/**
+	 * This method returns the currently logged in user's {@link UserLogin}.
+	 * 
+	 * @return The current {@link UserLogin}
+	 * @throws ForbiddenOperationException If there is no active session
+	 * @throws InternalErrorException      If an error occurs while retrieving the
+	 *                                     user
+	 */
+	public UserLogin getCurrentLogin() throws ServiceException {
+		Authentication current = sessionHelper.getAuthentication();
+		if (current == null) {
+			throw new ForbiddenOperationException("Logging out with no active session is forbidden!");
+		}
+		int userId = current.getUserId();
+		UserLogin login;
+		try {
+			login = userLoginDao.select(userId);
+		} catch (DatabaseException exception) {
+			throw new InternalErrorException("An internal error occured while getting the user!", exception);
+		}
+		if (login == null) {
+			throw new InternalErrorException("The current user does not exist!");
+		}
+		return login;
+	}
+
+	/**
 	 * Sets the respective {@link Authentication} in the respective user session if
 	 * the given password matches with the one contained in the database.
 	 * 
 	 * @param username The username of the user
 	 * @param password The password of the user
-	 * @return The id of the logged in {@link UserLogin}
+	 * @return The current {@link UserLogin}
 	 * @throws ForbiddenOperationException If there is an active session
 	 * @throws InvalidRequestException     If the username or password is incorrect
 	 * @throws InternalErrorException      If an internal error occurs while
 	 *                                     authenticating
 	 */
-	public int authenticateUser(String username, String password) throws ServiceException {
+	public UserLogin authenticateUser(String username, String password) throws ServiceException {
 		Authentication current = sessionHelper.getAuthentication();
 		if (current != null) {
 			throw new ForbiddenOperationException("Logging in with an active session is forbidden!");
@@ -185,7 +211,7 @@ public class UserLoginActionService {
 			int userId = login.getUserId();
 			Authentication authentication = new Authentication(userId);
 			sessionHelper.setAuthentication(authentication);
-			return userId;
+			return login;
 		} else {
 			throw new InvalidRequestException("The username or password is incorrect!");
 		}

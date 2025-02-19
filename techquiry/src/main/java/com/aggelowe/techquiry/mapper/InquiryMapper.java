@@ -2,10 +2,10 @@ package com.aggelowe.techquiry.mapper;
 
 import org.springframework.stereotype.Component;
 
-import com.aggelowe.techquiry.database.entity.Inquiry;
-import com.aggelowe.techquiry.database.entity.Inquiry.InquiryBuilder;
 import com.aggelowe.techquiry.dto.InquiryDto;
 import com.aggelowe.techquiry.dto.InquiryDto.InquiryDtoBuilder;
+import com.aggelowe.techquiry.entity.Inquiry;
+import com.aggelowe.techquiry.entity.Inquiry.InquiryBuilder;
 import com.aggelowe.techquiry.mapper.exception.MapperException;
 import com.aggelowe.techquiry.mapper.exception.MissingValueException;
 

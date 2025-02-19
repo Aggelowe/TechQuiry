@@ -14,16 +14,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.aggelowe.techquiry.database.entity.Inquiry;
-import com.aggelowe.techquiry.database.entity.Observer;
-import com.aggelowe.techquiry.database.entity.Response;
-import com.aggelowe.techquiry.database.entity.Upvote;
-import com.aggelowe.techquiry.database.entity.UserData;
-import com.aggelowe.techquiry.database.entity.UserLogin;
 import com.aggelowe.techquiry.dto.InquiryDto;
 import com.aggelowe.techquiry.dto.ResponseDto;
 import com.aggelowe.techquiry.dto.UserDataDto;
 import com.aggelowe.techquiry.dto.UserLoginDto;
+import com.aggelowe.techquiry.entity.Inquiry;
+import com.aggelowe.techquiry.entity.Observer;
+import com.aggelowe.techquiry.entity.Response;
+import com.aggelowe.techquiry.entity.Upvote;
+import com.aggelowe.techquiry.entity.UserData;
+import com.aggelowe.techquiry.entity.UserLogin;
 import com.aggelowe.techquiry.mapper.InquiryMapper;
 import com.aggelowe.techquiry.mapper.ResponseMapper;
 import com.aggelowe.techquiry.mapper.UserDataMapper;
@@ -171,6 +171,21 @@ public class UserController {
 	}
 
 	/**
+	 * This method will respond to the received request with the current user's
+	 * login.
+	 * 
+	 * @return The response with the requested user login
+	 * @throws ServiceException If an exception occurs while getting the user
+	 */
+	@PostMapping("/current")
+	public ResponseEntity<UserLoginDto> getCurrentLogin() throws ServiceException {
+		log.debug("Requested current user login");
+		UserLogin entity = userLoginActionService.getCurrentLogin();
+		UserLoginDto loginDto = userLoginMapper.toDto(entity);
+		return ResponseEntity.ok(loginDto);
+	}
+
+	/**
 	 * This method will login to the server with the given user credentials.
 	 * 
 	 * @param userLoginDto The DTO containing the user credentials
@@ -179,12 +194,13 @@ public class UserController {
 	 *                               incomplete
 	 */
 	@PostMapping("/login")
-	public ResponseEntity<Integer> login(@RequestBody UserLoginDto userLoginDto) throws ServiceException {
+	public ResponseEntity<UserLoginDto> login(@RequestBody UserLoginDto userLoginDto) throws ServiceException {
 		log.debug("Login requested with credentials " + userLoginDto);
 		String username = userLoginDto.getUsername();
 		String password = userLoginDto.getPassword();
-		int userId = userLoginActionService.authenticateUser(username, password);
-		return ResponseEntity.ok(userId);
+		UserLogin entity = userLoginActionService.authenticateUser(username, password);
+		UserLoginDto loginDto = userLoginMapper.toDto(entity);
+		return ResponseEntity.ok(loginDto);
 	}
 
 	/**

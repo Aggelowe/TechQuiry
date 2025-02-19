@@ -3,8 +3,8 @@ package com.aggelowe.techquiry.service;
 import org.springframework.stereotype.Service;
 
 import com.aggelowe.techquiry.database.dao.UserDataDao;
-import com.aggelowe.techquiry.database.entity.UserData;
 import com.aggelowe.techquiry.database.exception.DatabaseException;
+import com.aggelowe.techquiry.entity.UserData;
 import com.aggelowe.techquiry.service.exception.EntityNotFoundException;
 import com.aggelowe.techquiry.service.exception.InternalErrorException;
 import com.aggelowe.techquiry.service.exception.ServiceException;

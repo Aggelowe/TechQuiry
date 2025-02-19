@@ -12,8 +12,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.aggelowe.techquiry.common.TestAppConfiguration;
-import com.aggelowe.techquiry.database.entity.Inquiry;
 import com.aggelowe.techquiry.dto.InquiryDto;
+import com.aggelowe.techquiry.entity.Inquiry;
 import com.aggelowe.techquiry.mapper.exception.MissingValueException;
 
 @SpringBootTest(classes = TestAppConfiguration.class)

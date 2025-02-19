@@ -1,4 +1,4 @@
-package com.aggelowe.techquiry.database.entity;
+package com.aggelowe.techquiry.entity;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * The {@link Inquiry} class represents an inquiry entry of the TechQuiry
+ * The {@link Response} class represents an response entry of the TechQuiry
  * application along with the respective information and data.
  * 
  * @author Aggelowe
@@ -19,10 +19,16 @@ import lombok.ToString;
 @Builder(toBuilder = true)
 @EqualsAndHashCode
 @ToString
-public class Inquiry {
+public class Response {
 
 	/**
-	 * The unique id of the inquiry
+	 * The unique id of the response
+	 */
+	@NonNull
+	private Integer responseId;
+
+	/**
+	 * The id of the parent inquiry
 	 */
 	@NonNull
 	private Integer inquiryId;
@@ -35,21 +41,15 @@ public class Inquiry {
 	private Integer userId;
 
 	/**
-	 * The title of the inquiry
-	 */
-	@NonNull
-	private String title;
-
-	/**
-	 * The content of the inquiry
-	 */
-	@NonNull
-	private String content;
-
-	/**
 	 * Whether the author is anonymous
 	 */
 	@NonNull
 	private Boolean anonymous;
+
+	/**
+	 * The content of the response
+	 */
+	@NonNull
+	private String content;
 
 }

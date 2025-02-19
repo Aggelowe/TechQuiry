@@ -25,10 +25,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.aggelowe.techquiry.common.SecurityUtils;
 import com.aggelowe.techquiry.common.TestAppConfiguration;
-import com.aggelowe.techquiry.database.entity.Response;
-import com.aggelowe.techquiry.database.entity.Upvote;
-import com.aggelowe.techquiry.database.entity.UserLogin;
 import com.aggelowe.techquiry.database.exception.SQLRunnerExecuteException;
+import com.aggelowe.techquiry.entity.Response;
+import com.aggelowe.techquiry.entity.Upvote;
+import com.aggelowe.techquiry.entity.UserLogin;
 
 @SpringBootTest(classes = TestAppConfiguration.class)
 @ExtendWith(SpringExtension.class)

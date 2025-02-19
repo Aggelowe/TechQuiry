@@ -4,9 +4,9 @@ import org.springframework.stereotype.Service;
 
 import com.aggelowe.techquiry.database.dao.ResponseDao;
 import com.aggelowe.techquiry.database.dao.UpvoteDao;
-import com.aggelowe.techquiry.database.entity.Response;
-import com.aggelowe.techquiry.database.entity.Upvote;
 import com.aggelowe.techquiry.database.exception.DatabaseException;
+import com.aggelowe.techquiry.entity.Response;
+import com.aggelowe.techquiry.entity.Upvote;
 import com.aggelowe.techquiry.service.UpvoteService;
 import com.aggelowe.techquiry.service.exception.EntityNotFoundException;
 import com.aggelowe.techquiry.service.exception.ForbiddenOperationException;

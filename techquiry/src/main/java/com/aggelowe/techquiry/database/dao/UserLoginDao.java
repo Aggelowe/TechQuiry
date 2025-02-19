@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component;
 import com.aggelowe.techquiry.common.SecurityUtils;
 import com.aggelowe.techquiry.database.LocalResult;
 import com.aggelowe.techquiry.database.SQLRunner;
-import com.aggelowe.techquiry.database.entity.UserLogin;
 import com.aggelowe.techquiry.database.exception.DataAccessException;
 import com.aggelowe.techquiry.database.exception.DatabaseException;
+import com.aggelowe.techquiry.entity.UserLogin;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
