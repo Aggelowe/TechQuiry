@@ -247,7 +247,7 @@ public class InquiryController {
 
 	/**
 	 * This method will respond to the received request with the list of observers
-	 * that the inquiry with the given inquiry id.
+	 * of the inquiry with the given inquiry id.
 	 * 
 	 * @param inquiryId The id of the inquiry to get the observers
 	 * @return The response with the requested list of user logins
@@ -255,7 +255,7 @@ public class InquiryController {
 	 */
 	@PostMapping("/id/{inquiryId}/observer")
 	public ResponseEntity<List<UserLoginDto>> getObservers(@PathVariable int inquiryId) throws ServiceException {
-		log.debug("Requested posted responses of inquiry " + inquiryId);
+		log.debug("Requested observers of inquiry " + inquiryId);
 		List<UserLogin> entities = observerService.getObserverUserLoginListByInquiryId(inquiryId);
 		List<UserLoginDto> list = entities.stream().map(userLoginMapper::toDto).toList();
 		return ResponseEntity.ok(list);
@@ -263,7 +263,7 @@ public class InquiryController {
 
 	/**
 	 * This method will respond to the received request with the number of observers
-	 * that the inquiry with the given inquiry id.
+	 * of the inquiry with the given inquiry id.
 	 * 
 	 * @param inquiryId The id of the inquiry to get the observer count
 	 * @return The response with the requested observer count
@@ -278,7 +278,7 @@ public class InquiryController {
 
 	/**
 	 * This method will respond to the received request with whether the current
-	 * user is observing the inquiry with the given inquiry id has.
+	 * user is observing the inquiry with the given inquiry id.
 	 * 
 	 * @param inquiryId The id of the inquiry to check
 	 * @return The response with whether the user is observing the inquiry

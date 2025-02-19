@@ -200,6 +200,26 @@ public class UserController {
 	}
 
 	/**
+	 * This method will create the user data with the given information and user id
+	 * in the database.
+	 * 
+	 * @param userDataDto The DTO containing the user data
+	 * @throws ServiceException      If an exception occurs while creating the user
+	 *                               login
+	 * @throws MapperException       If the required data contained in the received
+	 *                               user data DTO are missing
+	 * @throws MissingValueException If the data provided to the method are
+	 *                               incomplete
+	 */
+	@PostMapping("/data/create")
+	public ResponseEntity<Void> createUserData(@RequestBody UserDataDto userDataDto) throws ServiceException, MapperException {
+		log.debug("Requested user data creation with " + userDataDto);
+		UserData data = userDataMapper.toEntity(userDataDto);
+		userDataActionService.createData(data);
+		return ResponseEntity.noContent().build();
+	}
+
+	/**
 	 * This method will respond to the received request with the user login with the
 	 * given username.
 	 * 
@@ -309,26 +329,6 @@ public class UserController {
 	}
 
 	/**
-	 * This method will create the user data with the given information and user id
-	 * in the database.
-	 * 
-	 * @param userDataDto The DTO containing the user data
-	 * @throws ServiceException      If an exception occurs while creating the user
-	 *                               login
-	 * @throws MapperException       If the required data contained in the received
-	 *                               user data DTO are missing
-	 * @throws MissingValueException If the data provided to the method are
-	 *                               incomplete
-	 */
-	@PostMapping("/data/create")
-	public ResponseEntity<Void> createUserData(@RequestBody UserDataDto userDataDto) throws ServiceException, MapperException {
-		log.debug("Requested user data creation with " + userDataDto);
-		UserData data = userDataMapper.toEntity(userDataDto);
-		userDataActionService.createData(data);
-		return ResponseEntity.noContent().build();
-	}
-
-	/**
 	 * This method will respond to the received request with the user data with the
 	 * given user id.
 	 * 
@@ -336,7 +336,7 @@ public class UserController {
 	 * @return The response with the requested user data
 	 * @throws ServiceException If an exception occurs while getting the user data
 	 */
-	@PostMapping("/data/id/{userId}")
+	@PostMapping("/id/{userId}/data")
 	public ResponseEntity<UserDataDto> getUserData(@PathVariable int userId) throws ServiceException {
 		log.debug("Requested user data with id " + userId);
 		UserData entity = userDataService.getDataByUserId(userId);
@@ -351,7 +351,7 @@ public class UserController {
 	 * @param userDataDto The DTO containing the user data
 	 * @throws ServiceException If an exception occurs while updating the user data
 	 */
-	@PostMapping("/data/id/{userId}/update")
+	@PostMapping("/id/{userId}/data/update")
 	public ResponseEntity<Void> updateUserData(@PathVariable int userId, @RequestBody UserDataDto userDataDto) throws ServiceException {
 		log.debug("Requested user data update with user id " + userId + " and data " + userDataDto);
 		UserData original = userDataService.getDataByUserId(userId);
@@ -366,7 +366,7 @@ public class UserController {
 	 * @param userId The user id of the user data to delete
 	 * @throws ServiceException If an exception occurs while deleting the user data
 	 */
-	@PostMapping("/data/id/{userId}/delete")
+	@PostMapping("/id/{userId}/data/delete")
 	public ResponseEntity<Void> deleteUserData(@PathVariable int userId) throws ServiceException {
 		log.debug("Requested user data deletion with user id " + userId);
 		userDataActionService.deleteData(userId);
@@ -381,7 +381,7 @@ public class UserController {
 	 * @return The response with the requested user icon
 	 * @throws ServiceException If an exception occurs while getting the user icon
 	 */
-	@GetMapping("/icon/id/{userId}")
+	@GetMapping("/id/{userId}/data/icon")
 	public ResponseEntity<byte[]> getUserIcon(@PathVariable int userId) throws ServiceException {
 		log.debug("Requested user icon with id " + userId);
 		UserData entity = userDataService.getDataByUserId(userId);
@@ -403,7 +403,7 @@ public class UserController {
 	 * @param icon   The user icon binary data
 	 * @throws ServiceException If an exception occurs while updating the user icon
 	 */
-	@PostMapping("/icon/id/{userId}/update")
+	@PostMapping("/id/{userId}/data/icon/update")
 	public ResponseEntity<Void> updateUserIcon(@PathVariable int userId, @RequestBody byte[] icon) throws ServiceException {
 		log.debug("Requested user icon update with user id " + userId);
 		UserData original = userDataService.getDataByUserId(userId);
@@ -418,7 +418,7 @@ public class UserController {
 	 * @param userId The user id of the user icon to delete
 	 * @throws ServiceException If an exception occurs while deleting the user icon
 	 */
-	@PostMapping("/icon/id/{userId}/delete")
+	@PostMapping("/id/{userId}/data/icon/delete")
 	public ResponseEntity<Void> deleteUserIcon(@PathVariable int userId) throws ServiceException {
 		log.debug("Requested user icon deletion with user id " + userId);
 		UserData original = userDataService.getDataByUserId(userId);
