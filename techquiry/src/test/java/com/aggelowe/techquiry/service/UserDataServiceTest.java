@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Connection;
@@ -106,7 +106,7 @@ class UserDataServiceTest {
 
 	@Test
 	void testGetDataByUserIdException() {
-		assertThrows(EntityNotFoundException.class, () -> userDataService.getDataByUserId(2));
+		assertThrowsExactly(EntityNotFoundException.class, () -> userDataService.getDataByUserId(2));
 	}
 
 	@Test
@@ -133,15 +133,15 @@ class UserDataServiceTest {
 	void testCreateDataException() {
 		UserData target0 = new UserData(0, "Charlie", "Brown", null);
 		sessionHelper.setAuthentication(null);
-		assertThrows(ForbiddenOperationException.class, () -> userDataActionService.createData(target0));
+		assertThrowsExactly(ForbiddenOperationException.class, () -> userDataActionService.createData(target0));
 		UserData target1 = new UserData(0, "", "Brown", null);
 		sessionHelper.setAuthentication(new Authentication(2));
-		assertThrows(InvalidRequestException.class, () -> userDataActionService.createData(target1));
+		assertThrowsExactly(InvalidRequestException.class, () -> userDataActionService.createData(target1));
 		UserData target2 = new UserData(0, "Charlie", "", null);
-		assertThrows(InvalidRequestException.class, () -> userDataActionService.createData(target2));
+		assertThrowsExactly(InvalidRequestException.class, () -> userDataActionService.createData(target2));
 		sessionHelper.setAuthentication(new Authentication(1));
 		UserData target3 = new UserData(0, "Charlie", "Brown", null);
-		assertThrows(InvalidRequestException.class, () -> userDataActionService.createData(target3));
+		assertThrowsExactly(InvalidRequestException.class, () -> userDataActionService.createData(target3));
 	}
 
 	@Test
@@ -162,11 +162,11 @@ class UserDataServiceTest {
 	@Test
 	void testDeleteDataException() {
 		sessionHelper.setAuthentication(null);
-		assertThrows(ForbiddenOperationException.class, () -> userDataActionService.deleteData(1));
+		assertThrowsExactly(ForbiddenOperationException.class, () -> userDataActionService.deleteData(1));
 		sessionHelper.setAuthentication(new Authentication(1));
-		assertThrows(ForbiddenOperationException.class, () -> userDataActionService.deleteData(0));
+		assertThrowsExactly(ForbiddenOperationException.class, () -> userDataActionService.deleteData(0));
 		sessionHelper.setAuthentication(new Authentication(3));
-		assertThrows(EntityNotFoundException.class, () -> userDataActionService.deleteData(3));
+		assertThrowsExactly(EntityNotFoundException.class, () -> userDataActionService.deleteData(3));
 	}
 
 	@Test
@@ -193,17 +193,17 @@ class UserDataServiceTest {
 	void testUpdateDataException() {
 		UserData target0 = new UserData(1, "David", "Dawson", new byte[2]);
 		sessionHelper.setAuthentication(null);
-		assertThrows(ForbiddenOperationException.class, () -> userDataActionService.updateData(target0));
+		assertThrowsExactly(ForbiddenOperationException.class, () -> userDataActionService.updateData(target0));
 		sessionHelper.setAuthentication(new Authentication(0));
-		assertThrows(ForbiddenOperationException.class, () -> userDataActionService.updateData(target0));
+		assertThrowsExactly(ForbiddenOperationException.class, () -> userDataActionService.updateData(target0));
 		UserData target1 = new UserData(1, "", "Brown", null);
 		sessionHelper.setAuthentication(new Authentication(1));
-		assertThrows(InvalidRequestException.class, () -> userDataActionService.updateData(target1));
+		assertThrowsExactly(InvalidRequestException.class, () -> userDataActionService.updateData(target1));
 		UserData target2 = new UserData(1, "Charlie", "", null);
-		assertThrows(InvalidRequestException.class, () -> userDataActionService.updateData(target2));
+		assertThrowsExactly(InvalidRequestException.class, () -> userDataActionService.updateData(target2));
 		UserData target3 = new UserData(2, "Charlie", "Brown", null);
 		sessionHelper.setAuthentication(new Authentication(2));
-		assertThrows(EntityNotFoundException.class, () -> userDataActionService.updateData(target3));
+		assertThrowsExactly(EntityNotFoundException.class, () -> userDataActionService.updateData(target3));
 	}
 
 }

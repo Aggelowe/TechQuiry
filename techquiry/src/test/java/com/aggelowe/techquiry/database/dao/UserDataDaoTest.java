@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Connection;
@@ -118,8 +118,8 @@ class UserDataDaoTest {
 
 	@Test
 	void testInsertException() {
-		assertThrows(SQLRunnerExecuteException.class, () -> userDataDao.insert(new UserData(1, "Charlie", "Brown")));
-		assertThrows(SQLRunnerExecuteException.class, () -> userDataDao.insert(new UserData(3, "Charlie", "Brown")));
+		assertThrowsExactly(SQLRunnerExecuteException.class, () -> userDataDao.insert(new UserData(1, "Charlie", "Brown")));
+		assertThrowsExactly(SQLRunnerExecuteException.class, () -> userDataDao.insert(new UserData(3, "Charlie", "Brown")));
 	}
 
 	@Test

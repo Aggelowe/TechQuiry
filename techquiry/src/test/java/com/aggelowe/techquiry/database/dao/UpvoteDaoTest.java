@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Connection;
@@ -169,8 +169,8 @@ class UpvoteDaoTest {
 
 	@Test
 	void testInsertException() {
-		assertThrows(SQLRunnerExecuteException.class, () -> upvoteDao.insert(new Upvote(0, 0)));
-		assertThrows(SQLRunnerExecuteException.class, () -> upvoteDao.insert(new Upvote(3, 2)));
+		assertThrowsExactly(SQLRunnerExecuteException.class, () -> upvoteDao.insert(new Upvote(0, 0)));
+		assertThrowsExactly(SQLRunnerExecuteException.class, () -> upvoteDao.insert(new Upvote(3, 2)));
 	}
 
 	@Test

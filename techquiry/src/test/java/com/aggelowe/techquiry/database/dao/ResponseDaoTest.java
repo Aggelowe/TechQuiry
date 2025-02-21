@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Connection;
@@ -147,7 +147,7 @@ class ResponseDaoTest {
 
 	@Test
 	void testInsertException() {
-		assertThrows(SQLRunnerExecuteException.class, () -> responseDao.insert(new Response(2, 3, 1, true, "Example Response")));
+		assertThrowsExactly(SQLRunnerExecuteException.class, () -> responseDao.insert(new Response(2, 3, 1, true, "Example Response")));
 	}
 
 	@Test
@@ -193,7 +193,7 @@ class ResponseDaoTest {
 
 	@Test
 	void testUpdateException() {
-		assertThrows(SQLRunnerExecuteException.class, () -> responseDao.update(new Response(0, 3, 2, false, "Fail Response")));
+		assertThrowsExactly(SQLRunnerExecuteException.class, () -> responseDao.update(new Response(0, 3, 2, false, "Fail Response")));
 	}
 
 }

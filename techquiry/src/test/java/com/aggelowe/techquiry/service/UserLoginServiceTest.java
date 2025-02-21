@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Connection;
@@ -114,7 +114,7 @@ class UserLoginServiceTest {
 
 	@Test
 	void testGetLoginByUserIdException() {
-		assertThrows(EntityNotFoundException.class, () -> userLoginService.getLoginByUserId(3));
+		assertThrowsExactly(EntityNotFoundException.class, () -> userLoginService.getLoginByUserId(3));
 	}
 
 	@Test
@@ -128,12 +128,12 @@ class UserLoginServiceTest {
 
 	@Test
 	void testGetLoginByUsernameException() {
-		assertThrows(EntityNotFoundException.class, () -> userLoginService.getLoginByUsername("david"));
+		assertThrowsExactly(EntityNotFoundException.class, () -> userLoginService.getLoginByUsername("david"));
 	}
 
 	@Test
 	void testCreateLoginSuccess() {
-		UserLogin target = new UserLogin(0, "david", "extra");
+		UserLogin target = new UserLogin(0, "david", new byte[4], new byte[2]);
 		sessionHelper.setAuthentication(null);
 		int id = assertDoesNotThrow(() -> userLoginActionService.createLogin(target));
 		assertEquals(3, id);
@@ -156,18 +156,18 @@ class UserLoginServiceTest {
 
 	@Test
 	void testCreateLoginException() {
-		UserLogin target0 = new UserLogin(0, "emily", "password");
+		UserLogin target0 = new UserLogin(0, "emily", new byte[4], new byte[2]);
 		sessionHelper.setAuthentication(new Authentication(0));
-		assertThrows(ForbiddenOperationException.class, () -> userLoginActionService.createLogin(target0));
-		UserLogin target1 = new UserLogin(0, "Εμιλία!", "password");
+		assertThrowsExactly(ForbiddenOperationException.class, () -> userLoginActionService.createLogin(target0));
+		UserLogin target1 = new UserLogin(0, "Εμιλία!", new byte[4], new byte[2]);
 		sessionHelper.setAuthentication(null);
-		assertThrows(InvalidRequestException.class, () -> userLoginActionService.createLogin(target1));
-		UserLogin target2 = new UserLogin(0, "__xX__Emily__Xx__", "password");
-		assertThrows(InvalidRequestException.class, () -> userLoginActionService.createLogin(target2));
-		UserLogin target3 = new UserLogin(0, "em", "password");
-		assertThrows(InvalidRequestException.class, () -> userLoginActionService.createLogin(target3));
-		UserLogin target4 = new UserLogin(0, "alice", "password");
-		assertThrows(InvalidRequestException.class, () -> userLoginActionService.createLogin(target4));
+		assertThrowsExactly(InvalidRequestException.class, () -> userLoginActionService.createLogin(target1));
+		UserLogin target2 = new UserLogin(0, "__xX__Emily__Xx__", new byte[4], new byte[2]);
+		assertThrowsExactly(InvalidRequestException.class, () -> userLoginActionService.createLogin(target2));
+		UserLogin target3 = new UserLogin(0, "em", new byte[4], new byte[2]);
+		assertThrowsExactly(InvalidRequestException.class, () -> userLoginActionService.createLogin(target3));
+		UserLogin target4 = new UserLogin(0, "alice", new byte[4], new byte[2]);
+		assertThrowsExactly(InvalidRequestException.class, () -> userLoginActionService.createLogin(target4));
 	}
 
 	@Test
@@ -188,16 +188,16 @@ class UserLoginServiceTest {
 	@Test
 	void testDeleteLoginException() {
 		sessionHelper.setAuthentication(null);
-		assertThrows(ForbiddenOperationException.class, () -> userLoginActionService.deleteLogin(1));
+		assertThrowsExactly(ForbiddenOperationException.class, () -> userLoginActionService.deleteLogin(1));
 		sessionHelper.setAuthentication(new Authentication(1));
-		assertThrows(ForbiddenOperationException.class, () -> userLoginActionService.deleteLogin(0));
+		assertThrowsExactly(ForbiddenOperationException.class, () -> userLoginActionService.deleteLogin(0));
 		sessionHelper.setAuthentication(new Authentication(3));
-		assertThrows(EntityNotFoundException.class, () -> userLoginActionService.deleteLogin(3));
+		assertThrowsExactly(EntityNotFoundException.class, () -> userLoginActionService.deleteLogin(3));
 	}
 
 	@Test
 	void testUpdateLoginSuccess() {
-		UserLogin login = new UserLogin(2, "david", "extra");
+		UserLogin login = new UserLogin(2, "david", new byte[4], new byte[2]);
 		sessionHelper.setAuthentication(new Authentication(2));
 		assertDoesNotThrow(() -> userLoginActionService.updateLogin(login));
 		assertDoesNotThrow(() -> {
@@ -218,19 +218,19 @@ class UserLoginServiceTest {
 
 	@Test
 	void testUpdateLoginException() {
-		UserLogin target = new UserLogin(2, "david", "extra");
+		UserLogin target = new UserLogin(2, "david", new byte[4], new byte[2]);
 		sessionHelper.setAuthentication(null);
-		assertThrows(ForbiddenOperationException.class, () -> userLoginActionService.updateLogin(target));
+		assertThrowsExactly(ForbiddenOperationException.class, () -> userLoginActionService.updateLogin(target));
 		sessionHelper.setAuthentication(new Authentication(1));
-		assertThrows(ForbiddenOperationException.class, () -> userLoginActionService.updateLogin(target));
-		UserLogin login0 = new UserLogin(3, "david", "extra");
+		assertThrowsExactly(ForbiddenOperationException.class, () -> userLoginActionService.updateLogin(target));
+		UserLogin login0 = new UserLogin(3, "david", new byte[4], new byte[2]);
 		sessionHelper.setAuthentication(new Authentication(3));
-		assertThrows(EntityNotFoundException.class, () -> userLoginActionService.updateLogin(login0));
-		UserLogin login1 = new UserLogin(2, "em", "password");
+		assertThrowsExactly(EntityNotFoundException.class, () -> userLoginActionService.updateLogin(login0));
+		UserLogin login1 = new UserLogin(2, "em", new byte[4], new byte[2]);
 		sessionHelper.setAuthentication(new Authentication(2));
-		assertThrows(InvalidRequestException.class, () -> userLoginActionService.updateLogin(login1));
-		UserLogin login2 = new UserLogin(2, "alice", "password");
-		assertThrows(InvalidRequestException.class, () -> userLoginActionService.updateLogin(login2));
+		assertThrowsExactly(InvalidRequestException.class, () -> userLoginActionService.updateLogin(login1));
+		UserLogin login2 = new UserLogin(2, "alice", new byte[4], new byte[2]);
+		assertThrowsExactly(InvalidRequestException.class, () -> userLoginActionService.updateLogin(login2));
 	}
 
 	@Test
@@ -246,7 +246,7 @@ class UserLoginServiceTest {
 	@Test
 	void testGetCurrentLoginException() {
 		sessionHelper.setAuthentication(null);
-		assertThrows(ForbiddenOperationException.class, () -> userLoginActionService.getCurrentLogin());
+		assertThrowsExactly(ForbiddenOperationException.class, () -> userLoginActionService.getCurrentLogin());
 	}
 
 	@Test
@@ -261,11 +261,11 @@ class UserLoginServiceTest {
 	@Test
 	void testAuthenticateUserException() {
 		sessionHelper.setAuthentication(new Authentication(2));
-		assertThrows(ForbiddenOperationException.class, () -> userLoginActionService.authenticateUser("bob", "pass"));
+		assertThrowsExactly(ForbiddenOperationException.class, () -> userLoginActionService.authenticateUser("bob", "pass"));
 		sessionHelper.setAuthentication(null);
-		assertThrows(InvalidRequestException.class, () -> userLoginActionService.authenticateUser("bob", "word"));
+		assertThrowsExactly(InvalidRequestException.class, () -> userLoginActionService.authenticateUser("bob", "word"));
 		sessionHelper.setAuthentication(null);
-		assertThrows(InvalidRequestException.class, () -> userLoginActionService.authenticateUser("david", "pass"));
+		assertThrowsExactly(InvalidRequestException.class, () -> userLoginActionService.authenticateUser("david", "pass"));
 	}
 
 	@Test
@@ -279,7 +279,7 @@ class UserLoginServiceTest {
 	@Test
 	void testLogoutUserException() {
 		sessionHelper.setAuthentication(null);
-		assertThrows(ForbiddenOperationException.class, () -> userLoginActionService.logoutUser());
+		assertThrowsExactly(ForbiddenOperationException.class, () -> userLoginActionService.logoutUser());
 	}
 
 }

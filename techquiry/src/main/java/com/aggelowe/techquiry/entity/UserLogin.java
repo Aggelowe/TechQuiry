@@ -1,7 +1,5 @@
 package com.aggelowe.techquiry.entity;
 
-import com.aggelowe.techquiry.common.SecurityUtils;
-
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -48,20 +46,5 @@ public class UserLogin {
 	@NonNull
 	@ToString.Exclude
 	private byte[] passwordSalt;
-
-	/**
-	 * This constructor constructs a new {@link UserLogin} instance with the
-	 * provided parameters as the required user login information.
-	 * 
-	 * @param id       The unique user id
-	 * @param username The unique username
-	 * @param password The user's password
-	 */
-	public UserLogin(int id, String username, String password) {
-		this.userId = id;
-		this.username = username;
-		this.passwordSalt = SecurityUtils.generateSalt();
-		this.passwordHash = SecurityUtils.hashPassword(password, passwordSalt);
-	}
 
 }

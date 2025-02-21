@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Connection;
@@ -121,7 +121,7 @@ class ObserverServiceTest {
 
 	@Test
 	void testGetObserverCountByInquiryIdException() {
-		assertThrows(EntityNotFoundException.class, () -> observerService.getObserverCountByInquiryId(3));
+		assertThrowsExactly(EntityNotFoundException.class, () -> observerService.getObserverCountByInquiryId(3));
 	}
 
 	@Test
@@ -137,7 +137,7 @@ class ObserverServiceTest {
 
 	@Test
 	void testGetObserverUserLoginListByInquiryIdException() {
-		assertThrows(EntityNotFoundException.class, () -> observerService.getObserverUserLoginListByInquiryId(3));
+		assertThrowsExactly(EntityNotFoundException.class, () -> observerService.getObserverUserLoginListByInquiryId(3));
 	}
 
 	@Test
@@ -154,7 +154,7 @@ class ObserverServiceTest {
 
 	@Test
 	void testGetObservedInquiryListByUserIdException() {
-		assertThrows(EntityNotFoundException.class, () -> observerService.getObservedInquiryListByUserId(2));
+		assertThrowsExactly(EntityNotFoundException.class, () -> observerService.getObservedInquiryListByUserId(2));
 	}
 
 	@Test
@@ -166,7 +166,7 @@ class ObserverServiceTest {
 	@Test
 	void testCheckObserverException() {
 		sessionHelper.setAuthentication(null);
-		assertThrows(ForbiddenOperationException.class, () -> observerActionService.checkObserver(0));
+		assertThrowsExactly(ForbiddenOperationException.class, () -> observerActionService.checkObserver(0));
 	}
 
 	@Test
@@ -189,10 +189,10 @@ class ObserverServiceTest {
 	@Test
 	void testCreateObserverException() {
 		sessionHelper.setAuthentication(null);
-		assertThrows(ForbiddenOperationException.class, () -> observerActionService.createObserver(2));
+		assertThrowsExactly(ForbiddenOperationException.class, () -> observerActionService.createObserver(2));
 		sessionHelper.setAuthentication(new Authentication(1));
-		assertThrows(EntityNotFoundException.class, () -> observerActionService.createObserver(3));
-		assertThrows(InvalidRequestException.class, () -> observerActionService.createObserver(1));
+		assertThrowsExactly(EntityNotFoundException.class, () -> observerActionService.createObserver(3));
+		assertThrowsExactly(InvalidRequestException.class, () -> observerActionService.createObserver(1));
 	}
 
 	@Test
@@ -213,9 +213,9 @@ class ObserverServiceTest {
 	@Test
 	void testDeleteObserverException() {
 		sessionHelper.setAuthentication(null);
-		assertThrows(ForbiddenOperationException.class, () -> observerActionService.deleteObserver(1));
+		assertThrowsExactly(ForbiddenOperationException.class, () -> observerActionService.deleteObserver(1));
 		sessionHelper.setAuthentication(new Authentication(1));
-		assertThrows(EntityNotFoundException.class, () -> observerActionService.deleteObserver(2));
+		assertThrowsExactly(EntityNotFoundException.class, () -> observerActionService.deleteObserver(2));
 	}
 
 }

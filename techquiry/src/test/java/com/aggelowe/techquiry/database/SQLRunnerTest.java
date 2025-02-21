@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -76,11 +76,11 @@ class SQLRunnerTest {
 	@Test
 	void testRunStatementException() {
 		String false0 = "SELECT * FROM false";
-		assertThrows(SQLRunnerExecuteException.class, () -> runner.runStatement(false0));
+		assertThrowsExactly(SQLRunnerExecuteException.class, () -> runner.runStatement(false0));
 		String false1 = "SLECT *";
-		assertThrows(SQLRunnerExecuteException.class, () -> runner.runStatement(false1));
+		assertThrowsExactly(SQLRunnerExecuteException.class, () -> runner.runStatement(false1));
 		String false2 = "INSERT INTO test (id, username) VALUES (1, 'Charlie')";
-		assertThrows(SQLRunnerExecuteException.class, () -> runner.runStatement(false2));
+		assertThrowsExactly(SQLRunnerExecuteException.class, () -> runner.runStatement(false2));
 	}
 
 	@Test
@@ -101,10 +101,10 @@ class SQLRunnerTest {
 	void testRunScriptException() {
 		String false0 = "SLECT *; INSERT INTO test (id, username) VALUES (?, ?);";
 		InputStream stream0 = new ByteArrayInputStream(false0.getBytes());
-		assertThrows(SQLRunnerLoadException.class, () -> runner.runScript(stream0));
+		assertThrowsExactly(SQLRunnerLoadException.class, () -> runner.runScript(stream0));
 		String false1 = "SELECT * FROM test; INSERT INTO test (id, username) VALUES (?, ?);";
 		InputStream stream1 = new ByteArrayInputStream(false1.getBytes());
-		assertThrows(SQLRunnerExecuteException.class, () -> runner.runScript(stream1, 1, "Charlie"));
+		assertThrowsExactly(SQLRunnerExecuteException.class, () -> runner.runScript(stream1, 1, "Charlie"));
 	}
 
 }

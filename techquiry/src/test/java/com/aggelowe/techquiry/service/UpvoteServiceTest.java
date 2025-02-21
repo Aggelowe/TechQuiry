@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Connection;
@@ -139,7 +139,7 @@ class UpvoteServiceTest {
 
 	@Test
 	void testGetUpvoteCountByResponseIdException() {
-		assertThrows(EntityNotFoundException.class, () -> upvoteService.getUpvoteCountByResponseId(3));
+		assertThrowsExactly(EntityNotFoundException.class, () -> upvoteService.getUpvoteCountByResponseId(3));
 	}
 
 	@Test
@@ -155,7 +155,7 @@ class UpvoteServiceTest {
 
 	@Test
 	void testGetUpvoteUserLoginListByResponseIdException() {
-		assertThrows(EntityNotFoundException.class, () -> upvoteService.getUpvoteUserLoginListByResponseId(3));
+		assertThrowsExactly(EntityNotFoundException.class, () -> upvoteService.getUpvoteUserLoginListByResponseId(3));
 	}
 
 	@Test
@@ -172,7 +172,7 @@ class UpvoteServiceTest {
 
 	@Test
 	void testGetUpvotedResponseListByUserIdException() {
-		assertThrows(EntityNotFoundException.class, () -> upvoteService.getUpvotedResponseListByUserId(2));
+		assertThrowsExactly(EntityNotFoundException.class, () -> upvoteService.getUpvotedResponseListByUserId(2));
 	}
 
 	@Test
@@ -184,7 +184,7 @@ class UpvoteServiceTest {
 	@Test
 	void testCheckUpvoteException() {
 		sessionHelper.setAuthentication(null);
-		assertThrows(ForbiddenOperationException.class, () -> upvoteActionService.checkUpvote(1));
+		assertThrowsExactly(ForbiddenOperationException.class, () -> upvoteActionService.checkUpvote(1));
 	}
 
 	@Test
@@ -207,10 +207,10 @@ class UpvoteServiceTest {
 	@Test
 	void testCreateUpvoteException() {
 		sessionHelper.setAuthentication(null);
-		assertThrows(ForbiddenOperationException.class, () -> upvoteActionService.createUpvote(2));
+		assertThrowsExactly(ForbiddenOperationException.class, () -> upvoteActionService.createUpvote(2));
 		sessionHelper.setAuthentication(new Authentication(1));
-		assertThrows(EntityNotFoundException.class, () -> upvoteActionService.createUpvote(3));
-		assertThrows(InvalidRequestException.class, () -> upvoteActionService.createUpvote(1));
+		assertThrowsExactly(EntityNotFoundException.class, () -> upvoteActionService.createUpvote(3));
+		assertThrowsExactly(InvalidRequestException.class, () -> upvoteActionService.createUpvote(1));
 	}
 
 	@Test
@@ -231,9 +231,9 @@ class UpvoteServiceTest {
 	@Test
 	void testDeleteUpvoteException() {
 		sessionHelper.setAuthentication(null);
-		assertThrows(ForbiddenOperationException.class, () -> upvoteActionService.deleteUpvote(0));
+		assertThrowsExactly(ForbiddenOperationException.class, () -> upvoteActionService.deleteUpvote(0));
 		sessionHelper.setAuthentication(new Authentication(0));
-		assertThrows(EntityNotFoundException.class, () -> upvoteActionService.deleteUpvote(2));
+		assertThrowsExactly(EntityNotFoundException.class, () -> upvoteActionService.deleteUpvote(2));
 	}
 
 }

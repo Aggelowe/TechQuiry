@@ -2,7 +2,7 @@ package com.aggelowe.techquiry.mapper;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,9 +42,9 @@ class UserDataMapperTest {
 	@Test
 	void testToEntityException() {
 		UserDataDto target0 = new UserDataDto(null, null, "Johnson");
-		assertThrows(MissingValueException.class, () -> userDataMapper.toEntity(target0));
+		assertThrowsExactly(MissingValueException.class, () -> userDataMapper.toEntity(target0));
 		UserDataDto target1 = new UserDataDto(null, "Bob", null);
-		assertThrows(MissingValueException.class, () -> userDataMapper.toEntity(target1));
+		assertThrowsExactly(MissingValueException.class, () -> userDataMapper.toEntity(target1));
 	}
 
 	@Test

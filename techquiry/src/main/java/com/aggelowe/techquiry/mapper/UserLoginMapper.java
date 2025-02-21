@@ -47,7 +47,9 @@ public class UserLoginMapper {
 		if (username == null || password == null) {
 			throw new MissingValueException("The username and/or password value is missing!");
 		}
-		return new UserLogin(0, username, password);
+		byte[] passwordSalt = SecurityUtils.generateSalt();
+		byte[] passwordHash = SecurityUtils.hashPassword(password, passwordSalt);
+		return new UserLogin(0, username, passwordHash, passwordSalt);
 	}
 
 	/**

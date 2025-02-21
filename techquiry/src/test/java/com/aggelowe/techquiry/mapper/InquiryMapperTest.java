@@ -3,7 +3,7 @@ package com.aggelowe.techquiry.mapper;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,11 +46,11 @@ class InquiryMapperTest {
 	@Test
 	void testToEntityException() {
 		InquiryDto target0 = new InquiryDto(null, null, null, "Example Content", true);
-		assertThrows(MissingValueException.class, () -> inquiryMapper.toEntity(target0));
+		assertThrowsExactly(MissingValueException.class, () -> inquiryMapper.toEntity(target0));
 		InquiryDto target1 = new InquiryDto(null, null, "Example", null, true);
-		assertThrows(MissingValueException.class, () -> inquiryMapper.toEntity(target1));
+		assertThrowsExactly(MissingValueException.class, () -> inquiryMapper.toEntity(target1));
 		InquiryDto target2 = new InquiryDto(null, null, "Example", "Example Content", null);
-		assertThrows(MissingValueException.class, () -> inquiryMapper.toEntity(target2));
+		assertThrowsExactly(MissingValueException.class, () -> inquiryMapper.toEntity(target2));
 	}
 
 	@Test

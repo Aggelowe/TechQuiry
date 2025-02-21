@@ -3,7 +3,7 @@ package com.aggelowe.techquiry.mapper;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,7 @@ class UserLoginMapperTest {
 
 	@Test
 	void testToDtoSuccess() {
-		UserLogin userLogin = new UserLogin(1, "bob", "password");
+		UserLogin userLogin = new UserLogin(1, "bob", new byte[4], new byte[2]);
 		UserLoginDto userLoginDto = userLoginMapper.toDto(userLogin);
 		assertEquals(1, userLoginDto.getUserId());
 		assertEquals("bob", userLoginDto.getUsername());
@@ -47,16 +47,16 @@ class UserLoginMapperTest {
 	@Test
 	void testToEntityException() {
 		UserLoginDto target0 = new UserLoginDto(null, null, "password");
-		assertThrows(MissingValueException.class, () -> userLoginMapper.toEntity(target0));
+		assertThrowsExactly(MissingValueException.class, () -> userLoginMapper.toEntity(target0));
 		UserLoginDto target1 = new UserLoginDto(null, "bob", null);
-		assertThrows(MissingValueException.class, () -> userLoginMapper.toEntity(target1));
+		assertThrowsExactly(MissingValueException.class, () -> userLoginMapper.toEntity(target1));
 
 	}
 
 	@Test
 	void testUpdateEntitySuccess() {
 		UserLoginDto userLoginDto = new UserLoginDto(null, "bob", "password");
-		UserLogin original = new UserLogin(1, "alice", "12345678");
+		UserLogin original = new UserLogin(1, "alice", new byte[4], new byte[2]);
 		UserLogin userLogin = userLoginMapper.updateEntity(userLoginDto, original);
 		assertEquals(1, userLogin.getUserId());
 		assertEquals("bob", userLogin.getUsername());

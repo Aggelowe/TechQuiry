@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Connection;
@@ -121,7 +121,7 @@ class ResponseServiceTest {
 
 	@Test
 	void testGetResponseCountByInquiryIdException() {
-		assertThrows(EntityNotFoundException.class, () -> responseService.getResponseCountByInquiryId(3));
+		assertThrowsExactly(EntityNotFoundException.class, () -> responseService.getResponseCountByInquiryId(3));
 	}
 
 	@Test
@@ -138,7 +138,7 @@ class ResponseServiceTest {
 
 	@Test
 	void testGetResponseListByInquiryIdException() {
-		assertThrows(EntityNotFoundException.class, () -> responseService.getResponseListByInquiryId(3));
+		assertThrowsExactly(EntityNotFoundException.class, () -> responseService.getResponseListByInquiryId(3));
 	}
 
 	@Test
@@ -153,7 +153,7 @@ class ResponseServiceTest {
 
 	@Test
 	void testGetResponseByResponseIdException() {
-		assertThrows(EntityNotFoundException.class, () -> responseService.getResponseByResponseId(3));
+		assertThrowsExactly(EntityNotFoundException.class, () -> responseService.getResponseByResponseId(3));
 	}
 
 	@Test
@@ -183,12 +183,12 @@ class ResponseServiceTest {
 	void testCreateResponseException() {
 		sessionHelper.setAuthentication(null);
 		Response target0 = new Response(0, 2, 0, true, "Fail Response");
-		assertThrows(ForbiddenOperationException.class, () -> responseActionService.createResponse(target0));
+		assertThrowsExactly(ForbiddenOperationException.class, () -> responseActionService.createResponse(target0));
 		Response target1 = new Response(0, 3, 0, true, "Fail Response");
 		sessionHelper.setAuthentication(new Authentication(1));
-		assertThrows(EntityNotFoundException.class, () -> responseActionService.createResponse(target1));
+		assertThrowsExactly(EntityNotFoundException.class, () -> responseActionService.createResponse(target1));
 		Response target2 = new Response(0, 2, 0, true, "");
-		assertThrows(InvalidRequestException.class, () -> responseActionService.createResponse(target2));
+		assertThrowsExactly(InvalidRequestException.class, () -> responseActionService.createResponse(target2));
 	}
 
 	@Test
@@ -209,10 +209,10 @@ class ResponseServiceTest {
 	@Test
 	void testDeleteResponseException() {
 		sessionHelper.setAuthentication(null);
-		assertThrows(ForbiddenOperationException.class, () -> responseActionService.deleteResponse(1));
+		assertThrowsExactly(ForbiddenOperationException.class, () -> responseActionService.deleteResponse(1));
 		sessionHelper.setAuthentication(new Authentication(0));
-		assertThrows(ForbiddenOperationException.class, () -> responseActionService.deleteResponse(1));
-		assertThrows(EntityNotFoundException.class, () -> responseActionService.deleteResponse(3));
+		assertThrowsExactly(ForbiddenOperationException.class, () -> responseActionService.deleteResponse(1));
+		assertThrowsExactly(EntityNotFoundException.class, () -> responseActionService.deleteResponse(3));
 	}
 
 	@Test
@@ -240,14 +240,14 @@ class ResponseServiceTest {
 	void testUpdateResponseException() {
 		sessionHelper.setAuthentication(null);
 		Response target0 = new Response(0, 1, 0, false, "Fail Response");
-		assertThrows(ForbiddenOperationException.class, () -> responseActionService.updateResponse(target0));
+		assertThrowsExactly(ForbiddenOperationException.class, () -> responseActionService.updateResponse(target0));
 		sessionHelper.setAuthentication(new Authentication(1));
-		assertThrows(ForbiddenOperationException.class, () -> responseActionService.updateResponse(target0));
+		assertThrowsExactly(ForbiddenOperationException.class, () -> responseActionService.updateResponse(target0));
 		Response target1 = new Response(3, 1, 0, false, "Fail Response");
 		sessionHelper.setAuthentication(new Authentication(0));
-		assertThrows(EntityNotFoundException.class, () -> responseActionService.updateResponse(target1));
+		assertThrowsExactly(EntityNotFoundException.class, () -> responseActionService.updateResponse(target1));
 		Response target2 = new Response(0, 1, 0, false, "");
-		assertThrows(InvalidRequestException.class, () -> responseActionService.updateResponse(target2));
+		assertThrowsExactly(InvalidRequestException.class, () -> responseActionService.updateResponse(target2));
 	}
 
 }
