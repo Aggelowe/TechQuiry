@@ -1,7 +1,7 @@
 package com.aggelowe.techquiry.common;
 
-import static com.aggelowe.techquiry.common.Constants.NAME;
-import static com.aggelowe.techquiry.common.Constants.VERSION;
+import static com.aggelowe.techquiry.common.Constants.APPLICATION_NAME;
+import static com.aggelowe.techquiry.common.Constants.APPLICATION_VERSION;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,8 +35,8 @@ public class TechQuiry {
 	private final DatabaseManager databaseManager;
 
 	public static void main(String[] args) {
-		log.info("Starting the " + NAME + " application on version " + VERSION);
-		log.debug("Application work directory: " + Environment.WORK_DIRECTORY);
+		log.info("Starting the " + APPLICATION_NAME + " application on version " + APPLICATION_VERSION);
+		log.debug("Application work directory: " + Environment.SERVER_WORK_DIRECTORY);
 		SpringApplication application = new SpringApplication(TechQuiry.class);
 		properties(application);
 		log.info("Invoking Spring application startup");
@@ -52,7 +52,7 @@ public class TechQuiry {
 	private static void properties(SpringApplication application) {
 		log.debug("Setting up Spring application properties");
 		Map<String, Object> applicationProperties = new HashMap<>();
-		applicationProperties.put("server.port", Environment.PORT);
+		applicationProperties.put("server.port", Environment.SERVER_PORT);
 		application.setDefaultProperties(applicationProperties);
 	}
 

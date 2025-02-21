@@ -1,7 +1,5 @@
 package com.aggelowe.techquiry.common;
 
-import static com.aggelowe.techquiry.common.Constants.HASHING_ALGORITHM;
-
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -72,7 +70,7 @@ public final class SecurityUtils {
 	 */
 	public static byte[] generateSalt() {
 		SecureRandom random = new SecureRandom();
-		int length = Environment.SALT_LENGTH;
+		int length = Environment.SECURITY_SALT_LENGTH;
 		byte[] salt = new byte[length];
 		random.nextBytes(salt);
 		return salt;
@@ -103,7 +101,7 @@ public final class SecurityUtils {
 	public static byte[] hashPassword(String password, byte[] salt) {
 		MessageDigest digest = null;
 		try {
-			digest = MessageDigest.getInstance(HASHING_ALGORITHM);
+			digest = MessageDigest.getInstance(Constants.SECURITY_HASHING_ALGORITHM);
 		} catch (NoSuchAlgorithmException exception) {
 			log.fatal(exception);
 			System.exit(1);

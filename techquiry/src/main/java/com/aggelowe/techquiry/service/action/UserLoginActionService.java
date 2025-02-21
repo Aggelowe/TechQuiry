@@ -1,6 +1,6 @@
 package com.aggelowe.techquiry.service.action;
 
-import static com.aggelowe.techquiry.common.Constants.USERNAME_REGEX;
+import static com.aggelowe.techquiry.common.Constants.SECURITY_USERNAME_REGEX;
 
 import java.util.regex.Pattern;
 
@@ -64,7 +64,7 @@ public class UserLoginActionService {
 			throw new ForbiddenOperationException("Creating users while logged-in is forbidden!");
 		}
 		String username = login.getUsername();
-		Pattern pattern = Pattern.compile(USERNAME_REGEX);
+		Pattern pattern = Pattern.compile(SECURITY_USERNAME_REGEX);
 		if (!pattern.matcher(username).matches()) {
 			throw new InvalidRequestException("The given username does not abide by the requirements!");
 		}
@@ -131,7 +131,7 @@ public class UserLoginActionService {
 			throw new ForbiddenOperationException("The requested user update is forbidden!");
 		}
 		String username = login.getUsername();
-		Pattern pattern = Pattern.compile(USERNAME_REGEX);
+		Pattern pattern = Pattern.compile(SECURITY_USERNAME_REGEX);
 		if (!pattern.matcher(username).matches()) {
 			throw new InvalidRequestException("The given username does not abide by the requirements!");
 		}

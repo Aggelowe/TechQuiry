@@ -25,17 +25,12 @@ public final class Constants {
 	/**
 	 * The string containing the name of the application
 	 */
-	public static final String NAME = "TechQuiry";
+	public static final String APPLICATION_NAME = "TechQuiry";
 
 	/**
 	 * The string containing the application version
 	 */
-	public static final String VERSION = "0.0.1";
-
-	/**
-	 * The path of the execution directory
-	 */
-	public static final String EXECUTION_DIRECTORY = System.getProperty("user.dir");
+	public static final String APPLICATION_VERSION = "0.0.1";
 
 	/**
 	 * The filename of the application database file
@@ -45,11 +40,11 @@ public final class Constants {
 	/**
 	 * The regular expression defining the valid format for usernames.
 	 */
-	public static final String USERNAME_REGEX = "^[A-Za-z][A-Za-z0-9_]{2,14}$";
+	public static final String SECURITY_USERNAME_REGEX = "^[A-Za-z][A-Za-z0-9_]{2,14}$";
 
 	/**
 	 * The hashing algorithm for generating the password hashes.
 	 */
-	public static final String HASHING_ALGORITHM = "SHA-256";
+	public static final String SECURITY_HASHING_ALGORITHM = "SHA-256";
 
 }

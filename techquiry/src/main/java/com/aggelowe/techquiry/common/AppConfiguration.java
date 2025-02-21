@@ -31,16 +31,16 @@ public class AppConfiguration {
 	 */
 	@Bean(destroyMethod = "close")
 	public DataSource getDataSource() {
-		Path databasePath = Environment.WORK_DIRECTORY.toPath().resolve(Constants.DATABASE_FILENAME);
+		Path databasePath = Environment.SERVER_WORK_DIRECTORY.toPath().resolve(Constants.DATABASE_FILENAME);
 		String databaseUrl = "jdbc:sqlite:" + databasePath;
 		HikariConfig hikariConfig = new HikariConfig();
 		hikariConfig.setAutoCommit(false);
 		hikariConfig.setJdbcUrl(databaseUrl);
-		hikariConfig.setConnectionTimeout(Environment.CONNECTION_TIMEOUT);
-		hikariConfig.setIdleTimeout(Environment.CONNECTION_IDLE_TIMEOUT);
-		hikariConfig.setMaxLifetime(Environment.CONNECTION_MAX_LIFETIME);
-		hikariConfig.setMaximumPoolSize(Environment.CONNECTION_POOL_SIZE);
-		hikariConfig.setPoolName(Constants.NAME + "ConnectionPool");
+		hikariConfig.setConnectionTimeout(Environment.DATABASE_TIMEOUT);
+		hikariConfig.setIdleTimeout(Environment.DATABASE_IDLE_TIMEOUT);
+		hikariConfig.setMaxLifetime(Environment.DATABASE_LIFETIME);
+		hikariConfig.setMaximumPoolSize(Environment.DATABASE_POOL_SIZE);
+		hikariConfig.setPoolName(Constants.APPLICATION_NAME + "ConnectionPool");
 		SQLiteConfig sqliteConfig = new SQLiteConfig();
 		sqliteConfig.enforceForeignKeys(true);
 		hikariConfig.setDataSourceProperties(sqliteConfig.toProperties());
