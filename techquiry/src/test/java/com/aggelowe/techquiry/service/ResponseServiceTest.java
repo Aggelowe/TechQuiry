@@ -28,6 +28,7 @@ import com.aggelowe.techquiry.service.action.ResponseActionService;
 import com.aggelowe.techquiry.service.exception.EntityNotFoundException;
 import com.aggelowe.techquiry.service.exception.ForbiddenOperationException;
 import com.aggelowe.techquiry.service.exception.InvalidRequestException;
+import com.aggelowe.techquiry.service.exception.UnauthorizedOperationException;
 import com.aggelowe.techquiry.service.session.Authentication;
 import com.aggelowe.techquiry.service.session.SessionHelper;
 
@@ -183,7 +184,7 @@ class ResponseServiceTest {
 	void testCreateResponseException() {
 		sessionHelper.setAuthentication(null);
 		Response target0 = new Response(0, 2, 0, true, "Fail Response");
-		assertThrowsExactly(ForbiddenOperationException.class, () -> responseActionService.createResponse(target0));
+		assertThrowsExactly(UnauthorizedOperationException.class, () -> responseActionService.createResponse(target0));
 		Response target1 = new Response(0, 3, 0, true, "Fail Response");
 		sessionHelper.setAuthentication(new Authentication(1));
 		assertThrowsExactly(EntityNotFoundException.class, () -> responseActionService.createResponse(target1));
@@ -209,7 +210,7 @@ class ResponseServiceTest {
 	@Test
 	void testDeleteResponseException() {
 		sessionHelper.setAuthentication(null);
-		assertThrowsExactly(ForbiddenOperationException.class, () -> responseActionService.deleteResponse(1));
+		assertThrowsExactly(UnauthorizedOperationException.class, () -> responseActionService.deleteResponse(1));
 		sessionHelper.setAuthentication(new Authentication(0));
 		assertThrowsExactly(ForbiddenOperationException.class, () -> responseActionService.deleteResponse(1));
 		assertThrowsExactly(EntityNotFoundException.class, () -> responseActionService.deleteResponse(3));
@@ -240,7 +241,7 @@ class ResponseServiceTest {
 	void testUpdateResponseException() {
 		sessionHelper.setAuthentication(null);
 		Response target0 = new Response(0, 1, 0, false, "Fail Response");
-		assertThrowsExactly(ForbiddenOperationException.class, () -> responseActionService.updateResponse(target0));
+		assertThrowsExactly(UnauthorizedOperationException.class, () -> responseActionService.updateResponse(target0));
 		sessionHelper.setAuthentication(new Authentication(1));
 		assertThrowsExactly(ForbiddenOperationException.class, () -> responseActionService.updateResponse(target0));
 		Response target1 = new Response(3, 1, 0, false, "Fail Response");

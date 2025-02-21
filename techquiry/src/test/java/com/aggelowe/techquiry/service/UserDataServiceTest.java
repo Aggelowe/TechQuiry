@@ -29,6 +29,7 @@ import com.aggelowe.techquiry.service.action.UserDataActionService;
 import com.aggelowe.techquiry.service.exception.EntityNotFoundException;
 import com.aggelowe.techquiry.service.exception.ForbiddenOperationException;
 import com.aggelowe.techquiry.service.exception.InvalidRequestException;
+import com.aggelowe.techquiry.service.exception.UnauthorizedOperationException;
 import com.aggelowe.techquiry.service.session.Authentication;
 import com.aggelowe.techquiry.service.session.SessionHelper;
 
@@ -133,7 +134,7 @@ class UserDataServiceTest {
 	void testCreateDataException() {
 		UserData target0 = new UserData(0, "Charlie", "Brown", null);
 		sessionHelper.setAuthentication(null);
-		assertThrowsExactly(ForbiddenOperationException.class, () -> userDataActionService.createData(target0));
+		assertThrowsExactly(UnauthorizedOperationException.class, () -> userDataActionService.createData(target0));
 		UserData target1 = new UserData(0, "", "Brown", null);
 		sessionHelper.setAuthentication(new Authentication(2));
 		assertThrowsExactly(InvalidRequestException.class, () -> userDataActionService.createData(target1));
@@ -162,7 +163,7 @@ class UserDataServiceTest {
 	@Test
 	void testDeleteDataException() {
 		sessionHelper.setAuthentication(null);
-		assertThrowsExactly(ForbiddenOperationException.class, () -> userDataActionService.deleteData(1));
+		assertThrowsExactly(UnauthorizedOperationException.class, () -> userDataActionService.deleteData(1));
 		sessionHelper.setAuthentication(new Authentication(1));
 		assertThrowsExactly(ForbiddenOperationException.class, () -> userDataActionService.deleteData(0));
 		sessionHelper.setAuthentication(new Authentication(3));
@@ -193,7 +194,7 @@ class UserDataServiceTest {
 	void testUpdateDataException() {
 		UserData target0 = new UserData(1, "David", "Dawson", new byte[2]);
 		sessionHelper.setAuthentication(null);
-		assertThrowsExactly(ForbiddenOperationException.class, () -> userDataActionService.updateData(target0));
+		assertThrowsExactly(UnauthorizedOperationException.class, () -> userDataActionService.updateData(target0));
 		sessionHelper.setAuthentication(new Authentication(0));
 		assertThrowsExactly(ForbiddenOperationException.class, () -> userDataActionService.updateData(target0));
 		UserData target1 = new UserData(1, "", "Brown", null);

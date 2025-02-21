@@ -28,6 +28,7 @@ import com.aggelowe.techquiry.service.action.InquiryActionService;
 import com.aggelowe.techquiry.service.exception.EntityNotFoundException;
 import com.aggelowe.techquiry.service.exception.ForbiddenOperationException;
 import com.aggelowe.techquiry.service.exception.InvalidRequestException;
+import com.aggelowe.techquiry.service.exception.UnauthorizedOperationException;
 import com.aggelowe.techquiry.service.session.Authentication;
 import com.aggelowe.techquiry.service.session.SessionHelper;
 
@@ -177,7 +178,7 @@ class InquiryServiceTest {
 	void testCreateInquiryException() {
 		sessionHelper.setAuthentication(null);
 		Inquiry target0 = new Inquiry(0, 0, "Fail", "Fail Content", true);
-		assertThrowsExactly(ForbiddenOperationException.class, () -> inquiryActionService.createInquiry(target0));
+		assertThrowsExactly(UnauthorizedOperationException.class, () -> inquiryActionService.createInquiry(target0));
 		Inquiry target1 = new Inquiry(0, 0, "", "Fail Content", false);
 		sessionHelper.setAuthentication(new Authentication(1));
 		assertThrowsExactly(InvalidRequestException.class, () -> inquiryActionService.createInquiry(target1));
@@ -203,7 +204,7 @@ class InquiryServiceTest {
 	@Test
 	void testDeleteInquiryException() {
 		sessionHelper.setAuthentication(null);
-		assertThrowsExactly(ForbiddenOperationException.class, () -> inquiryActionService.deleteInquiry(1));
+		assertThrowsExactly(UnauthorizedOperationException.class, () -> inquiryActionService.deleteInquiry(1));
 		sessionHelper.setAuthentication(new Authentication(1));
 		assertThrowsExactly(ForbiddenOperationException.class, () -> inquiryActionService.deleteInquiry(1));
 		assertThrowsExactly(EntityNotFoundException.class, () -> inquiryActionService.deleteInquiry(3));
@@ -234,7 +235,7 @@ class InquiryServiceTest {
 	void testUpdateInquiryException() {
 		Inquiry target0 = new Inquiry(0, 0, "Fail", "Fail Content", true);
 		sessionHelper.setAuthentication(null);
-		assertThrowsExactly(ForbiddenOperationException.class, () -> inquiryActionService.updateInquiry(target0));
+		assertThrowsExactly(UnauthorizedOperationException.class, () -> inquiryActionService.updateInquiry(target0));
 		Inquiry target1 = new Inquiry(0, 0, "Fail", "Fail Content", true);
 		sessionHelper.setAuthentication(new Authentication(0));
 		assertThrowsExactly(ForbiddenOperationException.class, () -> inquiryActionService.updateInquiry(target1));

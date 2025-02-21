@@ -31,6 +31,7 @@ import com.aggelowe.techquiry.service.action.UserLoginActionService;
 import com.aggelowe.techquiry.service.exception.EntityNotFoundException;
 import com.aggelowe.techquiry.service.exception.ForbiddenOperationException;
 import com.aggelowe.techquiry.service.exception.InvalidRequestException;
+import com.aggelowe.techquiry.service.exception.UnauthorizedOperationException;
 import com.aggelowe.techquiry.service.session.Authentication;
 import com.aggelowe.techquiry.service.session.SessionHelper;
 
@@ -188,7 +189,7 @@ class UserLoginServiceTest {
 	@Test
 	void testDeleteLoginException() {
 		sessionHelper.setAuthentication(null);
-		assertThrowsExactly(ForbiddenOperationException.class, () -> userLoginActionService.deleteLogin(1));
+		assertThrowsExactly(UnauthorizedOperationException.class, () -> userLoginActionService.deleteLogin(1));
 		sessionHelper.setAuthentication(new Authentication(1));
 		assertThrowsExactly(ForbiddenOperationException.class, () -> userLoginActionService.deleteLogin(0));
 		sessionHelper.setAuthentication(new Authentication(3));
@@ -220,7 +221,7 @@ class UserLoginServiceTest {
 	void testUpdateLoginException() {
 		UserLogin target = new UserLogin(2, "david", new byte[4], new byte[2]);
 		sessionHelper.setAuthentication(null);
-		assertThrowsExactly(ForbiddenOperationException.class, () -> userLoginActionService.updateLogin(target));
+		assertThrowsExactly(UnauthorizedOperationException.class, () -> userLoginActionService.updateLogin(target));
 		sessionHelper.setAuthentication(new Authentication(1));
 		assertThrowsExactly(ForbiddenOperationException.class, () -> userLoginActionService.updateLogin(target));
 		UserLogin login0 = new UserLogin(3, "david", new byte[4], new byte[2]);
@@ -246,7 +247,7 @@ class UserLoginServiceTest {
 	@Test
 	void testGetCurrentLoginException() {
 		sessionHelper.setAuthentication(null);
-		assertThrowsExactly(ForbiddenOperationException.class, () -> userLoginActionService.getCurrentLogin());
+		assertThrowsExactly(UnauthorizedOperationException.class, () -> userLoginActionService.getCurrentLogin());
 	}
 
 	@Test
@@ -279,7 +280,7 @@ class UserLoginServiceTest {
 	@Test
 	void testLogoutUserException() {
 		sessionHelper.setAuthentication(null);
-		assertThrowsExactly(ForbiddenOperationException.class, () -> userLoginActionService.logoutUser());
+		assertThrowsExactly(UnauthorizedOperationException.class, () -> userLoginActionService.logoutUser());
 	}
 
 }

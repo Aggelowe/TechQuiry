@@ -11,6 +11,7 @@ import com.aggelowe.techquiry.service.exception.ForbiddenOperationException;
 import com.aggelowe.techquiry.service.exception.InternalErrorException;
 import com.aggelowe.techquiry.service.exception.InvalidRequestException;
 import com.aggelowe.techquiry.service.exception.ServiceException;
+import com.aggelowe.techquiry.service.exception.UnauthorizedOperationException;
 import com.aggelowe.techquiry.service.session.Authentication;
 import com.aggelowe.techquiry.service.session.SessionHelper;
 
@@ -45,17 +46,18 @@ public class UserDataActionService {
 	 * user id is automatically selected.
 	 *
 	 * @param data The user data object to create
-	 * @throws ForbiddenOperationException If the current user is not logged in
-	 * @throws InvalidRequestException     If the given first or last name are empty
-	 *                                     or if the given id is not available
-	 * @throws InternalErrorException      If an internal error occurs while
-	 *                                     creating the user data
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws InvalidRequestException        If the given first or last name are
+	 *                                        empty or if the given id is not
+	 *                                        available
+	 * @throws InternalErrorException         If an internal error occurs while
+	 *                                        creating the user data
 	 * 
 	 */
 	public void createData(UserData data) throws ServiceException {
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
-			throw new ForbiddenOperationException("The requested user data creation is forbidden!");
+			throw new UnauthorizedOperationException("The requested user data creation is unauthorized!");
 		}
 		String firstName = data.getFirstName();
 		String lastName = data.getLastName();
@@ -78,15 +80,20 @@ public class UserDataActionService {
 	 * This method deletes the user data with the specified user id.
 	 *
 	 * @param id The user id
-	 * @throws ForbiddenOperationException If the current user does not have the
-	 *                                     given id
-	 * @throws EntityNotFoundException     If the requested user data do not exist
-	 * @throws InternalErrorException      If an internal error occurred while
-	 *                                     deleting the user
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws ForbiddenOperationException    If the current user does not have the
+	 *                                        given id
+	 * @throws EntityNotFoundException        If the requested user data do not
+	 *                                        exist
+	 * @throws InternalErrorException         If an internal error occurred while
+	 *                                        deleting the user
 	 */
 	public void deleteData(int id) throws ServiceException {
 		Authentication current = sessionHelper.getAuthentication();
-		if (current == null || current.getUserId() != id) {
+		if (current == null) {
+			throw new UnauthorizedOperationException("The requested user data deletion is unauthorized!");
+		}
+		if (current.getUserId() != id) {
 			throw new ForbiddenOperationException("The requested user data deletion is forbidden!");
 		}
 		try {
@@ -105,19 +112,24 @@ public class UserDataActionService {
 	 * {@link UserData} object.
 	 * 
 	 * @param data The user data
-	 * @throws ForbiddenOperationException If the current user does not have the
-	 *                                     given id
-	 * @throws EntityNotFoundException     If the given id does not correspond to a
-	 *                                     user login id
-	 * @throws InvalidRequestException     If the given first or last name are empty
-	 *                                     or if the given id is not available
-	 * @throws InternalErrorException      If an internal error occurred while
-	 *                                     updating the user data
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws ForbiddenOperationException    If the current user does not have the
+	 *                                        given id
+	 * @throws EntityNotFoundException        If the given id does not correspond to
+	 *                                        a user login id
+	 * @throws InvalidRequestException        If the given first or last name are
+	 *                                        empty or if the given id is not
+	 *                                        available
+	 * @throws InternalErrorException         If an internal error occurred while
+	 *                                        updating the user data
 	 * 
 	 */
 	public void updateData(UserData data) throws ServiceException {
 		Authentication current = sessionHelper.getAuthentication();
-		if (current == null || current.getUserId() != data.getUserId()) {
+		if (current == null) {
+			throw new UnauthorizedOperationException("The requested user update is unauthorized!");
+		}
+		if (current.getUserId() != data.getUserId()) {
 			throw new ForbiddenOperationException("The requested user update is forbidden!");
 		}
 		String firstName = data.getFirstName();

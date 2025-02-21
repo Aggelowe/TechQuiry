@@ -9,10 +9,10 @@ import com.aggelowe.techquiry.entity.Inquiry;
 import com.aggelowe.techquiry.entity.Observer;
 import com.aggelowe.techquiry.service.ObserverService;
 import com.aggelowe.techquiry.service.exception.EntityNotFoundException;
-import com.aggelowe.techquiry.service.exception.ForbiddenOperationException;
 import com.aggelowe.techquiry.service.exception.InternalErrorException;
 import com.aggelowe.techquiry.service.exception.InvalidRequestException;
 import com.aggelowe.techquiry.service.exception.ServiceException;
+import com.aggelowe.techquiry.service.exception.UnauthorizedOperationException;
 import com.aggelowe.techquiry.service.session.Authentication;
 import com.aggelowe.techquiry.service.session.SessionHelper;
 
@@ -54,14 +54,14 @@ public class ObserverActionService {
 	 * 
 	 * @param inquiryId The inquiry id of the inquiry to check
 	 * @return Whether the logged in user is observing the given inquiry
-	 * @throws ForbiddenOperationException If the current user is not logged in
-	 * @throws InternalErrorException      If an internal error occurs while
-	 *                                     checking the observer
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws InternalErrorException         If an internal error occurs while
+	 *                                        checking the observer
 	 */
 	public boolean checkObserver(int inquiryId) throws ServiceException {
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
-			throw new ForbiddenOperationException("The requested observer check is forbidden!");
+			throw new UnauthorizedOperationException("The requested observer check is unauthorized!");
 		}
 		Observer observer = new Observer(inquiryId, current.getUserId());
 		try {
@@ -76,17 +76,17 @@ public class ObserverActionService {
 	 * given inquiry id and the user id of the current user session.
 	 *
 	 * @param inquiryId The inquiry id of the inquiry to observe
-	 * @throws ForbiddenOperationException If the current user is not logged in
-	 * @throws EntityNotFoundException     If the given inquiry id does not
-	 *                                     correspond to an inquiry
-	 * @throws InvalidRequestException     If the given observer already exists
-	 * @throws InternalErrorException      If an internal error occurs while
-	 *                                     creating the observer
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws EntityNotFoundException        If the given inquiry id does not
+	 *                                        correspond to an inquiry
+	 * @throws InvalidRequestException        If the given observer already exists
+	 * @throws InternalErrorException         If an internal error occurs while
+	 *                                        creating the observer
 	 */
 	public void createObserver(int inquiryId) throws ServiceException {
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
-			throw new ForbiddenOperationException("The requested observer creation is forbidden!");
+			throw new UnauthorizedOperationException("The requested observer creation is unauthorized!");
 		}
 		try {
 			Inquiry inquiry = inquiryDao.select(inquiryId);
@@ -108,15 +108,16 @@ public class ObserverActionService {
 	 * given inquiry id and the user id of the current user session.
 	 *
 	 * @param inquiryId The inquiry id of the inquiry to stop observing
-	 * @throws ForbiddenOperationException If the current user is not logged in
-	 * @throws EntityNotFoundException     If the requested observer does not exist
-	 * @throws InternalErrorException      If an internal error occurred while
-	 *                                     deleting the observer
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws EntityNotFoundException        If the requested observer does not
+	 *                                        exist
+	 * @throws InternalErrorException         If an internal error occurred while
+	 *                                        deleting the observer
 	 */
 	public void deleteObserver(int inquiryId) throws ServiceException {
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
-			throw new ForbiddenOperationException("The requested observer deletion is forbidden!");
+			throw new UnauthorizedOperationException("The requested observer deletion is unauthorized!");
 		}
 		Observer observer = new Observer(inquiryId, current.getUserId());
 		try {

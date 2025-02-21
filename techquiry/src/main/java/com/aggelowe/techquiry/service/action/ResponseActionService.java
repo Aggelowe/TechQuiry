@@ -13,6 +13,7 @@ import com.aggelowe.techquiry.service.exception.ForbiddenOperationException;
 import com.aggelowe.techquiry.service.exception.InternalErrorException;
 import com.aggelowe.techquiry.service.exception.InvalidRequestException;
 import com.aggelowe.techquiry.service.exception.ServiceException;
+import com.aggelowe.techquiry.service.exception.UnauthorizedOperationException;
 import com.aggelowe.techquiry.service.session.Authentication;
 import com.aggelowe.techquiry.service.session.SessionHelper;
 
@@ -55,18 +56,18 @@ public class ResponseActionService {
 	 *
 	 * @param response The response object to create
 	 * @return The response id of the created {@link Response}
-	 * @throws ForbiddenOperationException If the current user is not logged in
-	 * @throws EntityNotFoundException     If the given inquiry id does not
-	 *                                     correspond to a inquiry
-	 * @throws InvalidRequestException     If the given content is empty
-	 * @throws InternalErrorException      If an internal error occurs while
-	 *                                     creating the response
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws EntityNotFoundException        If the given inquiry id does not
+	 *                                        correspond to a inquiry
+	 * @throws InvalidRequestException        If the given content is empty
+	 * @throws InternalErrorException         If an internal error occurs while
+	 *                                        creating the response
 	 * 
 	 */
 	public int createResponse(Response response) throws ServiceException {
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
-			throw new ForbiddenOperationException("The requested response creation is forbidden!");
+			throw new UnauthorizedOperationException("The requested response creation is unauthorized!");
 		}
 		String content = response.getContent();
 		if (content.isEmpty()) {
@@ -88,20 +89,25 @@ public class ResponseActionService {
 	 * This method deletes the response with the specified response id.
 	 *
 	 * @param responseId The response id
-	 * @throws ForbiddenOperationException If the current user does not have the
-	 *                                     given user id
-	 * @throws EntityNotFoundException     If the requested response does not exist
-	 * @throws InternalErrorException      If an internal error occurred while
-	 *                                     deleting the response
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws ForbiddenOperationException    If the current user does not have the
+	 *                                        given user id
+	 * @throws EntityNotFoundException        If the requested response does not
+	 *                                        exist
+	 * @throws InternalErrorException         If an internal error occurred while
+	 *                                        deleting the response
 	 */
 	public void deleteResponse(int responseId) throws ServiceException {
+		Authentication current = sessionHelper.getAuthentication();
+		if (current == null) {
+			throw new UnauthorizedOperationException("The requested response creation is unauthorized!");
+		}
 		try {
 			Response response = responseDao.select(responseId);
 			if (response == null) {
 				throw new EntityNotFoundException("The requested response does not exist!");
 			}
-			Authentication current = sessionHelper.getAuthentication();
-			if (current == null || current.getUserId() != response.getUserId()) {
+			if (current.getUserId() != response.getUserId()) {
 				throw new ForbiddenOperationException("The requested response deletion is forbidden!");
 			}
 			responseDao.delete(responseId);
@@ -116,19 +122,20 @@ public class ResponseActionService {
 	 * selected and is not carried over to the database.
 	 * 
 	 * @param response The response object
-	 * @throws ForbiddenOperationException If the current user does not have the
-	 *                                     user id contained in the the response
-	 *                                     contained in the database
-	 * @throws EntityNotFoundException     If the given inquiry id do not correspond
-	 *                                     to an inquiry
-	 * @throws InvalidRequestException     If the given content is empty
-	 * @throws InternalErrorException      If an internal error occurred while
-	 *                                     updating the response
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws ForbiddenOperationException    If the current user does not have the
+	 *                                        user id contained in the the response
+	 *                                        contained in the database
+	 * @throws EntityNotFoundException        If the given inquiry id do not
+	 *                                        correspond to an inquiry
+	 * @throws InvalidRequestException        If the given content is empty
+	 * @throws InternalErrorException         If an internal error occurred while
+	 *                                        updating the response
 	 */
 	public void updateResponse(Response response) throws ServiceException {
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
-			throw new ForbiddenOperationException("The requested response update is forbidden!");
+			throw new UnauthorizedOperationException("The requested response update is unauthorized!");
 		}
 		String content = response.getContent();
 		if (content.isEmpty()) {

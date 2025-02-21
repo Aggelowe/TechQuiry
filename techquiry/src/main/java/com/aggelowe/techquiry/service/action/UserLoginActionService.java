@@ -1,11 +1,10 @@
 package com.aggelowe.techquiry.service.action;
 
-import static com.aggelowe.techquiry.common.Constants.SECURITY_USERNAME_REGEX;
-
 import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Service;
 
+import com.aggelowe.techquiry.common.Constants;
 import com.aggelowe.techquiry.common.SecurityUtils;
 import com.aggelowe.techquiry.database.dao.UserLoginDao;
 import com.aggelowe.techquiry.database.exception.DatabaseException;
@@ -16,6 +15,7 @@ import com.aggelowe.techquiry.service.exception.ForbiddenOperationException;
 import com.aggelowe.techquiry.service.exception.InternalErrorException;
 import com.aggelowe.techquiry.service.exception.InvalidRequestException;
 import com.aggelowe.techquiry.service.exception.ServiceException;
+import com.aggelowe.techquiry.service.exception.UnauthorizedOperationException;
 import com.aggelowe.techquiry.service.session.Authentication;
 import com.aggelowe.techquiry.service.session.SessionHelper;
 
@@ -64,7 +64,7 @@ public class UserLoginActionService {
 			throw new ForbiddenOperationException("Creating users while logged-in is forbidden!");
 		}
 		String username = login.getUsername();
-		Pattern pattern = Pattern.compile(SECURITY_USERNAME_REGEX);
+		Pattern pattern = Pattern.compile(Constants.SECURITY_USERNAME_REGEX);
 		if (!pattern.matcher(username).matches()) {
 			throw new InvalidRequestException("The given username does not abide by the requirements!");
 		}
@@ -87,15 +87,19 @@ public class UserLoginActionService {
 	 * This method deletes the user login with the specified user id.
 	 *
 	 * @param id The user id
-	 * @throws ForbiddenOperationException If the current user does not have the
-	 *                                     given id
-	 * @throws EntityNotFoundException     If the requested user does not exist
-	 * @throws InternalErrorException      If an internal error occurred while
-	 *                                     deleting the user
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws ForbiddenOperationException    If the current user does not have the
+	 *                                        given id
+	 * @throws EntityNotFoundException        If the requested user does not exist
+	 * @throws InternalErrorException         If an internal error occurred while
+	 *                                        deleting the user
 	 */
 	public void deleteLogin(int id) throws ServiceException {
 		Authentication current = sessionHelper.getAuthentication();
-		if (current == null || current.getUserId() != id) {
+		if (current == null) {
+			throw new UnauthorizedOperationException("The requested user deletion is unauthorized!");
+		}
+		if (current.getUserId() != id) {
 			throw new ForbiddenOperationException("The requested user deletion is forbidden!");
 		}
 		try {
@@ -115,23 +119,27 @@ public class UserLoginActionService {
 	 * {@link UserLogin} object.
 	 * 
 	 * @param login The user login
-	 * @throws ForbiddenOperationException If the current user does not have the
-	 *                                     same id as the one contained in the given
-	 *                                     login.
-	 * @throws EntityNotFoundException     If the requested user does not exist
-	 * @throws InvalidRequestException     If the given username does not abide by
-	 *                                     the requirements.
-	 * @throws InternalErrorException      If an internal error occurred while
-	 *                                     updating the user
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws ForbiddenOperationException    If the current user does not have the
+	 *                                        same id as the one contained in the
+	 *                                        given login.
+	 * @throws EntityNotFoundException        If the requested user does not exist
+	 * @throws InvalidRequestException        If the given username does not abide
+	 *                                        by the requirements.
+	 * @throws InternalErrorException         If an internal error occurred while
+	 *                                        updating the user
 	 * 
 	 */
 	public void updateLogin(UserLogin login) throws ServiceException {
 		Authentication current = sessionHelper.getAuthentication();
-		if (current == null || current.getUserId() != login.getUserId()) {
+		if (current == null) {
+			throw new UnauthorizedOperationException("The requested user update is unauthorized!");
+		}
+		if (current.getUserId() != login.getUserId()) {
 			throw new ForbiddenOperationException("The requested user update is forbidden!");
 		}
 		String username = login.getUsername();
-		Pattern pattern = Pattern.compile(SECURITY_USERNAME_REGEX);
+		Pattern pattern = Pattern.compile(Constants.SECURITY_USERNAME_REGEX);
 		if (!pattern.matcher(username).matches()) {
 			throw new InvalidRequestException("The given username does not abide by the requirements!");
 		}
@@ -154,14 +162,14 @@ public class UserLoginActionService {
 	 * This method returns the currently logged in user's {@link UserLogin}.
 	 * 
 	 * @return The current {@link UserLogin}
-	 * @throws ForbiddenOperationException If there is no active session
-	 * @throws InternalErrorException      If an error occurs while retrieving the
-	 *                                     user
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws InternalErrorException         If an error occurs while retrieving
+	 *                                        the user
 	 */
 	public UserLogin getCurrentLogin() throws ServiceException {
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
-			throw new ForbiddenOperationException("Logging out with no active session is forbidden!");
+			throw new UnauthorizedOperationException("The requested current user request is unauthorized!");
 		}
 		int userId = current.getUserId();
 		UserLogin login;
@@ -220,12 +228,12 @@ public class UserLoginActionService {
 	/**
 	 * Sets the {@link Authentication} in the respective user session to NULL.
 	 * 
-	 * @throws ForbiddenOperationException If there is no active session
+	 * @throws UnauthorizedOperationException If there is no active session
 	 */
 	public void logoutUser() throws ServiceException {
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
-			throw new ForbiddenOperationException("Logging out with no active session is forbidden!");
+			throw new UnauthorizedOperationException("Logging out with no active session is not allowed!");
 		}
 		sessionHelper.setAuthentication(null);
 	}

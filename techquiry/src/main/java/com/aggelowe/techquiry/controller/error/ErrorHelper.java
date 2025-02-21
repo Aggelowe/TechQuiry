@@ -12,6 +12,7 @@ import com.aggelowe.techquiry.service.exception.EntityNotFoundException;
 import com.aggelowe.techquiry.service.exception.ForbiddenOperationException;
 import com.aggelowe.techquiry.service.exception.InvalidRequestException;
 import com.aggelowe.techquiry.service.exception.ServiceException;
+import com.aggelowe.techquiry.service.exception.UnauthorizedOperationException;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -25,6 +26,18 @@ import lombok.extern.log4j.Log4j2;
 @ControllerAdvice
 @Log4j2
 public class ErrorHelper {
+
+	/**
+	 * This method is invoked when a controller method throws an exception for a
+	 * unauthorized operation.
+	 * 
+	 * @param exception The causing exception
+	 * @return The constructed error response
+	 */
+	@ExceptionHandler(UnauthorizedOperationException.class)
+	public ResponseEntity<ErrorResponse> resolveUnauthorized(Exception exception) {
+		return resolveException(exception, HttpStatus.UNAUTHORIZED);
+	}
 
 	/**
 	 * This method is invoked when a controller method throws an exception for a

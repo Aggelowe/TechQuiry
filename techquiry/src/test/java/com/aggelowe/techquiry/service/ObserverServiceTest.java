@@ -29,8 +29,8 @@ import com.aggelowe.techquiry.entity.Inquiry;
 import com.aggelowe.techquiry.entity.UserLogin;
 import com.aggelowe.techquiry.service.action.ObserverActionService;
 import com.aggelowe.techquiry.service.exception.EntityNotFoundException;
-import com.aggelowe.techquiry.service.exception.ForbiddenOperationException;
 import com.aggelowe.techquiry.service.exception.InvalidRequestException;
+import com.aggelowe.techquiry.service.exception.UnauthorizedOperationException;
 import com.aggelowe.techquiry.service.session.Authentication;
 import com.aggelowe.techquiry.service.session.SessionHelper;
 
@@ -166,7 +166,7 @@ class ObserverServiceTest {
 	@Test
 	void testCheckObserverException() {
 		sessionHelper.setAuthentication(null);
-		assertThrowsExactly(ForbiddenOperationException.class, () -> observerActionService.checkObserver(0));
+		assertThrowsExactly(UnauthorizedOperationException.class, () -> observerActionService.checkObserver(0));
 	}
 
 	@Test
@@ -189,7 +189,7 @@ class ObserverServiceTest {
 	@Test
 	void testCreateObserverException() {
 		sessionHelper.setAuthentication(null);
-		assertThrowsExactly(ForbiddenOperationException.class, () -> observerActionService.createObserver(2));
+		assertThrowsExactly(UnauthorizedOperationException.class, () -> observerActionService.createObserver(2));
 		sessionHelper.setAuthentication(new Authentication(1));
 		assertThrowsExactly(EntityNotFoundException.class, () -> observerActionService.createObserver(3));
 		assertThrowsExactly(InvalidRequestException.class, () -> observerActionService.createObserver(1));
@@ -213,7 +213,7 @@ class ObserverServiceTest {
 	@Test
 	void testDeleteObserverException() {
 		sessionHelper.setAuthentication(null);
-		assertThrowsExactly(ForbiddenOperationException.class, () -> observerActionService.deleteObserver(1));
+		assertThrowsExactly(UnauthorizedOperationException.class, () -> observerActionService.deleteObserver(1));
 		sessionHelper.setAuthentication(new Authentication(1));
 		assertThrowsExactly(EntityNotFoundException.class, () -> observerActionService.deleteObserver(2));
 	}

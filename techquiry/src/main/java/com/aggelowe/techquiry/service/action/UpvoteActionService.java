@@ -9,10 +9,10 @@ import com.aggelowe.techquiry.entity.Response;
 import com.aggelowe.techquiry.entity.Upvote;
 import com.aggelowe.techquiry.service.UpvoteService;
 import com.aggelowe.techquiry.service.exception.EntityNotFoundException;
-import com.aggelowe.techquiry.service.exception.ForbiddenOperationException;
 import com.aggelowe.techquiry.service.exception.InternalErrorException;
 import com.aggelowe.techquiry.service.exception.InvalidRequestException;
 import com.aggelowe.techquiry.service.exception.ServiceException;
+import com.aggelowe.techquiry.service.exception.UnauthorizedOperationException;
 import com.aggelowe.techquiry.service.session.Authentication;
 import com.aggelowe.techquiry.service.session.SessionHelper;
 
@@ -53,14 +53,14 @@ public class UpvoteActionService {
 	 * 
 	 * @param responseId The response id of the response to check
 	 * @return Whether the logged in user is upvoting the given response
-	 * @throws ForbiddenOperationException If the current user is not logged in
-	 * @throws InternalErrorException      If an internal error occurs while
-	 *                                     checking the upvote
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws InternalErrorException         If an internal error occurs while
+	 *                                        checking the upvote
 	 */
 	public boolean checkUpvote(int responseId) throws ServiceException {
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
-			throw new ForbiddenOperationException("The requested upvote check is forbidden!");
+			throw new UnauthorizedOperationException("The requested upvote check is unauthorized!");
 		}
 		Upvote upvote = new Upvote(responseId, current.getUserId());
 		try {
@@ -75,17 +75,17 @@ public class UpvoteActionService {
 	 * response id and the user id of the current user session.
 	 *
 	 * @param responseId The responseId of the response to upvote
-	 * @throws ForbiddenOperationException If the current user is not logged in
-	 * @throws EntityNotFoundException     If the given response id does not
-	 *                                     correspond to a response
-	 * @throws InvalidRequestException     If the given upvote already exists
-	 * @throws InternalErrorException      If an internal error occurs while
-	 *                                     creating the upvote
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws EntityNotFoundException        If the given response id does not
+	 *                                        correspond to a response
+	 * @throws InvalidRequestException        If the given upvote already exists
+	 * @throws InternalErrorException         If an internal error occurs while
+	 *                                        creating the upvote
 	 */
 	public void createUpvote(int responseId) throws ServiceException {
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
-			throw new ForbiddenOperationException("The requested upvote creation is forbidden!");
+			throw new UnauthorizedOperationException("The requested upvote creation is unauthorized!");
 		}
 		try {
 			Response response = responseDao.select(responseId);
@@ -107,15 +107,15 @@ public class UpvoteActionService {
 	 * response id and the user id of the current user session.
 	 *
 	 * @param responseId The responseId of the response to stop upvoting
-	 * @throws ForbiddenOperationException If the current user is not logged in
-	 * @throws EntityNotFoundException     If the requested upvote does not exist
-	 * @throws InternalErrorException      If an internal error occurred while
-	 *                                     deleting the upvote
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws EntityNotFoundException        If the requested upvote does not exist
+	 * @throws InternalErrorException         If an internal error occurred while
+	 *                                        deleting the upvote
 	 */
 	public void deleteUpvote(int responseId) throws ServiceException {
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
-			throw new ForbiddenOperationException("The requested upvote deletion is forbidden!");
+			throw new UnauthorizedOperationException("The requested upvote deletion is unauthorized!");
 		}
 		Upvote upvote = new Upvote(responseId, current.getUserId());
 		try {

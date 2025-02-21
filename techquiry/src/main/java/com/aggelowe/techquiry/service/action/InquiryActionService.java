@@ -15,6 +15,7 @@ import com.aggelowe.techquiry.service.exception.ForbiddenOperationException;
 import com.aggelowe.techquiry.service.exception.InternalErrorException;
 import com.aggelowe.techquiry.service.exception.InvalidRequestException;
 import com.aggelowe.techquiry.service.exception.ServiceException;
+import com.aggelowe.techquiry.service.exception.UnauthorizedOperationException;
 import com.aggelowe.techquiry.service.session.Authentication;
 import com.aggelowe.techquiry.service.session.SessionHelper;
 
@@ -56,18 +57,19 @@ public class InquiryActionService {
 	 * the database.
 	 * 
 	 * @param inquiry The inquiry object to create
-	 * @throws ForbiddenOperationException If the current user is not logged in
-	 * @throws EntityNotFoundException     If the given user id does not correspond
-	 *                                     to a user login
-	 * @throws InvalidRequestException     If the given title or content are empty
-	 * @throws InternalErrorException      If an internal error occurs while
-	 *                                     creating the user data
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws EntityNotFoundException        If the given user id does not
+	 *                                        correspond to a user login
+	 * @throws InvalidRequestException        If the given title or content are
+	 *                                        empty
+	 * @throws InternalErrorException         If an internal error occurs while
+	 *                                        creating the user data
 	 * 
 	 */
 	public int createInquiry(Inquiry inquiry) throws ServiceException {
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
-			throw new ForbiddenOperationException("The requested inquiry creation is forbidden!");
+			throw new UnauthorizedOperationException("The requested inquiry creation is unauthorized!");
 		}
 		String title = inquiry.getTitle();
 		String content = inquiry.getContent();
@@ -86,20 +88,25 @@ public class InquiryActionService {
 	 * This method deletes the inquiry with the specified inquiry id.
 	 *
 	 * @param id The inquiry id
-	 * @throws ForbiddenOperationException If the current user does not have the
-	 *                                     given user id
-	 * @throws EntityNotFoundException     If the requested inquiry does not exist
-	 * @throws InternalErrorException      If an internal error occurred while
-	 *                                     deleting the inquiry
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws ForbiddenOperationException    If the current user does not have the
+	 *                                        given user id
+	 * @throws EntityNotFoundException        If the requested inquiry does not
+	 *                                        exist
+	 * @throws InternalErrorException         If an internal error occurred while
+	 *                                        deleting the inquiry
 	 */
 	public void deleteInquiry(int id) throws ServiceException {
+		Authentication current = sessionHelper.getAuthentication();
+		if (current == null) {
+			throw new UnauthorizedOperationException("The requested inquiry creation is unauthorized!");
+		}
 		try {
 			Inquiry inquiry = inquiryDao.select(id);
 			if (inquiry == null) {
 				throw new EntityNotFoundException("The requested inquiry does not exist!");
 			}
-			Authentication current = sessionHelper.getAuthentication();
-			if (current == null || current.getUserId() != inquiry.getUserId()) {
+			if (current.getUserId() != inquiry.getUserId()) {
 				throw new ForbiddenOperationException("The requested inquiry deletion is forbidden!");
 			}
 			inquiryDao.delete(id);
@@ -114,19 +121,21 @@ public class InquiryActionService {
 	 * carried over to the database.
 	 * 
 	 * @param inquiry The inquiry object
-	 * @throws ForbiddenOperationException If the current user does not have the
-	 *                                     user id contained in the inquiry
-	 *                                     contained in the database
-	 * @throws EntityNotFoundException     If the given id does not correspond to an
-	 *                                     inquiry id
-	 * @throws InvalidRequestException     If the given title or content are empty
-	 * @throws InternalErrorException      If an internal error occurred while
-	 *                                     updating the inquiry
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws ForbiddenOperationException    If the current user does not have the
+	 *                                        user id contained in the inquiry
+	 *                                        contained in the database
+	 * @throws EntityNotFoundException        If the given id does not correspond to
+	 *                                        an inquiry id
+	 * @throws InvalidRequestException        If the given title or content are
+	 *                                        empty
+	 * @throws InternalErrorException         If an internal error occurred while
+	 *                                        updating the inquiry
 	 */
 	public void updateInquiry(Inquiry inquiry) throws ServiceException {
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
-			throw new ForbiddenOperationException("The requested inquiry update is forbidden!");
+			throw new UnauthorizedOperationException("The requested inquiry update is unauthorized!");
 		}
 		String title = inquiry.getTitle();
 		String content = inquiry.getContent();

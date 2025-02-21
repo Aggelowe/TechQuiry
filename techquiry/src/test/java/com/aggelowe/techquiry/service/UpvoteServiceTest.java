@@ -29,8 +29,8 @@ import com.aggelowe.techquiry.entity.Response;
 import com.aggelowe.techquiry.entity.UserLogin;
 import com.aggelowe.techquiry.service.action.UpvoteActionService;
 import com.aggelowe.techquiry.service.exception.EntityNotFoundException;
-import com.aggelowe.techquiry.service.exception.ForbiddenOperationException;
 import com.aggelowe.techquiry.service.exception.InvalidRequestException;
+import com.aggelowe.techquiry.service.exception.UnauthorizedOperationException;
 import com.aggelowe.techquiry.service.session.Authentication;
 import com.aggelowe.techquiry.service.session.SessionHelper;
 
@@ -184,7 +184,7 @@ class UpvoteServiceTest {
 	@Test
 	void testCheckUpvoteException() {
 		sessionHelper.setAuthentication(null);
-		assertThrowsExactly(ForbiddenOperationException.class, () -> upvoteActionService.checkUpvote(1));
+		assertThrowsExactly(UnauthorizedOperationException.class, () -> upvoteActionService.checkUpvote(1));
 	}
 
 	@Test
@@ -207,7 +207,7 @@ class UpvoteServiceTest {
 	@Test
 	void testCreateUpvoteException() {
 		sessionHelper.setAuthentication(null);
-		assertThrowsExactly(ForbiddenOperationException.class, () -> upvoteActionService.createUpvote(2));
+		assertThrowsExactly(UnauthorizedOperationException.class, () -> upvoteActionService.createUpvote(2));
 		sessionHelper.setAuthentication(new Authentication(1));
 		assertThrowsExactly(EntityNotFoundException.class, () -> upvoteActionService.createUpvote(3));
 		assertThrowsExactly(InvalidRequestException.class, () -> upvoteActionService.createUpvote(1));
@@ -231,7 +231,7 @@ class UpvoteServiceTest {
 	@Test
 	void testDeleteUpvoteException() {
 		sessionHelper.setAuthentication(null);
-		assertThrowsExactly(ForbiddenOperationException.class, () -> upvoteActionService.deleteUpvote(0));
+		assertThrowsExactly(UnauthorizedOperationException.class, () -> upvoteActionService.deleteUpvote(0));
 		sessionHelper.setAuthentication(new Authentication(0));
 		assertThrowsExactly(EntityNotFoundException.class, () -> upvoteActionService.deleteUpvote(2));
 	}
