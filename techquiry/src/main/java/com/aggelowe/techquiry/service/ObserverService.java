@@ -16,6 +16,7 @@ import com.aggelowe.techquiry.service.exception.InternalErrorException;
 import com.aggelowe.techquiry.service.exception.ServiceException;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * The {@link ObserverService} class provides methods for managing observer
@@ -26,6 +27,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class ObserverService {
 
 	/**
@@ -57,6 +59,7 @@ public class ObserverService {
 	 *                                 the count
 	 */
 	public int getObserverCountByInquiryId(int inquiryId) throws ServiceException {
+		log.debug("Getting observer count (inquiryId=%s)".formatted(inquiryId));
 		Inquiry inquiry;
 		try {
 			inquiry = inquiryDao.select(inquiryId);
@@ -85,6 +88,7 @@ public class ObserverService {
 	 *                                 the observer entries
 	 */
 	public List<UserLogin> getObserverUserLoginListByInquiryId(int inquiryId) throws ServiceException {
+		log.debug("Getting observer user login list (inquiryId=%s)".formatted(inquiryId));
 		Inquiry inquiry;
 		try {
 			inquiry = inquiryDao.select(inquiryId);
@@ -113,6 +117,7 @@ public class ObserverService {
 	 *                                 the observer entries
 	 */
 	public List<Inquiry> getObservedInquiryListByUserId(int userId) throws ServiceException {
+		log.debug("Getting observed inquiry list (userId=%s)".formatted(userId));
 		UserLogin userLogin;
 		try {
 			userLogin = userLoginDao.select(userId);

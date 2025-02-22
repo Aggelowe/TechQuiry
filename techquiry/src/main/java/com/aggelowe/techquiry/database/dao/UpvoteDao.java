@@ -76,7 +76,7 @@ public final class UpvoteDao {
 	 * @throws DatabaseException If an error occurs while checking for the upvote
 	 */
 	public boolean check(Upvote upvote) throws DatabaseException {
-		log.debug("Checking whether the upvote " + upvote + " exists");
+		log.debug("Selecting upvote exists (upvote=%s)".formatted(upvote));
 		int responseId = upvote.getResponseId();
 		int userId = upvote.getUserId();
 		List<LocalResult> results = runner.runScript(UPVOTE_CHECK_SCRIPT, responseId, userId);
@@ -105,7 +105,7 @@ public final class UpvoteDao {
 	 *                           count
 	 */
 	public int countFromResponseId(int responseId) throws DatabaseException {
-		log.debug("Getting upvote entry count");
+		log.debug("Selecting upvote entry count (responseId=%s)".formatted(responseId));
 		List<LocalResult> results = runner.runScript(UPVOTE_COUNT_RESPONSE_ID_SCRIPT, responseId);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The first statement in " + UPVOTE_COUNT_RESPONSE_ID_SCRIPT + " did not yeild a result!");
@@ -130,7 +130,7 @@ public final class UpvoteDao {
 	 * @throws DatabaseException If an error occurs while deleting the upvote entry
 	 */
 	public void delete(Upvote upvote) throws DatabaseException {
-		log.debug("Deleting upvote with information " + upvote);
+		log.debug("Deleting upvote entry (upvote=%s)".formatted(upvote));
 		int responseId = upvote.getResponseId();
 		int userId = upvote.getUserId();
 		runner.runScript(UPVOTE_DELETE_SCRIPT, responseId, userId);
@@ -144,7 +144,7 @@ public final class UpvoteDao {
 	 * @throws DatabaseException If an error occurs while inserting the upvote entry
 	 */
 	public void insert(Upvote upvote) throws DatabaseException {
-		log.debug("Inserting upvote with information " + upvote);
+		log.debug("Inserting upvote entry (upvote=%s)".formatted(upvote));
 		int responseId = upvote.getResponseId();
 		int userId = upvote.getUserId();
 		runner.runScript(UPVOTE_INSERT_SCRIPT, responseId, userId);
@@ -161,7 +161,7 @@ public final class UpvoteDao {
 	 *                           information
 	 */
 	public List<UserLogin> selectFromResponseId(int responseId) throws DatabaseException {
-		log.debug("Getting upvotes with response id " + responseId);
+		log.debug("Selecting upvote entries (responseId=%s)".formatted(responseId));
 		List<LocalResult> results = runner.runScript(UPVOTE_SELECT_RESPONSE_ID_SCRIPT, responseId);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The first statement in " + UPVOTE_SELECT_RESPONSE_ID_SCRIPT + " did not yeild results!");
@@ -201,7 +201,7 @@ public final class UpvoteDao {
 	 *                           information
 	 */
 	public List<Response> selectFromUserId(int userId) throws DatabaseException {
-		log.debug("Getting upvotes with user id " + userId);
+		log.debug("Selecting upvote entries (userId=%s)".formatted(userId));
 		List<LocalResult> results = runner.runScript(UPVOTE_SELECT_USER_ID_SCRIPT, userId);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The first statement in " + UPVOTE_SELECT_USER_ID_SCRIPT + " did not yeild results!");

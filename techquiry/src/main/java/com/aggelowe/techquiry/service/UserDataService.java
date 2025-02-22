@@ -10,6 +10,7 @@ import com.aggelowe.techquiry.service.exception.InternalErrorException;
 import com.aggelowe.techquiry.service.exception.ServiceException;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * The {@link UserDataService} class provides methods for managing user data
@@ -20,6 +21,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class UserDataService {
 
 	/**
@@ -27,20 +29,21 @@ public class UserDataService {
 	 * objects.
 	 */
 	private final UserDataDao userDataDao;
-	
+
 	/**
 	 * This method returns the user data with the given user id.
 	 *
-	 * @param id The user id
+	 * @param userId The user id
 	 * @return The user data with the given id
 	 * @throws EntityNotFoundException If the requested user data do not exist
 	 * @throws InternalErrorException  If an internal error occurs while retrieving
 	 *                                 the user data
 	 */
-	public UserData getDataByUserId(int id) throws ServiceException {
+	public UserData getDataByUserId(int userId) throws ServiceException {
+		log.debug("Getting user data (userId=%s)".formatted(userId));
 		UserData data;
 		try {
-			data = userDataDao.select(id);
+			data = userDataDao.select(userId);
 		} catch (DatabaseException exception) {
 			throw new InternalErrorException("An internal error occured while getting the user data!", exception);
 		}

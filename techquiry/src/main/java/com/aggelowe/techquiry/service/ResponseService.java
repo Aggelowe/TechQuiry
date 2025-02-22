@@ -14,6 +14,7 @@ import com.aggelowe.techquiry.service.exception.InternalErrorException;
 import com.aggelowe.techquiry.service.exception.ServiceException;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * The {@link ResponseService} class provides methods for managing response
@@ -24,6 +25,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class ResponseService {
 
 	/**
@@ -49,6 +51,7 @@ public class ResponseService {
 	 *                                 the count
 	 */
 	public int getResponseCountByInquiryId(int inquiryId) throws ServiceException {
+		log.debug("Getting response count (inquiryId=%s)".formatted(inquiryId));
 		Inquiry inquiry;
 		try {
 			inquiry = inquiryDao.select(inquiryId);
@@ -77,6 +80,7 @@ public class ResponseService {
 	 *                                 the responses
 	 */
 	public List<Response> getResponseListByInquiryId(int inquiryId) throws ServiceException {
+		log.debug("Getting response list (inquiryId=%s)".formatted(inquiryId));
 		Inquiry inquiry;
 		try {
 			inquiry = inquiryDao.select(inquiryId);
@@ -103,6 +107,7 @@ public class ResponseService {
 	 *                                 the response
 	 */
 	public Response getResponseByResponseId(int responseId) throws ServiceException {
+		log.debug("Getting response (responseId=%s)".formatted(responseId));
 		Response response;
 		try {
 			response = responseDao.select(responseId);

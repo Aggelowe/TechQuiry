@@ -76,7 +76,7 @@ public final class UserLoginDao {
 	 * @throws DatabaseException If an error occurs while retrieving the user count
 	 */
 	public int count() throws DatabaseException {
-		log.debug("Getting user login entry count");
+		log.debug("Selecting user login entry count");
 		List<LocalResult> results = runner.runScript(USER_LOGIN_COUNT_SCRIPT);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + USER_LOGIN_COUNT_SCRIPT + " did not yeild results!");
@@ -97,13 +97,13 @@ public final class UserLoginDao {
 	 * This method deletes the user login entry with the provided user id from the
 	 * application database.
 	 * 
-	 * @param id The id of the user login entry
+	 * @param userId The id of the user login entry
 	 * @throws DatabaseException If an error occurs while deleting the user login
 	 *                           entry
 	 */
-	public void delete(int id) throws DatabaseException {
-		log.debug("Deleting user with id " + id);
-		runner.runScript(USER_LOGIN_DELETE_SCRIPT, id);
+	public void delete(int userId) throws DatabaseException {
+		log.debug("Deleting user login entry (userId=%s)".formatted(userId));
+		runner.runScript(USER_LOGIN_DELETE_SCRIPT, userId);
 	}
 
 	/**
@@ -117,7 +117,7 @@ public final class UserLoginDao {
 	 *                           entry
 	 */
 	public int insert(UserLogin userLogin) throws DatabaseException {
-		log.debug("Inserting user login with information " + userLogin);
+		log.debug("Inserting user login entry (userLogin=%s)".formatted(userLogin));
 		String username = userLogin.getUsername();
 		byte[] passwordHash = userLogin.getPasswordHash();
 		byte[] passwordSalt = userLogin.getPasswordSalt();
@@ -151,7 +151,7 @@ public final class UserLoginDao {
 	 *                           information
 	 */
 	public List<UserLogin> range(int count, int offset) throws DatabaseException {
-		log.debug("Getting " + count + " user login entries with offset " + offset);
+		log.debug("Selecting user login entries (count=%s, offset=%s)".formatted(count, offset));
 		List<LocalResult> results = runner.runScript(USER_LOGIN_RANGE_SCRIPT, offset, count);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + USER_LOGIN_RANGE_SCRIPT + " did not yeild results!");
@@ -184,14 +184,14 @@ public final class UserLoginDao {
 	 * This method returns and retrieves the only {@link UserLogin} object with the
 	 * given user id from the application database.
 	 * 
-	 * @param id The user id
+	 * @param userId The user id
 	 * @return The user login with the given id
 	 * @throws DatabaseException If an error occurs while retrieving the user login
 	 *                           information
 	 */
-	public UserLogin select(int id) throws DatabaseException {
-		log.debug("Getting user login with user id " + id);
-		List<LocalResult> results = runner.runScript(USER_LOGIN_SELECT_SCRIPT, id);
+	public UserLogin select(int userId) throws DatabaseException {
+		log.debug("Selecting user login entry (userId=%s)".formatted(userId));
+		List<LocalResult> results = runner.runScript(USER_LOGIN_SELECT_SCRIPT, userId);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + USER_LOGIN_SELECT_SCRIPT + " did not yeild results!");
 		}
@@ -215,7 +215,7 @@ public final class UserLoginDao {
 		} catch (IllegalArgumentException exception) {
 			throw new DataAccessException("There was an error while retrieving the user login information!", exception);
 		}
-		UserLogin userLogin = new UserLogin(id, username, passwordHash, passwordSalt);
+		UserLogin userLogin = new UserLogin(userId, username, passwordHash, passwordSalt);
 		return userLogin;
 	}
 
@@ -229,7 +229,7 @@ public final class UserLoginDao {
 	 *                           information
 	 */
 	public UserLogin selectFromUsername(String username) throws DatabaseException {
-		log.debug("Getting user login with username " + username);
+		log.debug("Selecting user login entry (username=%s)".formatted(username));
 		List<LocalResult> results = runner.runScript(USER_LOGIN_SELECT_USERNAME_SCRIPT, username);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + USER_LOGIN_SELECT_USERNAME_SCRIPT + " did not yeild results!");
@@ -268,7 +268,7 @@ public final class UserLoginDao {
 	 *                           entry
 	 */
 	public void update(UserLogin userLogin) throws DatabaseException {
-		log.debug("Updating user login with data " + userLogin);
+		log.debug("Updating user login entry (userLogin=%s)".formatted(userLogin));
 		int id = userLogin.getUserId();
 		String username = userLogin.getUsername();
 		byte[] passwordHash = userLogin.getPasswordHash();

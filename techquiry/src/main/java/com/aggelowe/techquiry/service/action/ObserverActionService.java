@@ -17,6 +17,7 @@ import com.aggelowe.techquiry.service.session.Authentication;
 import com.aggelowe.techquiry.service.session.SessionHelper;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * The {@link ObserverActionService} class is a component of
@@ -28,6 +29,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class ObserverActionService {
 
 	/**
@@ -59,6 +61,7 @@ public class ObserverActionService {
 	 *                                        checking the observer
 	 */
 	public boolean checkObserver(int inquiryId) throws ServiceException {
+		log.debug("Checking observer (inquiryId=%s)".formatted(inquiryId));
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
 			throw new UnauthorizedOperationException("The requested observer check is unauthorized!");
@@ -84,6 +87,7 @@ public class ObserverActionService {
 	 *                                        creating the observer
 	 */
 	public void createObserver(int inquiryId) throws ServiceException {
+		log.debug("Creating observer (inquiryId=%s)".formatted(inquiryId));
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
 			throw new UnauthorizedOperationException("The requested observer creation is unauthorized!");
@@ -115,6 +119,7 @@ public class ObserverActionService {
 	 *                                        deleting the observer
 	 */
 	public void deleteObserver(int inquiryId) throws ServiceException {
+		log.debug("Deleting observer (inquiryId=%s)".formatted(inquiryId));
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
 			throw new UnauthorizedOperationException("The requested observer deletion is unauthorized!");

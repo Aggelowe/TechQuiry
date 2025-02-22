@@ -16,6 +16,7 @@ import com.aggelowe.techquiry.service.exception.InternalErrorException;
 import com.aggelowe.techquiry.service.exception.ServiceException;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * The {@link UpvoteService} class provides methods for managing upvote
@@ -26,6 +27,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class UpvoteService {
 
 	/**
@@ -57,6 +59,7 @@ public class UpvoteService {
 	 *                                 the count
 	 */
 	public int getUpvoteCountByResponseId(int responseId) throws ServiceException {
+		log.debug("Getting upvote count (responseId=%s)".formatted(responseId));
 		Response response;
 		try {
 			response = responseDao.select(responseId);
@@ -85,6 +88,7 @@ public class UpvoteService {
 	 *                                 the upvote entries
 	 */
 	public List<UserLogin> getUpvoteUserLoginListByResponseId(int responseId) throws ServiceException {
+		log.debug("Getting upvoter user login list (responseId=%s)".formatted(responseId));
 		Response response;
 		try {
 			response = responseDao.select(responseId);
@@ -113,6 +117,7 @@ public class UpvoteService {
 	 *                                 the upvote entries
 	 */
 	public List<Response> getUpvotedResponseListByUserId(int userId) throws ServiceException {
+		log.debug("Getting upvoted response list (userId=%s)".formatted(userId));
 		UserLogin userLogin;
 		try {
 			userLogin = userLoginDao.select(userId);

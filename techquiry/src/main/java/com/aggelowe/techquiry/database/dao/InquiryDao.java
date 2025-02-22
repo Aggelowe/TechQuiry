@@ -82,7 +82,7 @@ public final class InquiryDao {
 	 *                           count
 	 */
 	public int count() throws DatabaseException {
-		log.debug("Getting inquiry entry count");
+		log.debug("Selecting inquiry entry count");
 		List<LocalResult> results = runner.runScript(INQUIRY_COUNT_SCRIPT);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + INQUIRY_COUNT_SCRIPT + " did not yeild results!");
@@ -103,12 +103,12 @@ public final class InquiryDao {
 	 * This method deletes the inquiry with the provided inquiry id from the
 	 * application database.
 	 * 
-	 * @param id The id of the inquiry entry
+	 * @param inquiryId The id of the inquiry entry
 	 * @throws DatabaseException If an error occurs while deleting the inquiry entry
 	 */
-	public void delete(int id) throws DatabaseException {
-		log.debug("Deleting inquiry with id " + id);
-		runner.runScript(INQUIRY_DELETE_SCRIPT, id);
+	public void delete(int inquiryId) throws DatabaseException {
+		log.debug("Deleting inquiry entry (inquiryId=%s)".formatted(inquiryId));
+		runner.runScript(INQUIRY_DELETE_SCRIPT, inquiryId);
 	}
 
 	/**
@@ -122,7 +122,7 @@ public final class InquiryDao {
 	 *                           entry
 	 */
 	public int insert(Inquiry inquiry) throws DatabaseException {
-		log.debug("Inserting inquiry with information " + inquiry);
+		log.debug("Inserting inquiry entry (inquiry=%s)".formatted(inquiry));
 		int userId = inquiry.getUserId();
 		String title = inquiry.getTitle();
 		String content = inquiry.getContent();
@@ -155,7 +155,7 @@ public final class InquiryDao {
 	 *                           information
 	 */
 	public List<Inquiry> range(int count, int offset) throws DatabaseException {
-		log.debug("Getting " + count + " inquiry entries with offset " + offset);
+		log.debug("Selecting inquiry entries (count=%s, offset=%s)".formatted(count, offset));
 		List<LocalResult> results = runner.runScript(INQUIRY_RANGE_SCRIPT, offset, count);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + INQUIRY_RANGE_SCRIPT + " did not yeild results!");
@@ -187,7 +187,7 @@ public final class InquiryDao {
 	 *                           information
 	 */
 	public List<Inquiry> selectFromUserIdNonAnonymous(int userId) throws DatabaseException {
-		log.debug("Getting responses with user id " + userId);
+		log.debug("Selecting non-anonymous inquiry entries (userId=%s)".formatted(userId));
 		List<LocalResult> results = runner.runScript(INQUIRY_SELECT_USER_ID_NON_ANONYMOUS_SCRIPT, userId);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + INQUIRY_SELECT_USER_ID_NON_ANONYMOUS_SCRIPT + " did not yeild results!");
@@ -218,7 +218,7 @@ public final class InquiryDao {
 	 *                           information
 	 */
 	public List<Inquiry> selectFromUserId(int userId) throws DatabaseException {
-		log.debug("Getting responses with user id " + userId);
+		log.debug("Selecting inquiry entries (userId=%s)".formatted(userId));
 		List<LocalResult> results = runner.runScript(INQUIRY_SELECT_USER_ID_SCRIPT, userId);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + INQUIRY_SELECT_USER_ID_SCRIPT + " did not yeild results!");
@@ -243,14 +243,14 @@ public final class InquiryDao {
 	 * This method returns and retrieves the only {@link Inquiry} object with the
 	 * given inquiry id from the application database.
 	 * 
-	 * @param id The inquiry id
+	 * @param inquiryId The inquiry id
 	 * @return The inquiry with the given id
 	 * @throws DatabaseException If an error occurs while retrieving the inquiry
 	 *                           information
 	 */
-	public Inquiry select(int id) throws DatabaseException {
-		log.debug("Getting inquiry with inquiry id " + id);
-		List<LocalResult> results = runner.runScript(INQUIRY_SELECT_SCRIPT, id);
+	public Inquiry select(int inquiryId) throws DatabaseException {
+		log.debug("Selecting inquiry entry (inquiryId=%s)".formatted(inquiryId));
+		List<LocalResult> results = runner.runScript(INQUIRY_SELECT_SCRIPT, inquiryId);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + INQUIRY_SELECT_SCRIPT + " did not yeild results!");
 		}
@@ -267,7 +267,7 @@ public final class InquiryDao {
 		String title = (String) row.get("title");
 		String content = (String) row.get("content");
 		boolean anonymous = (int) row.get("anonymous") == 1;
-		Inquiry inquiry = new Inquiry(id, userId, title, content, anonymous);
+		Inquiry inquiry = new Inquiry(inquiryId, userId, title, content, anonymous);
 		return inquiry;
 	}
 
@@ -280,7 +280,7 @@ public final class InquiryDao {
 	 * @throws DatabaseException If an error occurs while updating the inquiry entry
 	 */
 	public void update(Inquiry inquiry) throws DatabaseException {
-		log.debug("Updating inquiry with data " + inquiry);
+		log.debug("Updating inquiry entry (inquiry=%s)".formatted(inquiry));
 		int id = inquiry.getInquiryId();
 		int userId = inquiry.getUserId();
 		String title = inquiry.getTitle();

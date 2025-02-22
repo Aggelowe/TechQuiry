@@ -146,7 +146,7 @@ public class UserController {
 	 */
 	@PostMapping("/range/{count}/{page}")
 	public ResponseEntity<List<UserLoginDto>> getRange(@PathVariable int count, @PathVariable int page) throws ServiceException {
-		log.debug("Requested " + count + " user login range at page " + page);
+		log.debug("Requested user login range (count=%s, page=%s)".formatted(count, page));
 		List<UserLogin> entities = userLoginService.getLoginRange(count, page);
 		List<UserLoginDto> range = entities.stream().map(userLoginMapper::toDto).toList();
 		return ResponseEntity.ok(range);
@@ -164,7 +164,7 @@ public class UserController {
 	 */
 	@PostMapping("/create")
 	public ResponseEntity<Integer> createUserLogin(@RequestBody UserLoginDto userLoginDto) throws ServiceException, MapperException {
-		log.debug("Requested user login creation with " + userLoginDto);
+		log.debug("Requested user login creation (userLoginDto=%s)".formatted(userLoginDto));
 		UserLogin login = userLoginMapper.toEntity(userLoginDto);
 		int userId = userLoginActionService.createLogin(login);
 		return ResponseEntity.ok(userId);
@@ -195,7 +195,7 @@ public class UserController {
 	 */
 	@PostMapping("/login")
 	public ResponseEntity<UserLoginDto> login(@RequestBody UserLoginDto userLoginDto) throws ServiceException {
-		log.debug("Login requested with credentials " + userLoginDto);
+		log.debug("Session login requested (userLoginDto=%s)".formatted(userLoginDto));
 		String username = userLoginDto.getUsername();
 		String password = userLoginDto.getPassword();
 		UserLogin entity = userLoginActionService.authenticateUser(username, password);
@@ -210,7 +210,7 @@ public class UserController {
 	 */
 	@PostMapping("/logout")
 	public ResponseEntity<Void> logout() throws ServiceException {
-		log.debug("Logout requested");
+		log.debug("Session logout requested");
 		userLoginActionService.logoutUser();
 		return ResponseEntity.noContent().build();
 	}
@@ -229,7 +229,7 @@ public class UserController {
 	 */
 	@PostMapping("/data/create")
 	public ResponseEntity<Void> createUserData(@RequestBody UserDataDto userDataDto) throws ServiceException, MapperException {
-		log.debug("Requested user data creation with " + userDataDto);
+		log.debug("Requested user data creation (userDataDto=%s)".formatted(userDataDto));
 		UserData data = userDataMapper.toEntity(userDataDto);
 		userDataActionService.createData(data);
 		return ResponseEntity.noContent().build();
@@ -245,7 +245,7 @@ public class UserController {
 	 */
 	@PostMapping("/u/{username}")
 	public ResponseEntity<UserLoginDto> getUserLogin(@PathVariable String username) throws ServiceException {
-		log.debug("Requested user login with username " + username);
+		log.debug("Requested user login (username=%s)".formatted(username));
 		UserLogin entity = userLoginService.getLoginByUsername(username);
 		UserLoginDto loginDto = userLoginMapper.toDto(entity);
 		return ResponseEntity.ok(loginDto);
@@ -261,7 +261,7 @@ public class UserController {
 	 */
 	@PostMapping("/id/{userId}")
 	public ResponseEntity<UserLoginDto> getUserLogin(@PathVariable int userId) throws ServiceException {
-		log.debug("Requested user login with id " + userId);
+		log.debug("Requested user login (userId=%s)".formatted(userId));
 		UserLogin entity = userLoginService.getLoginByUserId(userId);
 		UserLoginDto loginDto = userLoginMapper.toDto(entity);
 		return ResponseEntity.ok(loginDto);
@@ -275,7 +275,7 @@ public class UserController {
 	 */
 	@PostMapping("/id/{userId}/delete")
 	public ResponseEntity<Void> deleteUserLogin(@PathVariable int userId) throws ServiceException {
-		log.debug("Requested user login deletion with user id " + userId);
+		log.debug("Requested user login deletion (userId=%s)".formatted(userId));
 		userLoginActionService.deleteLogin(userId);
 		return ResponseEntity.noContent().build();
 	}
@@ -289,7 +289,7 @@ public class UserController {
 	 */
 	@PostMapping("/id/{userId}/update")
 	public ResponseEntity<Void> updateUserLogin(@PathVariable int userId, @RequestBody UserLoginDto userLoginDto) throws ServiceException {
-		log.debug("Requested user login update with user id " + userId + " and data " + userLoginDto);
+		log.debug("Requested user login update (userId=%s, userLoginDto=%s)".formatted(userId, userLoginDto));
 		UserLogin original = userLoginService.getLoginByUserId(userId);
 		UserLogin login = userLoginMapper.updateEntity(userLoginDto, original);
 		userLoginActionService.updateLogin(login);
@@ -306,7 +306,7 @@ public class UserController {
 	 */
 	@PostMapping("/id/{userId}/inquiries")
 	public ResponseEntity<List<InquiryDto>> getInquiries(@PathVariable int userId) throws ServiceException {
-		log.debug("Requested posted inquiries of user " + userId);
+		log.debug("Requested posted inquiries (userId=%s)".formatted(userId));
 		List<Inquiry> entities = inquiryActionService.getInquiryListByUserId(userId);
 		List<InquiryDto> list = entities.stream().map(inquiryMapper::toDto).toList();
 		return ResponseEntity.ok(list);
@@ -322,7 +322,7 @@ public class UserController {
 	 */
 	@PostMapping("/id/{userId}/observed")
 	public ResponseEntity<List<InquiryDto>> getObservedInquiries(@PathVariable int userId) throws ServiceException {
-		log.debug("Requested observed inquiries of user " + userId);
+		log.debug("Requested observed inquiries (userId=%s)".formatted(userId));
 		List<Inquiry> entities = observerService.getObservedInquiryListByUserId(userId);
 		List<InquiryDto> list = entities.stream().map(inquiryMapper::toDto).toList();
 		return ResponseEntity.ok(list);
@@ -338,7 +338,7 @@ public class UserController {
 	 */
 	@PostMapping("/id/{userId}/upvotes")
 	public ResponseEntity<List<ResponseDto>> getUpvotedResponses(@PathVariable int userId) throws ServiceException {
-		log.debug("Requested upvoted responses of user " + userId);
+		log.debug("Requested upvoted responses (userId=%s)".formatted(userId));
 		List<Response> entities = upvoteService.getUpvotedResponseListByUserId(userId);
 		List<ResponseDto> list = entities.stream().map(responseMapper::toDto).toList();
 		return ResponseEntity.ok(list);
@@ -354,7 +354,7 @@ public class UserController {
 	 */
 	@PostMapping("/id/{userId}/data")
 	public ResponseEntity<UserDataDto> getUserData(@PathVariable int userId) throws ServiceException {
-		log.debug("Requested user data with id " + userId);
+		log.debug("Requested user data (userId=%s)".formatted(userId));
 		UserData entity = userDataService.getDataByUserId(userId);
 		UserDataDto dataDto = userDataMapper.toDto(entity);
 		return ResponseEntity.ok(dataDto);
@@ -369,7 +369,7 @@ public class UserController {
 	 */
 	@PostMapping("/id/{userId}/data/update")
 	public ResponseEntity<Void> updateUserData(@PathVariable int userId, @RequestBody UserDataDto userDataDto) throws ServiceException {
-		log.debug("Requested user data update with user id " + userId + " and data " + userDataDto);
+		log.debug("Requested user data update (userId=%s, userDataDto=%s)".formatted(userId, userDataDto));
 		UserData original = userDataService.getDataByUserId(userId);
 		UserData data = userDataMapper.updateEntity(userDataDto, original);
 		userDataActionService.updateData(data);
@@ -384,7 +384,7 @@ public class UserController {
 	 */
 	@PostMapping("/id/{userId}/data/delete")
 	public ResponseEntity<Void> deleteUserData(@PathVariable int userId) throws ServiceException {
-		log.debug("Requested user data deletion with user id " + userId);
+		log.debug("Requested user data deletion (userId=%s)".formatted(userId));
 		userDataActionService.deleteData(userId);
 		return ResponseEntity.noContent().build();
 	}
@@ -399,7 +399,7 @@ public class UserController {
 	 */
 	@GetMapping("/id/{userId}/data/icon")
 	public ResponseEntity<byte[]> getUserIcon(@PathVariable int userId) throws ServiceException {
-		log.debug("Requested user icon with id " + userId);
+		log.debug("Requested user icon (userId=%s)".formatted(userId));
 		UserData entity = userDataService.getDataByUserId(userId);
 		byte[] image = entity.getIcon();
 		HttpHeaders headers = new HttpHeaders();
@@ -421,7 +421,7 @@ public class UserController {
 	 */
 	@PostMapping("/id/{userId}/data/icon/update")
 	public ResponseEntity<Void> updateUserIcon(@PathVariable int userId, @RequestBody byte[] icon) throws ServiceException {
-		log.debug("Requested user icon update with user id " + userId);
+		log.debug("Requested user icon update (userId=%s)".formatted(userId));
 		UserData original = userDataService.getDataByUserId(userId);
 		UserData data = original.toBuilder().icon(icon).build();
 		userDataActionService.updateData(data);
@@ -436,7 +436,7 @@ public class UserController {
 	 */
 	@PostMapping("/id/{userId}/data/icon/delete")
 	public ResponseEntity<Void> deleteUserIcon(@PathVariable int userId) throws ServiceException {
-		log.debug("Requested user icon deletion with user id " + userId);
+		log.debug("Requested user icon deletion (userId=%s)".formatted(userId));
 		UserData original = userDataService.getDataByUserId(userId);
 		UserData data = original.toBuilder().icon(null).build();
 		userDataActionService.updateData(data);

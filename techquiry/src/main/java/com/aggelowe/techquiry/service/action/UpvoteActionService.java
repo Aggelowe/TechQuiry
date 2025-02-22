@@ -17,6 +17,7 @@ import com.aggelowe.techquiry.service.session.Authentication;
 import com.aggelowe.techquiry.service.session.SessionHelper;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * The {@link UpvoteActionService} class is a component of {@link UpvoteService}
@@ -27,6 +28,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class UpvoteActionService {
 
 	/**
@@ -58,6 +60,7 @@ public class UpvoteActionService {
 	 *                                        checking the upvote
 	 */
 	public boolean checkUpvote(int responseId) throws ServiceException {
+		log.debug("Checking upvote (responseId=%s)".formatted(responseId));
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
 			throw new UnauthorizedOperationException("The requested upvote check is unauthorized!");
@@ -83,6 +86,7 @@ public class UpvoteActionService {
 	 *                                        creating the upvote
 	 */
 	public void createUpvote(int responseId) throws ServiceException {
+		log.debug("Creating upvote (responseId=%s)".formatted(responseId));
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
 			throw new UnauthorizedOperationException("The requested upvote creation is unauthorized!");
@@ -113,6 +117,7 @@ public class UpvoteActionService {
 	 *                                        deleting the upvote
 	 */
 	public void deleteUpvote(int responseId) throws ServiceException {
+		log.debug("Deleting upvote (responseId=%s)".formatted(responseId));
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
 			throw new UnauthorizedOperationException("The requested upvote deletion is unauthorized!");

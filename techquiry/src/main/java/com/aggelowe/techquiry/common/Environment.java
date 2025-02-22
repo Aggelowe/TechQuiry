@@ -134,12 +134,12 @@ public final class Environment {
 			try {
 				value = converter.convert(original);
 			} catch (RuntimeException exception) {
-				log.fatal("An exception was thrown while converting " + key + "!", exception);
+				log.fatal("An exception was thrown while converting %s!".formatted(key), exception);
 				System.exit(1);
 			}
 		}
 		if (constraint != null && !constraint.check(value)) {
-			log.fatal("The value of " + key + " is outside the defined contraints!");
+			log.fatal("The value of %s is outside the defined contraints!".formatted(key));
 			System.exit(1);
 		}
 		return value;

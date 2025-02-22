@@ -77,7 +77,7 @@ public final class ObserverDao {
 	 * @throws DatabaseException If an error occurs while checking for the observer
 	 */
 	public boolean check(Observer observer) throws DatabaseException {
-		log.debug("Checking whether the observer " + observer + " exists");
+		log.debug("Selecting observer exists (observer=%s)".formatted(observer));
 		int inquiryId = observer.getInquiryId();
 		int userId = observer.getUserId();
 		List<LocalResult> results = runner.runScript(OBSERVER_CHECK_SCRIPT, inquiryId, userId);
@@ -106,7 +106,7 @@ public final class ObserverDao {
 	 *                           count
 	 */
 	public int countFromInquiryId(int inquiryId) throws DatabaseException {
-		log.debug("Getting observer entry count");
+		log.debug("Selecting observer entry count (inquiryId=%s)".formatted(inquiryId));
 		List<LocalResult> results = runner.runScript(OBSERVER_COUNT_INQUIRY_ID_SCRIPT, inquiryId);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The first statement in " + OBSERVER_COUNT_INQUIRY_ID_SCRIPT + " did not yeild a result!");
@@ -132,6 +132,7 @@ public final class ObserverDao {
 	 *                           entry
 	 */
 	public void delete(Observer observer) throws DatabaseException {
+		log.debug("Deleting observer entry (observer=%s)".formatted(observer));
 		int inquiryId = observer.getInquiryId();
 		int userId = observer.getUserId();
 		runner.runScript(OBSERVER_DELETE_SCRIPT, inquiryId, userId);
@@ -146,7 +147,7 @@ public final class ObserverDao {
 	 *                           entry
 	 */
 	public void insert(Observer observer) throws DatabaseException {
-		log.debug("Inserting observer with information " + observer);
+		log.debug("Inserting observer entry (observer=%s)".formatted(observer));
 		int inquiryId = observer.getInquiryId();
 		int userId = observer.getUserId();
 		runner.runScript(OBSERVER_INSERT_SCRIPT, inquiryId, userId);
@@ -163,7 +164,7 @@ public final class ObserverDao {
 	 *                           information
 	 */
 	public List<UserLogin> selectFromInquiryId(int inquiryId) throws DatabaseException {
-		log.debug("Getting observers with inquiry id " + inquiryId);
+		log.debug("Selecting observer entries (inquiryId=%s)".formatted(inquiryId));
 		List<LocalResult> results = runner.runScript(OBSERVER_SELECT_INQUIRY_ID_SCRIPT, inquiryId);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + OBSERVER_SELECT_INQUIRY_ID_SCRIPT + " did not yeild results!");
@@ -203,7 +204,7 @@ public final class ObserverDao {
 	 *                           information
 	 */
 	public List<Inquiry> selectFromUserId(int userId) throws DatabaseException {
-		log.debug("Getting observers with user id " + userId);
+		log.debug("Selecting observer entries (userId=%s)".formatted(userId));
 		List<LocalResult> results = runner.runScript(OBSERVER_SELECT_USER_ID_SCRIPT, userId);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + OBSERVER_SELECT_USER_ID_SCRIPT + " did not yeild results!");

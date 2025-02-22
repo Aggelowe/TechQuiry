@@ -73,7 +73,7 @@ public final class ResponseDao {
 	 *                           count
 	 */
 	public int countFromInquiryId(int inquiryId) throws DatabaseException {
-		log.debug("Getting inquiry entry count");
+		log.debug("Selecting inquiry entry count (inquiryId=%s)".formatted(inquiryId));
 		List<LocalResult> results = runner.runScript(RESPONSE_COUNT_INQUIRY_ID_SCRIPT, inquiryId);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + RESPONSE_COUNT_INQUIRY_ID_SCRIPT + " did not yeild results!");
@@ -94,13 +94,13 @@ public final class ResponseDao {
 	 * This method deletes the response with the provided response id from the
 	 * application database.
 	 * 
-	 * @param id The id of the response entry
+	 * @param responseId The id of the response entry
 	 * @throws DatabaseException If an error occurs while deleting the response
 	 *                           entry
 	 */
-	public void delete(int id) throws DatabaseException {
-		log.debug("Deleting response with id " + id);
-		runner.runScript(RESPONSE_DELETE_SCRIPT, id);
+	public void delete(int responseId) throws DatabaseException {
+		log.debug("Deleting response entry (responseId=%s)".formatted(responseId));
+		runner.runScript(RESPONSE_DELETE_SCRIPT, responseId);
 	}
 
 	/**
@@ -114,7 +114,7 @@ public final class ResponseDao {
 	 *                           entry
 	 */
 	public int insert(Response response) throws DatabaseException {
-		log.debug("Inserting response with information " + response);
+		log.debug("Inserting response entry (response=%s)".formatted(response));
 		int inquiryId = response.getInquiryId();
 		int userId = response.getUserId();
 		boolean anonymous = response.getAnonymous();
@@ -145,7 +145,7 @@ public final class ResponseDao {
 	 *                           information
 	 */
 	public List<Response> selectFromInquiryId(int inquiryId) throws DatabaseException {
-		log.debug("Getting responses with inquiry id " + inquiryId);
+		log.debug("Selecting response entries (inquiryId=%s)".formatted(inquiryId));
 		List<LocalResult> results = runner.runScript(RESPONSE_SELECT_INQUIRY_ID_SCRIPT, inquiryId);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + RESPONSE_SELECT_INQUIRY_ID_SCRIPT + " did not yeild results!");
@@ -170,14 +170,14 @@ public final class ResponseDao {
 	 * This method returns and retrieves the only {@link Response} object with the
 	 * given response id from the application database.
 	 * 
-	 * @param id The response id
+	 * @param responseId The response id
 	 * @return The response with the given id
 	 * @throws DatabaseException If an error occurs while retrieving the response
 	 *                           information
 	 */
-	public Response select(int id) throws DatabaseException {
-		log.debug("Getting response with response id " + id);
-		List<LocalResult> results = runner.runScript(RESPONSE_SELECT_SCRIPT, id);
+	public Response select(int responseId) throws DatabaseException {
+		log.debug("Selecting response entry (responseId=%s)".formatted(responseId));
+		List<LocalResult> results = runner.runScript(RESPONSE_SELECT_SCRIPT, responseId);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + RESPONSE_SELECT_SCRIPT + " did not yeild results!");
 		}
@@ -194,7 +194,7 @@ public final class ResponseDao {
 		int userId = (int) row.get("user_id");
 		boolean anonymous = (int) row.get("anonymous") == 1;
 		String content = (String) row.get("content");
-		Response response = new Response(id, inquiryId, userId, anonymous, content);
+		Response response = new Response(responseId, inquiryId, userId, anonymous, content);
 		return response;
 	}
 
@@ -208,7 +208,7 @@ public final class ResponseDao {
 	 *                           entry
 	 */
 	public void update(Response response) throws DatabaseException {
-		log.debug("Updating response with data " + response);
+		log.debug("Updating response entry (response=%s)".formatted(response));
 		int id = response.getResponseId();
 		int inquiryId = response.getInquiryId();
 		int userId = response.getUserId();

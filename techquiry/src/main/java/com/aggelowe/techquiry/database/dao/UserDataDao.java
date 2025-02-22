@@ -52,19 +52,19 @@ public final class UserDataDao {
 	 * The runner responsible for executing the SQL scripts.
 	 */
 	private final SQLRunner runner;
-	
+
 	/**
 	 * This method deletes the user data entry with the provided user id from the
 	 * application database.
 	 * 
-	 * @param id The id of the user data entry
+	 * @param userId The id of the user data entry
 	 * @throws DatabaseException If an error occurs while deleting the user data
 	 *                           entry
 	 */
-	public void delete(int id) throws DatabaseException {
-		log.debug("Deleting user with id " + id);
+	public void delete(int userId) throws DatabaseException {
+		log.debug("Deleting user data entry (userId=%s)".formatted(userId));
 		try {
-			runner.runScript(USER_DATA_DELETE_SCRIPT, id);
+			runner.runScript(USER_DATA_DELETE_SCRIPT, userId);
 		} catch (SQLRunnerLoadException exception) {
 			throw new DataAccessException("There was an error while deleting the user data entry!", exception);
 		}
@@ -79,7 +79,7 @@ public final class UserDataDao {
 	 *                           entry
 	 */
 	public void insert(UserData userData) throws DatabaseException {
-		log.debug("Inserting user data with information " + userData);
+		log.debug("Inserting user data entry (userData=%s)".formatted(userData));
 		int id = userData.getUserId();
 		String firstName = userData.getFirstName();
 		String lastName = userData.getLastName();
@@ -91,14 +91,14 @@ public final class UserDataDao {
 	 * This method returns and retrieves the only {@link UserData} object with the
 	 * given user id from the application database.
 	 * 
-	 * @param id The user id
+	 * @param userId The user id
 	 * @return The user data with the given id
 	 * @throws DatabaseException If an error occurs while retrieving the user data
 	 *                           information
 	 */
-	public UserData select(int id) throws DatabaseException {
-		log.debug("Getting user data with user id " + id);
-		List<LocalResult> results = runner.runScript(USER_DATA_SELECT_SCRIPT, id);
+	public UserData select(int userId) throws DatabaseException {
+		log.debug("Selecting user data entry (userId=%s)".formatted(userId));
+		List<LocalResult> results = runner.runScript(USER_DATA_SELECT_SCRIPT, userId);
 		if (results.isEmpty()) {
 			throw new DataAccessException("The script " + USER_DATA_SELECT_SCRIPT + " did not yeild results!");
 		}
@@ -114,7 +114,7 @@ public final class UserDataDao {
 		String firstName = (String) row.get("first_name");
 		String lastName = (String) row.get("last_name");
 		byte[] icon = (byte[]) row.get("icon");
-		UserData userData = new UserData(id, firstName, lastName, icon);
+		UserData userData = new UserData(userId, firstName, lastName, icon);
 		return userData;
 	}
 
@@ -129,7 +129,7 @@ public final class UserDataDao {
 	 *                           entry
 	 */
 	public void update(UserData userData) throws DatabaseException {
-		log.debug("Updating user data with data " + userData);
+		log.debug("Updating user data entry (userData=%s)".formatted(userData));
 		int id = userData.getUserId();
 		String firstName = userData.getFirstName();
 		String lastName = userData.getLastName();

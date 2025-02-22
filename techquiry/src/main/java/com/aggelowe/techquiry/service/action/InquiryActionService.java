@@ -20,6 +20,7 @@ import com.aggelowe.techquiry.service.session.Authentication;
 import com.aggelowe.techquiry.service.session.SessionHelper;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * The {@link InquiryActionService} class is a component of
@@ -31,6 +32,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class InquiryActionService {
 
 	/**
@@ -67,6 +69,7 @@ public class InquiryActionService {
 	 * 
 	 */
 	public int createInquiry(Inquiry inquiry) throws ServiceException {
+		log.debug("Creating inquiry (inquiry=%s)".formatted(inquiry));
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
 			throw new UnauthorizedOperationException("The requested inquiry creation is unauthorized!");
@@ -87,7 +90,7 @@ public class InquiryActionService {
 	/**
 	 * This method deletes the inquiry with the specified inquiry id.
 	 *
-	 * @param id The inquiry id
+	 * @param inquiryId The inquiry id
 	 * @throws UnauthorizedOperationException If the current user is not logged in
 	 * @throws ForbiddenOperationException    If the current user does not have the
 	 *                                        given user id
@@ -96,20 +99,21 @@ public class InquiryActionService {
 	 * @throws InternalErrorException         If an internal error occurred while
 	 *                                        deleting the inquiry
 	 */
-	public void deleteInquiry(int id) throws ServiceException {
+	public void deleteInquiry(int inquiryId) throws ServiceException {
+		log.debug("Deleting inquiry (inquiryId=%s)".formatted(inquiryId));
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
 			throw new UnauthorizedOperationException("The requested inquiry creation is unauthorized!");
 		}
 		try {
-			Inquiry inquiry = inquiryDao.select(id);
+			Inquiry inquiry = inquiryDao.select(inquiryId);
 			if (inquiry == null) {
 				throw new EntityNotFoundException("The requested inquiry does not exist!");
 			}
 			if (current.getUserId() != inquiry.getUserId()) {
 				throw new ForbiddenOperationException("The requested inquiry deletion is forbidden!");
 			}
-			inquiryDao.delete(id);
+			inquiryDao.delete(inquiryId);
 		} catch (DatabaseException exception) {
 			throw new InternalErrorException("An internal error occured while deleting the inquiry!", exception);
 		}
@@ -133,6 +137,7 @@ public class InquiryActionService {
 	 *                                        updating the inquiry
 	 */
 	public void updateInquiry(Inquiry inquiry) throws ServiceException {
+		log.debug("Updating inquiry (inquiry=%s)".formatted(inquiry));
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
 			throw new UnauthorizedOperationException("The requested inquiry update is unauthorized!");
@@ -162,25 +167,26 @@ public class InquiryActionService {
 	 * current user does not have the user id, the list will be limited to
 	 * non-anonymous inquiries.
 	 *
-	 * @param id The user id
+	 * @param userId The user id
 	 * @return The inquiries with the given user id
 	 * @throws EntityNotFoundException If the given user id does not correspond to a
 	 *                                 user login
 	 * @throws InternalErrorException  If an internal error occurs while retrieving
 	 *                                 the inquiry
 	 */
-	public List<Inquiry> getInquiryListByUserId(int id) throws ServiceException {
+	public List<Inquiry> getInquiryListByUserId(int userId) throws ServiceException {
+		log.debug("Getting inquiry list (userId=%s)".formatted(userId));
 		List<Inquiry> inquiries;
 		try {
-			UserLogin userLogin = userLoginDao.select(id);
+			UserLogin userLogin = userLoginDao.select(userId);
 			if (userLogin == null) {
 				throw new EntityNotFoundException("The given user id does not have a corresponding login!");
 			}
 			Authentication current = sessionHelper.getAuthentication();
-			if (current == null || current.getUserId() != id) {
-				inquiries = inquiryDao.selectFromUserIdNonAnonymous(id);
+			if (current == null || current.getUserId() != userId) {
+				inquiries = inquiryDao.selectFromUserIdNonAnonymous(userId);
 			} else {
-				inquiries = inquiryDao.selectFromUserId(id);
+				inquiries = inquiryDao.selectFromUserId(userId);
 			}
 		} catch (DatabaseException exception) {
 			throw new InternalErrorException("An internal error occured while getting the inquiry!", exception);

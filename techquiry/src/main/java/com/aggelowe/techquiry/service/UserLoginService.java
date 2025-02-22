@@ -13,6 +13,7 @@ import com.aggelowe.techquiry.service.exception.InvalidRequestException;
 import com.aggelowe.techquiry.service.exception.ServiceException;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * The {@link UserLoginService} class provides methods for managing user login
@@ -23,6 +24,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class UserLoginService {
 
 	/**
@@ -39,6 +41,7 @@ public class UserLoginService {
 	 *                                the count
 	 */
 	public int getLoginCount() throws ServiceException {
+		log.debug("Getting user login count");
 		try {
 			return userLoginDao.count();
 		} catch (DatabaseException exception) {
@@ -58,6 +61,7 @@ public class UserLoginService {
 	 *                                 the user
 	 */
 	public List<UserLogin> getLoginRange(int count, int page) throws ServiceException {
+		log.debug("Getting user login range (count=%s, page=%s)".formatted(count, page));
 		if (count < 0 || page < 0) {
 			throw new InvalidRequestException("The given count/page must be larger than 0!");
 		}
@@ -73,16 +77,17 @@ public class UserLoginService {
 	/**
 	 * This method returns the user login with the given user id.
 	 *
-	 * @param id The user id
+	 * @param userId The user id
 	 * @return The user login with the given id
 	 * @throws EntityNotFoundException If the requested user does not exist
 	 * @throws InternalErrorException  If an internal error occurs while retrieving
 	 *                                 the user
 	 */
-	public UserLogin getLoginByUserId(int id) throws ServiceException {
+	public UserLogin getLoginByUserId(int userId) throws ServiceException {
+		log.debug("Getting user login (userId=%s)".formatted(userId));
 		UserLogin login;
 		try {
-			login = userLoginDao.select(id);
+			login = userLoginDao.select(userId);
 		} catch (DatabaseException exception) {
 			throw new InternalErrorException("An internal error occured while getting the user!", exception);
 		}
@@ -102,6 +107,7 @@ public class UserLoginService {
 	 *                                 the user
 	 */
 	public UserLogin getLoginByUsername(String username) throws ServiceException {
+		log.debug("Getting user login (username=%s)".formatted(username));
 		UserLogin login;
 		try {
 			login = userLoginDao.selectFromUsername(username);

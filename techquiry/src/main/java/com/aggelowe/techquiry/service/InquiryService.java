@@ -13,6 +13,7 @@ import com.aggelowe.techquiry.service.exception.InvalidRequestException;
 import com.aggelowe.techquiry.service.exception.ServiceException;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * The {@link InquiryService} class provides methods for managing inquiry
@@ -23,6 +24,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class InquiryService {
 
 	/**
@@ -39,6 +41,7 @@ public class InquiryService {
 	 *                                the count
 	 */
 	public int getInquiryCount() throws ServiceException {
+		log.debug("Getting inquiry count");
 		try {
 			return inquiryDao.count();
 		} catch (DatabaseException exception) {
@@ -58,6 +61,7 @@ public class InquiryService {
 	 *                                 the inquiries
 	 */
 	public List<Inquiry> getInquiryRange(int count, int page) throws ServiceException {
+		log.debug("Getting inquiry range (count=%s, page=%s)".formatted(count, page));
 		if (count < 0 || page < 0) {
 			throw new InvalidRequestException("The given count/page must be larger than 0!");
 		}
@@ -73,16 +77,17 @@ public class InquiryService {
 	/**
 	 * This method returns the inquiry with the given inquiry id.
 	 *
-	 * @param id The inquiry id
+	 * @param inquiryId The inquiry id
 	 * @return The inquiry with the given id
 	 * @throws EntityNotFoundException If the requested inquiry does not exist
 	 * @throws InternalErrorException  If an internal error occurs while retrieving
 	 *                                 the inquiry
 	 */
-	public Inquiry getInquiryByInquiryId(int id) throws ServiceException {
+	public Inquiry getInquiryByInquiryId(int inquiryId) throws ServiceException {
+		log.debug("Getting inquiry (inquiryId=%s)".formatted(inquiryId));
 		Inquiry inquiry;
 		try {
-			inquiry = inquiryDao.select(id);
+			inquiry = inquiryDao.select(inquiryId);
 		} catch (DatabaseException exception) {
 			throw new InternalErrorException("An internal error occured while getting the inquiry!", exception);
 		}

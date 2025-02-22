@@ -18,6 +18,7 @@ import com.aggelowe.techquiry.service.session.Authentication;
 import com.aggelowe.techquiry.service.session.SessionHelper;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * The {@link ResponseActionService} class is a component of
@@ -29,6 +30,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class ResponseActionService {
 
 	/**
@@ -65,6 +67,7 @@ public class ResponseActionService {
 	 * 
 	 */
 	public int createResponse(Response response) throws ServiceException {
+		log.debug("Creating response (response=%s)".formatted(response));
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
 			throw new UnauthorizedOperationException("The requested response creation is unauthorized!");
@@ -98,6 +101,7 @@ public class ResponseActionService {
 	 *                                        deleting the response
 	 */
 	public void deleteResponse(int responseId) throws ServiceException {
+		log.debug("Deleting response (responseId=%s)".formatted(responseId));
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
 			throw new UnauthorizedOperationException("The requested response creation is unauthorized!");
@@ -133,6 +137,7 @@ public class ResponseActionService {
 	 *                                        updating the response
 	 */
 	public void updateResponse(Response response) throws ServiceException {
+		log.debug("Updating response (response=%s)".formatted(response));
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
 			throw new UnauthorizedOperationException("The requested response update is unauthorized!");

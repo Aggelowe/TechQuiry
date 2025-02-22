@@ -84,7 +84,7 @@ public class ResponseController {
 	 */
 	@PostMapping("/id/{responseId}")
 	public ResponseEntity<ResponseDto> getResponse(@PathVariable int responseId) throws ServiceException {
-		log.debug("Requested response with id " + responseId);
+		log.debug("Requested response (responseId=%s)".formatted(responseId));
 		Response entity = responseService.getResponseByResponseId(responseId);
 		ResponseDto responseDto = responseMapper.toDto(entity);
 		return ResponseEntity.ok(responseDto);
@@ -99,7 +99,7 @@ public class ResponseController {
 	 */
 	@PostMapping("/id/{responseId}/delete")
 	public ResponseEntity<Void> deleteResponse(@PathVariable int responseId) throws ServiceException {
-		log.debug("Requested response deletion with response id " + responseId);
+		log.debug("Requested response deletion (responseId=%s)".formatted(responseId));
 		responseActionService.deleteResponse(responseId);
 		return ResponseEntity.noContent().build();
 	}
@@ -114,7 +114,7 @@ public class ResponseController {
 	 */
 	@PostMapping("/id/{responseId}/update")
 	public ResponseEntity<Void> updateResponse(@PathVariable int responseId, @RequestBody ResponseDto responseDto) throws ServiceException {
-		log.debug("Requested response update with response id " + responseId + " and data " + responseDto);
+		log.debug("Requested response update (responseId=%s, responseDto=%s)".formatted(responseId, responseDto));
 		Response original = responseService.getResponseByResponseId(responseId);
 		Response response = responseMapper.updateEntity(responseDto, original);
 		responseActionService.updateResponse(response);
@@ -131,7 +131,7 @@ public class ResponseController {
 	 */
 	@PostMapping("/id/{responseId}/upvote")
 	public ResponseEntity<List<UserLoginDto>> getUpvotes(@PathVariable int responseId) throws ServiceException {
-		log.debug("Requested upvotes of response " + responseId);
+		log.debug("Requested upvotes (responseId=%s)".formatted(responseId));
 		List<UserLogin> entities = upvoteService.getUpvoteUserLoginListByResponseId(responseId);
 		List<UserLoginDto> list = entities.stream().map(userLoginMapper::toDto).toList();
 		return ResponseEntity.ok(list);
@@ -147,7 +147,7 @@ public class ResponseController {
 	 */
 	@PostMapping("/id/{responseId}/upvote/count")
 	public ResponseEntity<Integer> getUpvoteCount(@PathVariable int responseId) throws ServiceException {
-		log.debug("Requested upvote count of response " + responseId);
+		log.debug("Requested upvote count (responseId=%s)".formatted(responseId));
 		int count = upvoteService.getUpvoteCountByResponseId(responseId);
 		return ResponseEntity.ok(count);
 	}
@@ -162,7 +162,7 @@ public class ResponseController {
 	 */
 	@PostMapping("/id/{responseId}/upvote/check")
 	public ResponseEntity<Boolean> checkUpvote(@PathVariable int responseId) throws ServiceException {
-		log.debug("Checking upvote of response " + responseId);
+		log.debug("Requested upvote check (responseId=%s)".formatted(responseId));
 		boolean check = upvoteActionService.checkUpvote(responseId);
 		return ResponseEntity.ok(check);
 	}
@@ -176,7 +176,7 @@ public class ResponseController {
 	 */
 	@PostMapping("/id/{responseId}/upvote/create")
 	public ResponseEntity<Void> createUpvote(@PathVariable int responseId) throws ServiceException {
-		log.debug("Creating upvote of response " + responseId);
+		log.debug("Requested upvote creation (responseId=%s)".formatted(responseId));
 		upvoteActionService.createUpvote(responseId);
 		return ResponseEntity.noContent().build();
 	}
@@ -190,7 +190,7 @@ public class ResponseController {
 	 */
 	@PostMapping("/id/{responseId}/upvote/delete")
 	public ResponseEntity<Void> deleteUpvote(@PathVariable int responseId) throws ServiceException {
-		log.debug("Deleting upvote of response " + responseId);
+		log.debug("Requested upvote deletion (responseId=%s)".formatted(responseId));
 		upvoteActionService.deleteUpvote(responseId);
 		return ResponseEntity.noContent().build();
 	}

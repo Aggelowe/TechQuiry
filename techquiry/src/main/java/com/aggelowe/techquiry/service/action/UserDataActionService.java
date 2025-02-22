@@ -16,6 +16,7 @@ import com.aggelowe.techquiry.service.session.Authentication;
 import com.aggelowe.techquiry.service.session.SessionHelper;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * The {@link UserDataActionService} class is a dependency of
@@ -27,6 +28,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class UserDataActionService {
 
 	/**
@@ -55,6 +57,7 @@ public class UserDataActionService {
 	 * 
 	 */
 	public void createData(UserData data) throws ServiceException {
+		log.debug("Creating user data (data=%s)".formatted(data));
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
 			throw new UnauthorizedOperationException("The requested user data creation is unauthorized!");
@@ -79,7 +82,7 @@ public class UserDataActionService {
 	/**
 	 * This method deletes the user data with the specified user id.
 	 *
-	 * @param id The user id
+	 * @param userId The user id
 	 * @throws UnauthorizedOperationException If the current user is not logged in
 	 * @throws ForbiddenOperationException    If the current user does not have the
 	 *                                        given id
@@ -88,20 +91,21 @@ public class UserDataActionService {
 	 * @throws InternalErrorException         If an internal error occurred while
 	 *                                        deleting the user
 	 */
-	public void deleteData(int id) throws ServiceException {
+	public void deleteData(int userId) throws ServiceException {
+		log.debug("Deleting user data (userId=%s)".formatted(userId));
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
 			throw new UnauthorizedOperationException("The requested user data deletion is unauthorized!");
 		}
-		if (current.getUserId() != id) {
+		if (current.getUserId() != userId) {
 			throw new ForbiddenOperationException("The requested user data deletion is forbidden!");
 		}
 		try {
-			UserData data = userDataDao.select(id);
+			UserData data = userDataDao.select(userId);
 			if (data == null) {
 				throw new EntityNotFoundException("The requested user data do not exist!");
 			}
-			userDataDao.delete(id);
+			userDataDao.delete(userId);
 		} catch (DatabaseException exception) {
 			throw new InternalErrorException("An internal error occured while deleting the user data!", exception);
 		}
@@ -125,6 +129,7 @@ public class UserDataActionService {
 	 * 
 	 */
 	public void updateData(UserData data) throws ServiceException {
+		log.debug("Updating user data (data=%s)".formatted(data));
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
 			throw new UnauthorizedOperationException("The requested user update is unauthorized!");

@@ -20,6 +20,7 @@ import com.aggelowe.techquiry.service.session.Authentication;
 import com.aggelowe.techquiry.service.session.SessionHelper;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * The {@link UserLoginActionService} class is a component of
@@ -31,6 +32,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class UserLoginActionService {
 
 	/**
@@ -59,6 +61,7 @@ public class UserLoginActionService {
 	 * 
 	 */
 	public int createLogin(UserLogin login) throws ServiceException {
+		log.debug("Creating user login (login=%s)".formatted(login));
 		Authentication current = sessionHelper.getAuthentication();
 		if (current != null) {
 			throw new ForbiddenOperationException("Creating users while logged-in is forbidden!");
@@ -86,7 +89,7 @@ public class UserLoginActionService {
 	/**
 	 * This method deletes the user login with the specified user id.
 	 *
-	 * @param id The user id
+	 * @param userId The user id
 	 * @throws UnauthorizedOperationException If the current user is not logged in
 	 * @throws ForbiddenOperationException    If the current user does not have the
 	 *                                        given id
@@ -94,21 +97,22 @@ public class UserLoginActionService {
 	 * @throws InternalErrorException         If an internal error occurred while
 	 *                                        deleting the user
 	 */
-	public void deleteLogin(int id) throws ServiceException {
+	public void deleteLogin(int userId) throws ServiceException {
+		log.debug("Deleting user login (userId=%s)".formatted(userId));
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
 			throw new UnauthorizedOperationException("The requested user deletion is unauthorized!");
 		}
-		if (current.getUserId() != id) {
+		if (current.getUserId() != userId) {
 			throw new ForbiddenOperationException("The requested user deletion is forbidden!");
 		}
 		try {
-			UserLogin login = userLoginDao.select(id);
+			UserLogin login = userLoginDao.select(userId);
 			if (login == null) {
 				throw new EntityNotFoundException("The requested user does not exist!");
 			}
 			sessionHelper.setAuthentication(null);
-			userLoginDao.delete(id);
+			userLoginDao.delete(userId);
 		} catch (DatabaseException exception) {
 			throw new InternalErrorException("An internal error occured while deleting the user!", exception);
 		}
@@ -131,6 +135,7 @@ public class UserLoginActionService {
 	 * 
 	 */
 	public void updateLogin(UserLogin login) throws ServiceException {
+		log.debug("Updating user login (login=%s)".formatted(login));
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
 			throw new UnauthorizedOperationException("The requested user update is unauthorized!");
@@ -167,6 +172,7 @@ public class UserLoginActionService {
 	 *                                        the user
 	 */
 	public UserLogin getCurrentLogin() throws ServiceException {
+		log.debug("Getting current user login");
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
 			throw new UnauthorizedOperationException("The requested current user request is unauthorized!");
@@ -197,6 +203,7 @@ public class UserLoginActionService {
 	 *                                     authenticating
 	 */
 	public UserLogin authenticateUser(String username, String password) throws ServiceException {
+		log.debug("Authenticating user (username=%s)".formatted(username));
 		Authentication current = sessionHelper.getAuthentication();
 		if (current != null) {
 			throw new ForbiddenOperationException("Logging in with an active session is forbidden!");
@@ -231,6 +238,7 @@ public class UserLoginActionService {
 	 * @throws UnauthorizedOperationException If there is no active session
 	 */
 	public void logoutUser() throws ServiceException {
+		log.debug("Logging out user");
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
 			throw new UnauthorizedOperationException("Logging out with no active session is not allowed!");

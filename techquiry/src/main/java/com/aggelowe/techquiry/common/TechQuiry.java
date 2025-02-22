@@ -1,8 +1,5 @@
 package com.aggelowe.techquiry.common;
 
-import static com.aggelowe.techquiry.common.Constants.APPLICATION_NAME;
-import static com.aggelowe.techquiry.common.Constants.APPLICATION_VERSION;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,8 +32,8 @@ public class TechQuiry {
 	private final DatabaseManager databaseManager;
 
 	public static void main(String[] args) {
-		log.info("Starting the " + APPLICATION_NAME + " application on version " + APPLICATION_VERSION);
-		log.debug("Application work directory: " + Environment.SERVER_WORK_DIRECTORY);
+		log.info("Starting %s v%s".formatted(Constants.APPLICATION_NAME, Constants.APPLICATION_VERSION));
+		log.debug("Application work directory: %s".formatted(Environment.SERVER_WORK_DIRECTORY));
 		SpringApplication application = new SpringApplication(TechQuiry.class);
 		properties(application);
 		log.info("Invoking Spring application startup");

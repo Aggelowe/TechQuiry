@@ -123,7 +123,7 @@ public class InquiryController {
 	 */
 	@PostMapping("/range/{count}/{page}")
 	public ResponseEntity<List<InquiryDto>> getRange(@PathVariable int count, @PathVariable int page) throws ServiceException {
-		log.debug("Requested " + count + " inquiry range at page " + page);
+		log.debug("Requested inquiry range (count=%s, page=%s)".formatted(count, page));
 		List<Inquiry> entities = inquiryService.getInquiryRange(count, page);
 		List<InquiryDto> range = entities.stream().map(inquiryMapper::toDto).toList();
 		return ResponseEntity.ok(range);
@@ -141,7 +141,7 @@ public class InquiryController {
 	 */
 	@PostMapping("/create")
 	public ResponseEntity<Integer> createInquiry(@RequestBody InquiryDto inquiryDto) throws ServiceException, MapperException {
-		log.debug("Requested inquiry creation with " + inquiryDto);
+		log.debug("Requested inquiry creation (inquiryDto=%s)".formatted(inquiryDto));
 		Inquiry inquiry = inquiryMapper.toEntity(inquiryDto);
 		int inquiryId = inquiryActionService.createInquiry(inquiry);
 		return ResponseEntity.ok(inquiryId);
@@ -157,7 +157,7 @@ public class InquiryController {
 	 */
 	@PostMapping("/id/{inquiryId}")
 	public ResponseEntity<InquiryDto> getInquiry(@PathVariable int inquiryId) throws ServiceException {
-		log.debug("Requested inquiry with id " + inquiryId);
+		log.debug("Requested inquiry (inquiryId=%s)".formatted(inquiryId));
 		Inquiry entity = inquiryService.getInquiryByInquiryId(inquiryId);
 		InquiryDto inquiryDto = inquiryMapper.toDto(entity);
 		return ResponseEntity.ok(inquiryDto);
@@ -172,7 +172,7 @@ public class InquiryController {
 	 */
 	@PostMapping("/id/{inquiryId}/delete")
 	public ResponseEntity<Void> deleteInquiry(@PathVariable int inquiryId) throws ServiceException {
-		log.debug("Requested inquiry deletion with inquiry id " + inquiryId);
+		log.debug("Requested inquiry deletion (inquiryId=%s)".formatted(inquiryId));
 		inquiryActionService.deleteInquiry(inquiryId);
 		return ResponseEntity.noContent().build();
 	}
@@ -186,7 +186,7 @@ public class InquiryController {
 	 */
 	@PostMapping("/id/{inquiryId}/update")
 	public ResponseEntity<Void> updateInquiry(@PathVariable int inquiryId, @RequestBody InquiryDto inquiryDto) throws ServiceException {
-		log.debug("Requested inquiry update with inquiry id " + inquiryId + " and data " + inquiryDto);
+		log.debug("Requested inquiry update (inquiryId=%s, inquiryDto=%s)".formatted(inquiryId, inquiryDto));
 		Inquiry original = inquiryService.getInquiryByInquiryId(inquiryId);
 		Inquiry inquiry = inquiryMapper.updateEntity(inquiryDto, original);
 		inquiryActionService.updateInquiry(inquiry);
@@ -203,7 +203,7 @@ public class InquiryController {
 	 */
 	@PostMapping("/id/{inquiryId}/response")
 	public ResponseEntity<List<ResponseDto>> getResponses(@PathVariable int inquiryId) throws ServiceException {
-		log.debug("Requested posted responses of inquiry " + inquiryId);
+		log.debug("Requested responses (inquiryId=%s)".formatted(inquiryId));
 		List<Response> entities = responseService.getResponseListByInquiryId(inquiryId);
 		List<ResponseDto> list = entities.stream().map(responseMapper::toDto).toList();
 		return ResponseEntity.ok(list);
@@ -219,7 +219,7 @@ public class InquiryController {
 	 */
 	@PostMapping("/id/{inquiryId}/response/count")
 	public ResponseEntity<Integer> getResponseCount(@PathVariable int inquiryId) throws ServiceException {
-		log.debug("Requested inquiry count of inquiry " + inquiryId);
+		log.debug("Requested response count (inquiryId=%s)".formatted(inquiryId));
 		int count = responseService.getResponseCountByInquiryId(inquiryId);
 		return ResponseEntity.ok(count);
 	}
@@ -238,7 +238,7 @@ public class InquiryController {
 	 */
 	@PostMapping("/id/{inquiryId}/response/create")
 	public ResponseEntity<Integer> createResponse(@PathVariable int inquiryId, @RequestBody ResponseDto responseDto) throws ServiceException, MapperException {
-		log.debug("Requested response creation to " + inquiryId + " with " + responseDto);
+		log.debug("Requested response creation (inquiryId=%s, responseDto=%s)".formatted(inquiryId, responseDto));
 		Response response = responseMapper.toEntity(responseDto);
 		Response updated = response.toBuilder().inquiryId(inquiryId).build();
 		int responseId = responseActionService.createResponse(updated);
@@ -255,7 +255,7 @@ public class InquiryController {
 	 */
 	@PostMapping("/id/{inquiryId}/observer")
 	public ResponseEntity<List<UserLoginDto>> getObservers(@PathVariable int inquiryId) throws ServiceException {
-		log.debug("Requested observers of inquiry " + inquiryId);
+		log.debug("Requested observers (inquiryId=%s)".formatted(inquiryId));
 		List<UserLogin> entities = observerService.getObserverUserLoginListByInquiryId(inquiryId);
 		List<UserLoginDto> list = entities.stream().map(userLoginMapper::toDto).toList();
 		return ResponseEntity.ok(list);
@@ -271,7 +271,7 @@ public class InquiryController {
 	 */
 	@PostMapping("/id/{inquiryId}/observer/count")
 	public ResponseEntity<Integer> getObserverCount(@PathVariable int inquiryId) throws ServiceException {
-		log.debug("Requested observer count of inquiry " + inquiryId);
+		log.debug("Requested observer count (inquiryId=%s)".formatted(inquiryId));
 		int count = observerService.getObserverCountByInquiryId(inquiryId);
 		return ResponseEntity.ok(count);
 	}
@@ -286,7 +286,7 @@ public class InquiryController {
 	 */
 	@PostMapping("/id/{inquiryId}/observer/check")
 	public ResponseEntity<Boolean> checkObserver(@PathVariable int inquiryId) throws ServiceException {
-		log.debug("Checking observer of inquiry " + inquiryId);
+		log.debug("Requested observer check (inquiryId=%s)".formatted(inquiryId));
 		boolean check = observerActionService.checkObserver(inquiryId);
 		return ResponseEntity.ok(check);
 	}
@@ -300,7 +300,7 @@ public class InquiryController {
 	 */
 	@PostMapping("/id/{inquiryId}/observer/create")
 	public ResponseEntity<Void> createObserver(@PathVariable int inquiryId) throws ServiceException {
-		log.debug("Creating observer of inquiry " + inquiryId);
+		log.debug("Requested observer creation (inquiryId=%s)".formatted(inquiryId));
 		observerActionService.createObserver(inquiryId);
 		return ResponseEntity.noContent().build();
 	}
@@ -314,7 +314,7 @@ public class InquiryController {
 	 */
 	@PostMapping("/id/{inquiryId}/observer/delete")
 	public ResponseEntity<Void> deleteObserver(@PathVariable int inquiryId) throws ServiceException {
-		log.debug("Deleting observer of inquiry " + inquiryId);
+		log.debug("Requested observer deletion (inquiryId=%s)".formatted(inquiryId));
 		observerActionService.deleteObserver(inquiryId);
 		return ResponseEntity.noContent().build();
 	}
