@@ -70,11 +70,11 @@ public class ResponseActionService {
 		log.debug("Creating response (response=%s)".formatted(response));
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
-			throw new UnauthorizedOperationException("The requested response creation is unauthorized!");
+			throw new UnauthorizedOperationException("Creating responses requires an active session!");
 		}
 		String content = response.getContent();
 		if (content.isEmpty()) {
-			throw new InvalidRequestException("The given content name must not be empty!");
+			throw new InvalidRequestException("The given content must not be empty!");
 		}
 		try {
 			Inquiry inquiry = inquiryDao.select(response.getInquiryId());
@@ -84,7 +84,7 @@ public class ResponseActionService {
 			Response copy = response.toBuilder().userId(current.getUserId()).build();
 			return responseDao.insert(copy);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while creating the response!", exception);
+			throw new InternalErrorException("A database error occured while creating the response!", exception);
 		}
 	}
 
@@ -104,19 +104,19 @@ public class ResponseActionService {
 		log.debug("Deleting response (responseId=%s)".formatted(responseId));
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
-			throw new UnauthorizedOperationException("The requested response creation is unauthorized!");
+			throw new UnauthorizedOperationException("Deleting responses requires an active session!");
 		}
 		try {
 			Response response = responseDao.select(responseId);
 			if (response == null) {
-				throw new EntityNotFoundException("The requested response does not exist!");
+				throw new EntityNotFoundException("The given response id does not have a corresponding response!");
 			}
 			if (current.getUserId() != response.getUserId()) {
 				throw new ForbiddenOperationException("The requested response deletion is forbidden!");
 			}
 			responseDao.delete(responseId);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while deleting the response!", exception);
+			throw new InternalErrorException("A database error occured while deleting the response!", exception);
 		}
 	}
 
@@ -140,16 +140,16 @@ public class ResponseActionService {
 		log.debug("Updating response (response=%s)".formatted(response));
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
-			throw new UnauthorizedOperationException("The requested response update is unauthorized!");
+			throw new UnauthorizedOperationException("Updating responses requires an active session!");
 		}
 		String content = response.getContent();
 		if (content.isEmpty()) {
-			throw new InvalidRequestException("The given content name must not be empty!");
+			throw new InvalidRequestException("The given content must not be empty!");
 		}
 		try {
 			Response previous = responseDao.select(response.getResponseId());
 			if (previous == null) {
-				throw new EntityNotFoundException("The requested response does not exist!");
+				throw new EntityNotFoundException("The given response id does not have a corresponding response!");
 			}
 			if (current.getUserId() != previous.getUserId()) {
 				throw new ForbiddenOperationException("The requested response update is forbidden!");
@@ -157,7 +157,7 @@ public class ResponseActionService {
 			Response copy = response.toBuilder().userId(current.getUserId()).inquiryId(previous.getResponseId()).build();
 			responseDao.update(copy);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while creating the inquiry!", exception);
+			throw new InternalErrorException("A database error occured while creating the inquiry!", exception);
 		}
 	}
 

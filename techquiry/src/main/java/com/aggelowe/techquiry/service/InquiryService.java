@@ -45,7 +45,7 @@ public class InquiryService {
 		try {
 			return inquiryDao.count();
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while getting the inquiry count!", exception);
+			throw new InternalErrorException("A database error occured while getting the inquiry count!", exception);
 		}
 	}
 
@@ -69,7 +69,7 @@ public class InquiryService {
 		try {
 			range = inquiryDao.range(count, count * page);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while getting the inquiries!", exception);
+			throw new InternalErrorException("A database error occured while getting the inquiries!", exception);
 		}
 		return range;
 	}
@@ -89,10 +89,10 @@ public class InquiryService {
 		try {
 			inquiry = inquiryDao.select(inquiryId);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while getting the inquiry!", exception);
+			throw new InternalErrorException("A database error occured while getting the inquiry!", exception);
 		}
 		if (inquiry == null) {
-			throw new EntityNotFoundException("The requested inquiry does not exist!");
+			throw new EntityNotFoundException("The given inquiry id does not have a corresponding inquiry!");
 		}
 		return inquiry;
 	}

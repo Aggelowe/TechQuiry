@@ -64,13 +64,13 @@ public class ObserverActionService {
 		log.debug("Checking observer (inquiryId=%s)".formatted(inquiryId));
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
-			throw new UnauthorizedOperationException("The requested observer check is unauthorized!");
+			throw new UnauthorizedOperationException("Checking observers requires an active session!");
 		}
 		Observer observer = new Observer(inquiryId, current.getUserId());
 		try {
 			return observerDao.check(observer);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while checking the observer!", exception);
+			throw new InternalErrorException("A database error occured while checking the observer!", exception);
 		}
 	}
 
@@ -90,7 +90,7 @@ public class ObserverActionService {
 		log.debug("Creating observer (inquiryId=%s)".formatted(inquiryId));
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
-			throw new UnauthorizedOperationException("The requested observer creation is unauthorized!");
+			throw new UnauthorizedOperationException("Creating observers requires an active session!");
 		}
 		try {
 			Inquiry inquiry = inquiryDao.select(inquiryId);
@@ -99,11 +99,11 @@ public class ObserverActionService {
 			}
 			Observer observer = new Observer(inquiryId, current.getUserId());
 			if (observerDao.check(observer)) {
-				throw new InvalidRequestException("The given observer already exists!");
+				throw new InvalidRequestException("An observer with the given information already exists!");
 			}
 			observerDao.insert(observer);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while creating the observer!", exception);
+			throw new InternalErrorException("A database error occured while creating the observer!", exception);
 		}
 	}
 
@@ -122,16 +122,16 @@ public class ObserverActionService {
 		log.debug("Deleting observer (inquiryId=%s)".formatted(inquiryId));
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
-			throw new UnauthorizedOperationException("The requested observer deletion is unauthorized!");
+			throw new UnauthorizedOperationException("Deleting observers requires an active session!");
 		}
 		Observer observer = new Observer(inquiryId, current.getUserId());
 		try {
 			if (!observerDao.check(observer)) {
-				throw new EntityNotFoundException("The requested observer does not exist!");
+				throw new EntityNotFoundException("The given observer information does not have a corresponding observer!");
 			}
 			observerDao.delete(observer);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while deleting the observer!", exception);
+			throw new InternalErrorException("A database error occured while deleting the observer!", exception);
 		}
 	}
 

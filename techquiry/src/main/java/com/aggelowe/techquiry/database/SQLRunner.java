@@ -96,9 +96,9 @@ public final class SQLRunner {
 				try {
 					connection.rollback();
 				} catch (SQLException rollback) {
-					throw new SQLRunnerExecuteException("Could not rollback failed commit!", rollback);
+					throw new SQLRunnerExecuteException("Could not rollback failed transaction!", rollback);
 				}
-				throw new SQLRunnerExecuteException("An error occured while executing the provided SQL statement!", exception);
+				throw new SQLRunnerExecuteException("Could not execute SQL statement!", exception);
 			}
 			return result;
 		} catch (SQLException exception) {
@@ -120,12 +120,11 @@ public final class SQLRunner {
 	 */
 	private List<PreparedStatement> loadStatements(Connection connection, InputStream stream) throws SQLRunnerLoadException {
 		List<PreparedStatement> statements = new LinkedList<>();
-		InputStreamReader reader = new InputStreamReader(stream);
 		StringBuilder commandBuilder = new StringBuilder();
 		int mode = 0;
 		char previous = (char) -1;
 		int code;
-		try {
+		try (InputStreamReader reader = new InputStreamReader(stream)) {
 			while ((code = reader.read()) != -1) {
 				char character = (char) code;
 				switch (mode) {
@@ -200,15 +199,9 @@ public final class SQLRunner {
 				statements.add(statement);
 			}
 		} catch (IOException exception) {
-			throw new SQLRunnerLoadException("An exception occured while reading the SQL script!", exception);
+			throw new SQLRunnerLoadException("Could not read SQL script!", exception);
 		} catch (SQLException exception) {
-			throw new SQLRunnerLoadException("The SQL statement could not be constructed!", exception);
-		} finally {
-			try {
-				reader.close();
-			} catch (IOException exception) {
-				throw new SQLRunnerLoadException("The SQL script input stream could not be closed!", exception);
-			}
+			throw new SQLRunnerLoadException("Could not construct SQL statement!", exception);
 		}
 		return statements;
 	}
@@ -237,7 +230,7 @@ public final class SQLRunner {
 			result = statement.getResultSet();
 			local = LocalResult.of(result);
 		} catch (SQLException exception) {
-			throw new SQLRunnerExecuteException("An error occured while executing the given statement!", exception);
+			throw new SQLRunnerExecuteException("Could not execute SQL statement!", exception);
 		} finally {
 			try {
 				statement.close();
@@ -245,7 +238,7 @@ public final class SQLRunner {
 					result.close();
 				}
 			} catch (SQLException exception) {
-				throw new SQLRunnerExecuteException("An error occured while closing the database resources!", exception);
+				throw new SQLRunnerExecuteException("Could not close database resources!", exception);
 			}
 		}
 		return local;
@@ -263,7 +256,8 @@ public final class SQLRunner {
 	 * @throws SQLRunnerExecuteException If an error occurs while executing the
 	 *                                   statements
 	 */
-	private List<LocalResult> executeStatements(Connection connection, List<PreparedStatement> statements, Object... parameters) throws SQLRunnerExecuteException {
+	private List<LocalResult> executeStatements(Connection connection, List<PreparedStatement> statements, Object... parameters)
+			throws SQLRunnerExecuteException {
 		List<LocalResult> results = new ArrayList<>(statements.size());
 		try {
 			for (PreparedStatement statement : statements) {
@@ -283,9 +277,9 @@ public final class SQLRunner {
 			try {
 				connection.rollback();
 			} catch (SQLException rollback) {
-				throw new SQLRunnerExecuteException("Could not rollback failed commit!", rollback);
+				throw new SQLRunnerExecuteException("Could not rollback failed transaction!", rollback);
 			}
-			throw new SQLRunnerExecuteException("An error occured while executing the provided SQL statements!", exception);
+			throw new SQLRunnerExecuteException("Could not execute SQL statements!", exception);
 		}
 		return results;
 	}

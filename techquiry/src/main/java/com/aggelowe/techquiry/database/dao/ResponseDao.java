@@ -76,15 +76,15 @@ public final class ResponseDao {
 		log.debug("Selecting inquiry entry count (inquiryId=%s)".formatted(inquiryId));
 		List<LocalResult> results = runner.runScript(RESPONSE_COUNT_INQUIRY_ID_SCRIPT, inquiryId);
 		if (results.isEmpty()) {
-			throw new DataAccessException("The script " + RESPONSE_COUNT_INQUIRY_ID_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.INVALID_RESULT_COUNT_MESSAGE.formatted(RESPONSE_COUNT_INQUIRY_ID_SCRIPT));
 		}
 		LocalResult result = results.getFirst();
 		if (result == null) {
-			throw new DataAccessException("The first statement in " + RESPONSE_COUNT_INQUIRY_ID_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(RESPONSE_COUNT_INQUIRY_ID_SCRIPT));
 		}
 		List<Map<String, Object>> list = result.list();
 		if (list.size() == 0) {
-			throw new DataAccessException("The first statement in " + RESPONSE_COUNT_INQUIRY_ID_SCRIPT + " did not yeild a response count!");
+			throw new DataAccessException(DataAccessException.INVALID_RESULT_MESSAGE.formatted(RESPONSE_COUNT_INQUIRY_ID_SCRIPT));
 		}
 		Map<String, Object> row = list.getFirst();
 		return (int) row.get("response_count");
@@ -121,15 +121,15 @@ public final class ResponseDao {
 		String content = response.getContent();
 		List<LocalResult> results = runner.runScript(RESPONSE_INSERT_SCRIPT, inquiryId, userId, anonymous, content);
 		if (results.size() < 2) {
-			throw new DataAccessException("The script " + RESPONSE_INSERT_SCRIPT + " did not yeild at least two results!");
+			throw new DataAccessException(DataAccessException.INVALID_RESULT_COUNT_MESSAGE.formatted(RESPONSE_INSERT_SCRIPT));
 		}
 		LocalResult result = results.get(1);
 		if (result == null) {
-			throw new DataAccessException("The first statement in " + RESPONSE_INSERT_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(RESPONSE_INSERT_SCRIPT));
 		}
 		List<Map<String, Object>> list = result.list();
 		if (list.size() == 0) {
-			throw new DataAccessException("The first statement in " + RESPONSE_INSERT_SCRIPT + " did not yeild a response id!");
+			throw new DataAccessException(DataAccessException.INVALID_RESULT_MESSAGE.formatted(RESPONSE_INSERT_SCRIPT));
 		}
 		Map<String, Object> row = list.getFirst();
 		return (int) row.get("response_id");
@@ -148,11 +148,11 @@ public final class ResponseDao {
 		log.debug("Selecting response entries (inquiryId=%s)".formatted(inquiryId));
 		List<LocalResult> results = runner.runScript(RESPONSE_SELECT_INQUIRY_ID_SCRIPT, inquiryId);
 		if (results.isEmpty()) {
-			throw new DataAccessException("The script " + RESPONSE_SELECT_INQUIRY_ID_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.INVALID_RESULT_COUNT_MESSAGE.formatted(RESPONSE_SELECT_INQUIRY_ID_SCRIPT));
 		}
 		LocalResult result = results.getFirst();
 		if (result == null) {
-			throw new DataAccessException("The first statement in " + RESPONSE_SELECT_INQUIRY_ID_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(RESPONSE_SELECT_INQUIRY_ID_SCRIPT));
 		}
 		List<Response> list = new ArrayList<>();
 		for (Map<String, Object> row : result) {
@@ -179,11 +179,11 @@ public final class ResponseDao {
 		log.debug("Selecting response entry (responseId=%s)".formatted(responseId));
 		List<LocalResult> results = runner.runScript(RESPONSE_SELECT_SCRIPT, responseId);
 		if (results.isEmpty()) {
-			throw new DataAccessException("The script " + RESPONSE_SELECT_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.INVALID_RESULT_COUNT_MESSAGE.formatted(RESPONSE_SELECT_SCRIPT));
 		}
 		LocalResult result = results.getFirst();
 		if (result == null) {
-			throw new DataAccessException("The first statement in " + RESPONSE_SELECT_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(RESPONSE_SELECT_SCRIPT));
 		}
 		List<Map<String, Object>> list = result.list();
 		if (list.size() == 0) {

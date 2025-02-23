@@ -85,15 +85,15 @@ public final class InquiryDao {
 		log.debug("Selecting inquiry entry count");
 		List<LocalResult> results = runner.runScript(INQUIRY_COUNT_SCRIPT);
 		if (results.isEmpty()) {
-			throw new DataAccessException("The script " + INQUIRY_COUNT_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.INVALID_RESULT_COUNT_MESSAGE.formatted(INQUIRY_COUNT_SCRIPT));
 		}
 		LocalResult result = results.getFirst();
 		if (result == null) {
-			throw new DataAccessException("The first statement in " + INQUIRY_COUNT_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(INQUIRY_COUNT_SCRIPT));
 		}
 		List<Map<String, Object>> list = result.list();
 		if (list.size() == 0) {
-			throw new DataAccessException("The first statement in " + INQUIRY_COUNT_SCRIPT + " did not yeild an inquiry count!");
+			throw new DataAccessException(DataAccessException.INVALID_RESULT_MESSAGE.formatted(INQUIRY_COUNT_SCRIPT));
 		}
 		Map<String, Object> row = list.getFirst();
 		return (int) row.get("inquiry_count");
@@ -129,15 +129,15 @@ public final class InquiryDao {
 		boolean anonymous = inquiry.getAnonymous();
 		List<LocalResult> results = runner.runScript(INQUIRY_INSERT_SCRIPT, userId, title, content, anonymous);
 		if (results.size() < 2) {
-			throw new DataAccessException("The script " + INQUIRY_INSERT_SCRIPT + " did not yeild at least two results!");
+			throw new DataAccessException(DataAccessException.INVALID_RESULT_COUNT_MESSAGE.formatted(INQUIRY_INSERT_SCRIPT));
 		}
 		LocalResult result = results.get(1);
 		if (result == null) {
-			throw new DataAccessException("The first statement in " + INQUIRY_INSERT_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(INQUIRY_INSERT_SCRIPT));
 		}
 		List<Map<String, Object>> list = result.list();
 		if (list.size() == 0) {
-			throw new DataAccessException("The first statement in " + INQUIRY_INSERT_SCRIPT + " did not yeild an inquiry id!");
+			throw new DataAccessException(DataAccessException.INVALID_RESULT_MESSAGE.formatted(INQUIRY_INSERT_SCRIPT));
 		}
 		Map<String, Object> row = list.getFirst();
 		return (int) row.get("inquiry_id");
@@ -158,11 +158,11 @@ public final class InquiryDao {
 		log.debug("Selecting inquiry entries (count=%s, offset=%s)".formatted(count, offset));
 		List<LocalResult> results = runner.runScript(INQUIRY_RANGE_SCRIPT, offset, count);
 		if (results.isEmpty()) {
-			throw new DataAccessException("The script " + INQUIRY_RANGE_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.INVALID_RESULT_COUNT_MESSAGE.formatted(INQUIRY_RANGE_SCRIPT));
 		}
 		LocalResult result = results.getFirst();
 		if (result == null) {
-			throw new DataAccessException("The first statement in " + INQUIRY_RANGE_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(INQUIRY_RANGE_SCRIPT));
 		}
 		List<Inquiry> range = new ArrayList<>(count);
 		for (Map<String, Object> row : result) {
@@ -190,11 +190,11 @@ public final class InquiryDao {
 		log.debug("Selecting non-anonymous inquiry entries (userId=%s)".formatted(userId));
 		List<LocalResult> results = runner.runScript(INQUIRY_SELECT_USER_ID_NON_ANONYMOUS_SCRIPT, userId);
 		if (results.isEmpty()) {
-			throw new DataAccessException("The script " + INQUIRY_SELECT_USER_ID_NON_ANONYMOUS_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.INVALID_RESULT_COUNT_MESSAGE.formatted(INQUIRY_SELECT_USER_ID_NON_ANONYMOUS_SCRIPT));
 		}
 		LocalResult result = results.getFirst();
 		if (result == null) {
-			throw new DataAccessException("The first statement in " + INQUIRY_SELECT_USER_ID_NON_ANONYMOUS_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(INQUIRY_SELECT_USER_ID_NON_ANONYMOUS_SCRIPT));
 		}
 		List<Inquiry> list = new ArrayList<>();
 		for (Map<String, Object> row : result) {
@@ -221,11 +221,11 @@ public final class InquiryDao {
 		log.debug("Selecting inquiry entries (userId=%s)".formatted(userId));
 		List<LocalResult> results = runner.runScript(INQUIRY_SELECT_USER_ID_SCRIPT, userId);
 		if (results.isEmpty()) {
-			throw new DataAccessException("The script " + INQUIRY_SELECT_USER_ID_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.INVALID_RESULT_COUNT_MESSAGE.formatted(INQUIRY_SELECT_USER_ID_SCRIPT));
 		}
 		LocalResult result = results.getFirst();
 		if (result == null) {
-			throw new DataAccessException("The first statement in " + INQUIRY_SELECT_USER_ID_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(INQUIRY_SELECT_USER_ID_SCRIPT));
 		}
 		List<Inquiry> list = new ArrayList<>();
 		for (Map<String, Object> row : result) {
@@ -252,11 +252,11 @@ public final class InquiryDao {
 		log.debug("Selecting inquiry entry (inquiryId=%s)".formatted(inquiryId));
 		List<LocalResult> results = runner.runScript(INQUIRY_SELECT_SCRIPT, inquiryId);
 		if (results.isEmpty()) {
-			throw new DataAccessException("The script " + INQUIRY_SELECT_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.INVALID_RESULT_COUNT_MESSAGE.formatted(INQUIRY_SELECT_SCRIPT));
 		}
 		LocalResult result = results.getFirst();
 		if (result == null) {
-			throw new DataAccessException("The first statement in " + INQUIRY_SELECT_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(INQUIRY_SELECT_SCRIPT));
 		}
 		List<Map<String, Object>> list = result.list();
 		if (list.size() == 0) {

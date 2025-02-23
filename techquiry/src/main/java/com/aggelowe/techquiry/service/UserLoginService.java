@@ -45,7 +45,7 @@ public class UserLoginService {
 		try {
 			return userLoginDao.count();
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while getting the user count!", exception);
+			throw new InternalErrorException("A database error occured while getting the user login count!", exception);
 		}
 	}
 
@@ -69,7 +69,7 @@ public class UserLoginService {
 		try {
 			range = userLoginDao.range(count, count * page);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while getting the user!", exception);
+			throw new InternalErrorException("A database error occured while getting the user login!", exception);
 		}
 		return range;
 	}
@@ -89,10 +89,10 @@ public class UserLoginService {
 		try {
 			login = userLoginDao.select(userId);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while getting the user!", exception);
+			throw new InternalErrorException("A database error occured while getting the user login!", exception);
 		}
 		if (login == null) {
-			throw new EntityNotFoundException("The requested user does not exist!");
+			throw new EntityNotFoundException("The given user id does not have a corresponding user login!");
 		}
 		return login;
 	}
@@ -112,10 +112,10 @@ public class UserLoginService {
 		try {
 			login = userLoginDao.selectFromUsername(username);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while getting the user!", exception);
+			throw new InternalErrorException("A database error occured while getting the user login!", exception);
 		}
 		if (login == null) {
-			throw new EntityNotFoundException("The requested user does not exist!");
+			throw new EntityNotFoundException("The given username does not have a corresponding user login!");
 		}
 		return login;
 	}

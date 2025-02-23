@@ -30,7 +30,7 @@ public final class DatabaseManager {
 	 * database
 	 */
 	private final SQLRunner runner;
-	
+
 	/**
 	 * This method applies the database schema to the database if the respective
 	 * environment variable is true.
@@ -41,7 +41,7 @@ public final class DatabaseManager {
 		log.debug("Applying database schema");
 		runner.runScript(CREATE_SCHEMA_SCRIPT);
 	}
-	
+
 	/**
 	 * The {@link #initialize()} method is responsible for initializing the database
 	 * used by the application. When invoked, the method connects to the database
@@ -52,7 +52,7 @@ public final class DatabaseManager {
 			try {
 				createSchema();
 			} catch (DatabaseException exception) {
-				log.fatal("An error occured while applying the database schema!", exception);
+				log.fatal("Could not apply database schema!", exception);
 				System.exit(1);
 			}
 		}

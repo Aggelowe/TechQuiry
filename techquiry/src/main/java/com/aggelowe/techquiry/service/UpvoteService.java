@@ -64,15 +64,15 @@ public class UpvoteService {
 		try {
 			response = responseDao.select(responseId);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while getting the response!", exception);
+			throw new InternalErrorException("A database error occured while getting the response!", exception);
 		}
 		if (response == null) {
-			throw new EntityNotFoundException("The requested response does not exist!");
+			throw new EntityNotFoundException("The given response id does not have a corresponding response!");
 		}
 		try {
 			return upvoteDao.countFromResponseId(responseId);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while getting the upvote count!", exception);
+			throw new InternalErrorException("A database error occured while getting the upvote count!", exception);
 		}
 	}
 
@@ -93,15 +93,15 @@ public class UpvoteService {
 		try {
 			response = responseDao.select(responseId);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while getting the response!", exception);
+			throw new InternalErrorException("A database error occured while getting the response!", exception);
 		}
 		if (response == null) {
-			throw new EntityNotFoundException("The requested response does not exist!");
+			throw new EntityNotFoundException("The given response id does not have a corresponding response!");
 		}
 		try {
 			return upvoteDao.selectFromResponseId(responseId);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while getting the upvoter user logins!", exception);
+			throw new InternalErrorException("A database error occured while getting the upvote user logins!", exception);
 		}
 	}
 
@@ -122,15 +122,15 @@ public class UpvoteService {
 		try {
 			userLogin = userLoginDao.select(userId);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while getting the user login!", exception);
+			throw new InternalErrorException("A database error occured while getting the user login!", exception);
 		}
 		if (userLogin == null) {
-			throw new EntityNotFoundException("The given user id does not have a corresponding login!");
+			throw new EntityNotFoundException("The given user id does not have a corresponding user login!");
 		}
 		try {
 			return upvoteDao.selectFromUserId(userId);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while getting the upvoted responses!", exception);
+			throw new InternalErrorException("A database error occured while getting the upvoted responses!", exception);
 		}
 	}
 

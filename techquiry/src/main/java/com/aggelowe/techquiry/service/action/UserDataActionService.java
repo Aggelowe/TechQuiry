@@ -60,7 +60,7 @@ public class UserDataActionService {
 		log.debug("Creating user data (data=%s)".formatted(data));
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
-			throw new UnauthorizedOperationException("The requested user data creation is unauthorized!");
+			throw new UnauthorizedOperationException("Creating user data requires an active session!");
 		}
 		String firstName = data.getFirstName();
 		String lastName = data.getLastName();
@@ -70,12 +70,12 @@ public class UserDataActionService {
 		try {
 			UserData userData = userDataDao.select(current.getUserId());
 			if (userData != null) {
-				throw new InvalidRequestException("The given id is not available!");
+				throw new InvalidRequestException("User data with the given user id already exist!");
 			}
 			UserData copy = data.toBuilder().userId(current.getUserId()).build();
 			userDataDao.insert(copy);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while creating the user!", exception);
+			throw new InternalErrorException("A database error occured while creating the user data!", exception);
 		}
 	}
 
@@ -95,7 +95,7 @@ public class UserDataActionService {
 		log.debug("Deleting user data (userId=%s)".formatted(userId));
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
-			throw new UnauthorizedOperationException("The requested user data deletion is unauthorized!");
+			throw new UnauthorizedOperationException("Deleting user data requires an active session!");
 		}
 		if (current.getUserId() != userId) {
 			throw new ForbiddenOperationException("The requested user data deletion is forbidden!");
@@ -103,11 +103,11 @@ public class UserDataActionService {
 		try {
 			UserData data = userDataDao.select(userId);
 			if (data == null) {
-				throw new EntityNotFoundException("The requested user data do not exist!");
+				throw new EntityNotFoundException("The given user id does not have corresponding user data!");
 			}
 			userDataDao.delete(userId);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while deleting the user data!", exception);
+			throw new InternalErrorException("A database error occured while deleting the user data!", exception);
 		}
 	}
 
@@ -132,10 +132,10 @@ public class UserDataActionService {
 		log.debug("Updating user data (data=%s)".formatted(data));
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
-			throw new UnauthorizedOperationException("The requested user update is unauthorized!");
+			throw new UnauthorizedOperationException("Updating user data requires an active session!");
 		}
 		if (current.getUserId() != data.getUserId()) {
-			throw new ForbiddenOperationException("The requested user update is forbidden!");
+			throw new ForbiddenOperationException("The requested user data update is forbidden!");
 		}
 		String firstName = data.getFirstName();
 		String lastName = data.getLastName();
@@ -145,11 +145,11 @@ public class UserDataActionService {
 		try {
 			UserData userData = userDataDao.select(data.getUserId());
 			if (userData == null) {
-				throw new EntityNotFoundException("The requested user does not exist!");
+				throw new EntityNotFoundException("The given user id does not have corresponding user data!");
 			}
 			userDataDao.update(data);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while getting the user!", exception);
+			throw new InternalErrorException("A database error occured while updating the user data!", exception);
 		}
 	}
 

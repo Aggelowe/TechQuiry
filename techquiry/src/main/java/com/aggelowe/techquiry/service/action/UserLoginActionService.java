@@ -75,11 +75,11 @@ public class UserLoginActionService {
 		try {
 			UserLogin userLogin = userLoginDao.selectFromUsername(login.getUsername());
 			if (userLogin != null) {
-				throw new InvalidRequestException("The given username is not available!");
+				throw new InvalidRequestException("A user login with the given username already exists!");
 			}
 			userId = userLoginDao.insert(login);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while creating the user!", exception);
+			throw new InternalErrorException("A database error occured while creating the user login!", exception);
 		}
 		Authentication authentication = new Authentication(userId);
 		sessionHelper.setAuthentication(authentication);
@@ -101,20 +101,20 @@ public class UserLoginActionService {
 		log.debug("Deleting user login (userId=%s)".formatted(userId));
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
-			throw new UnauthorizedOperationException("The requested user deletion is unauthorized!");
+			throw new UnauthorizedOperationException("Deleting user logins requires an active session!");
 		}
 		if (current.getUserId() != userId) {
-			throw new ForbiddenOperationException("The requested user deletion is forbidden!");
+			throw new ForbiddenOperationException("The requested user login deletion is forbidden!");
 		}
 		try {
 			UserLogin login = userLoginDao.select(userId);
 			if (login == null) {
-				throw new EntityNotFoundException("The requested user does not exist!");
+				throw new EntityNotFoundException("The given user id does not have corresponding user login!");
 			}
 			sessionHelper.setAuthentication(null);
 			userLoginDao.delete(userId);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while deleting the user!", exception);
+			throw new InternalErrorException("A database error occured while deleting the user login!", exception);
 		}
 	}
 
@@ -138,10 +138,10 @@ public class UserLoginActionService {
 		log.debug("Updating user login (login=%s)".formatted(login));
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
-			throw new UnauthorizedOperationException("The requested user update is unauthorized!");
+			throw new UnauthorizedOperationException("Updating user logins requires an active session!");
 		}
 		if (current.getUserId() != login.getUserId()) {
-			throw new ForbiddenOperationException("The requested user update is forbidden!");
+			throw new ForbiddenOperationException("The requested user login update is forbidden!");
 		}
 		String username = login.getUsername();
 		Pattern pattern = Pattern.compile(Constants.SECURITY_USERNAME_REGEX);
@@ -151,15 +151,15 @@ public class UserLoginActionService {
 		try {
 			UserLogin idLogin = userLoginDao.select(login.getUserId());
 			if (idLogin == null) {
-				throw new EntityNotFoundException("The requested user does not exist!");
+				throw new EntityNotFoundException("The given user id does not have corresponding user login!");
 			}
 			UserLogin usernameLogin = userLoginDao.selectFromUsername(login.getUsername());
 			if (usernameLogin != null && !usernameLogin.getUserId().equals(login.getUserId())) {
-				throw new InvalidRequestException("The given username is not available!");
+				throw new InvalidRequestException("A user login with the given username already exists!");
 			}
 			userLoginDao.update(login);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while getting the user!", exception);
+			throw new InternalErrorException("A database error occured while getting the user!", exception);
 		}
 	}
 
@@ -175,17 +175,17 @@ public class UserLoginActionService {
 		log.debug("Getting current user login");
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
-			throw new UnauthorizedOperationException("The requested current user request is unauthorized!");
+			throw new UnauthorizedOperationException("Getting the current user login requires an active session!");
 		}
 		int userId = current.getUserId();
 		UserLogin login;
 		try {
 			login = userLoginDao.select(userId);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while getting the user!", exception);
+			throw new InternalErrorException("A database error occured while getting the user!", exception);
 		}
 		if (login == null) {
-			throw new InternalErrorException("The current user does not exist!");
+			throw new EntityNotFoundException("The current user id does not have corresponding user login!");
 		}
 		return login;
 	}
@@ -215,10 +215,10 @@ public class UserLoginActionService {
 		try {
 			login = userLoginDao.selectFromUsername(username);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while authenticating!", exception);
+			throw new InternalErrorException("A database error occured while authenticating!", exception);
 		}
 		if (login == null) {
-			throw new InvalidRequestException("The username or password is incorrect!");
+			throw new UnauthorizedOperationException("The username and/or password is incorrect!");
 		}
 		byte[] salt = login.getPasswordSalt();
 		byte[] hash = login.getPasswordHash();
@@ -228,7 +228,7 @@ public class UserLoginActionService {
 			sessionHelper.setAuthentication(authentication);
 			return login;
 		} else {
-			throw new InvalidRequestException("The username or password is incorrect!");
+			throw new UnauthorizedOperationException("The username and/or password is incorrect!");
 		}
 	}
 
@@ -241,7 +241,7 @@ public class UserLoginActionService {
 		log.debug("Logging out user");
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
-			throw new UnauthorizedOperationException("Logging out with no active session is not allowed!");
+			throw new UnauthorizedOperationException("Logging out requires an active session!");
 		}
 		sessionHelper.setAuthentication(null);
 	}

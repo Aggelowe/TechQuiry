@@ -45,10 +45,10 @@ public class UserDataService {
 		try {
 			data = userDataDao.select(userId);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while getting the user data!", exception);
+			throw new InternalErrorException("A database error occured while getting the user data!", exception);
 		}
 		if (data == null) {
-			throw new EntityNotFoundException("The requested user data do not exist!");
+			throw new EntityNotFoundException("The given user id does not have corresponding user data!");
 		}
 		return data;
 	}

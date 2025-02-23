@@ -64,15 +64,15 @@ public class ObserverService {
 		try {
 			inquiry = inquiryDao.select(inquiryId);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while getting the inquiry!", exception);
+			throw new InternalErrorException("A database error occured while getting the inquiry!", exception);
 		}
 		if (inquiry == null) {
-			throw new EntityNotFoundException("The requested inquiry does not exist!");
+			throw new EntityNotFoundException("The given inquiry id does not have a corresponding inquiry!");
 		}
 		try {
 			return observerDao.countFromInquiryId(inquiryId);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while getting the observer count!", exception);
+			throw new InternalErrorException("A database error occured while getting the observer count!", exception);
 		}
 	}
 
@@ -93,15 +93,15 @@ public class ObserverService {
 		try {
 			inquiry = inquiryDao.select(inquiryId);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while getting the inquiry!", exception);
+			throw new InternalErrorException("A database error occured while getting the inquiry!", exception);
 		}
 		if (inquiry == null) {
-			throw new EntityNotFoundException("The requested inquiry does not exist!");
+			throw new EntityNotFoundException("The given inquiry id does not have a corresponding inquiry!");
 		}
 		try {
 			return observerDao.selectFromInquiryId(inquiryId);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while getting the observer user logins!", exception);
+			throw new InternalErrorException("A database error occured while getting the observer user logins!", exception);
 		}
 	}
 
@@ -122,15 +122,15 @@ public class ObserverService {
 		try {
 			userLogin = userLoginDao.select(userId);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while getting the user login!", exception);
+			throw new InternalErrorException("A database error occured while getting the user login!", exception);
 		}
 		if (userLogin == null) {
-			throw new EntityNotFoundException("The given user id does not have a corresponding login!");
+			throw new EntityNotFoundException("The given user id does not have a corresponding user login!");
 		}
 		try {
 			return observerDao.selectFromUserId(userId);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while getting the observed inquiries!", exception);
+			throw new InternalErrorException("A database error occured while getting the observed inquiries!", exception);
 		}
 	}
 

@@ -56,15 +56,15 @@ public class ResponseService {
 		try {
 			inquiry = inquiryDao.select(inquiryId);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while getting the inquiry!", exception);
+			throw new InternalErrorException("A database error occured while getting the inquiry!", exception);
 		}
 		if (inquiry == null) {
-			throw new EntityNotFoundException("The requested inquiry does not exist!");
+			throw new EntityNotFoundException("The given inquiry id does not have a corresponding inquiry!");
 		}
 		try {
 			return responseDao.countFromInquiryId(inquiryId);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while getting the response count!", exception);
+			throw new InternalErrorException("A database error occured while getting the response count!", exception);
 		}
 	}
 
@@ -85,15 +85,15 @@ public class ResponseService {
 		try {
 			inquiry = inquiryDao.select(inquiryId);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while getting the inquiry!", exception);
+			throw new InternalErrorException("A database error occured while getting the inquiry!", exception);
 		}
 		if (inquiry == null) {
-			throw new EntityNotFoundException("The requested inquiry does not exist!");
+			throw new EntityNotFoundException("The given inquiry id does not have a corresponding inquiry!");
 		}
 		try {
 			return responseDao.selectFromInquiryId(inquiryId);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while getting the responses!", exception);
+			throw new InternalErrorException("A database error occured while getting the responses!", exception);
 		}
 	}
 
@@ -112,10 +112,10 @@ public class ResponseService {
 		try {
 			response = responseDao.select(responseId);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while getting the response!", exception);
+			throw new InternalErrorException("A database error occured while getting the response!", exception);
 		}
 		if (response == null) {
-			throw new EntityNotFoundException("The requested response does not exist!");
+			throw new EntityNotFoundException("The given response id does not have a corresponding response!");
 		}
 		return response;
 	}

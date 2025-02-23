@@ -72,18 +72,18 @@ public class InquiryActionService {
 		log.debug("Creating inquiry (inquiry=%s)".formatted(inquiry));
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
-			throw new UnauthorizedOperationException("The requested inquiry creation is unauthorized!");
+			throw new UnauthorizedOperationException("Creating inquiries requires an active session!");
 		}
 		String title = inquiry.getTitle();
 		String content = inquiry.getContent();
 		if (title.isEmpty() || content.isEmpty()) {
-			throw new InvalidRequestException("The given title and content name must not be empty!");
+			throw new InvalidRequestException("The given title and content must not be empty!");
 		}
 		Inquiry copy = inquiry.toBuilder().userId(current.getUserId()).build();
 		try {
 			return inquiryDao.insert(copy);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while creating the inquiry!", exception);
+			throw new InternalErrorException("A database error occured while creating the inquiry!", exception);
 		}
 	}
 
@@ -103,19 +103,19 @@ public class InquiryActionService {
 		log.debug("Deleting inquiry (inquiryId=%s)".formatted(inquiryId));
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
-			throw new UnauthorizedOperationException("The requested inquiry creation is unauthorized!");
+			throw new UnauthorizedOperationException("Deleting inquiries requires an active session!");
 		}
 		try {
 			Inquiry inquiry = inquiryDao.select(inquiryId);
 			if (inquiry == null) {
-				throw new EntityNotFoundException("The requested inquiry does not exist!");
+				throw new EntityNotFoundException("The given inquiry id does not have a corresponding inquiry!");
 			}
 			if (current.getUserId() != inquiry.getUserId()) {
 				throw new ForbiddenOperationException("The requested inquiry deletion is forbidden!");
 			}
 			inquiryDao.delete(inquiryId);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while deleting the inquiry!", exception);
+			throw new InternalErrorException("A database error occured while deleting the inquiry!", exception);
 		}
 	}
 
@@ -140,17 +140,17 @@ public class InquiryActionService {
 		log.debug("Updating inquiry (inquiry=%s)".formatted(inquiry));
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
-			throw new UnauthorizedOperationException("The requested inquiry update is unauthorized!");
+			throw new UnauthorizedOperationException("Updating inquiries requires an active session!");
 		}
 		String title = inquiry.getTitle();
 		String content = inquiry.getContent();
 		if (title.isEmpty() || content.isEmpty()) {
-			throw new InvalidRequestException("The given title and content name must not be empty!");
+			throw new InvalidRequestException("The given title and content must not be empty!");
 		}
 		try {
 			Inquiry previous = inquiryDao.select(inquiry.getInquiryId());
 			if (previous == null) {
-				throw new EntityNotFoundException("The requested inquiry does not exist!");
+				throw new EntityNotFoundException("The given inquiry id does not have a corresponding inquiry!");
 			}
 			if (current.getUserId() != previous.getUserId()) {
 				throw new ForbiddenOperationException("The requested inquiry update is forbidden!");
@@ -158,7 +158,7 @@ public class InquiryActionService {
 			Inquiry copy = inquiry.toBuilder().userId(current.getUserId()).build();
 			inquiryDao.update(copy);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while creating the inquiry!", exception);
+			throw new InternalErrorException("A database error occured while creating the inquiry!", exception);
 		}
 	}
 
@@ -180,7 +180,7 @@ public class InquiryActionService {
 		try {
 			UserLogin userLogin = userLoginDao.select(userId);
 			if (userLogin == null) {
-				throw new EntityNotFoundException("The given user id does not have a corresponding login!");
+				throw new EntityNotFoundException("The given user id does not have a corresponding user login!");
 			}
 			Authentication current = sessionHelper.getAuthentication();
 			if (current == null || current.getUserId() != userId) {
@@ -189,7 +189,7 @@ public class InquiryActionService {
 				inquiries = inquiryDao.selectFromUserId(userId);
 			}
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while getting the inquiry!", exception);
+			throw new InternalErrorException("A database error occured while getting the inquiry!", exception);
 		}
 		return inquiries;
 	}

@@ -82,15 +82,15 @@ public final class ObserverDao {
 		int userId = observer.getUserId();
 		List<LocalResult> results = runner.runScript(OBSERVER_CHECK_SCRIPT, inquiryId, userId);
 		if (results.isEmpty()) {
-			throw new DataAccessException("The first statement in " + OBSERVER_CHECK_SCRIPT + " did not yeild a result!");
+			throw new DataAccessException(DataAccessException.INVALID_RESULT_COUNT_MESSAGE.formatted(OBSERVER_CHECK_SCRIPT));
 		}
 		LocalResult result = results.getFirst();
 		if (result == null) {
-			throw new DataAccessException("The first statement in " + OBSERVER_CHECK_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(OBSERVER_CHECK_SCRIPT));
 		}
 		List<Map<String, Object>> list = result.list();
 		if (list.size() == 0) {
-			throw new DataAccessException("The first statement in " + OBSERVER_CHECK_SCRIPT + " did not yeild a result!");
+			throw new DataAccessException(DataAccessException.INVALID_RESULT_MESSAGE.formatted(OBSERVER_CHECK_SCRIPT));
 		}
 		Map<String, Object> row = list.getFirst();
 		return (int) row.get("exist") == 1;
@@ -109,15 +109,15 @@ public final class ObserverDao {
 		log.debug("Selecting observer entry count (inquiryId=%s)".formatted(inquiryId));
 		List<LocalResult> results = runner.runScript(OBSERVER_COUNT_INQUIRY_ID_SCRIPT, inquiryId);
 		if (results.isEmpty()) {
-			throw new DataAccessException("The first statement in " + OBSERVER_COUNT_INQUIRY_ID_SCRIPT + " did not yeild a result!");
+			throw new DataAccessException(DataAccessException.INVALID_RESULT_COUNT_MESSAGE.formatted(OBSERVER_COUNT_INQUIRY_ID_SCRIPT));
 		}
 		LocalResult result = results.getFirst();
 		if (result == null) {
-			throw new DataAccessException("The first statement in " + OBSERVER_COUNT_INQUIRY_ID_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(OBSERVER_COUNT_INQUIRY_ID_SCRIPT));
 		}
 		List<Map<String, Object>> list = result.list();
 		if (list.size() == 0) {
-			throw new DataAccessException("The first statement in " + OBSERVER_COUNT_INQUIRY_ID_SCRIPT + " did not yeild an observer count!");
+			throw new DataAccessException(DataAccessException.INVALID_RESULT_MESSAGE.formatted(OBSERVER_COUNT_INQUIRY_ID_SCRIPT));
 		}
 		Map<String, Object> row = list.getFirst();
 		return (int) row.get("observer_count");
@@ -167,11 +167,11 @@ public final class ObserverDao {
 		log.debug("Selecting observer entries (inquiryId=%s)".formatted(inquiryId));
 		List<LocalResult> results = runner.runScript(OBSERVER_SELECT_INQUIRY_ID_SCRIPT, inquiryId);
 		if (results.isEmpty()) {
-			throw new DataAccessException("The script " + OBSERVER_SELECT_INQUIRY_ID_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.INVALID_RESULT_COUNT_MESSAGE.formatted(OBSERVER_SELECT_INQUIRY_ID_SCRIPT));
 		}
 		LocalResult result = results.getFirst();
 		if (result == null) {
-			throw new DataAccessException("The first statement in " + OBSERVER_SELECT_INQUIRY_ID_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(OBSERVER_SELECT_INQUIRY_ID_SCRIPT));
 		}
 		List<UserLogin> list = new ArrayList<>();
 		for (Map<String, Object> row : result) {
@@ -207,12 +207,12 @@ public final class ObserverDao {
 		log.debug("Selecting observer entries (userId=%s)".formatted(userId));
 		List<LocalResult> results = runner.runScript(OBSERVER_SELECT_USER_ID_SCRIPT, userId);
 		if (results.isEmpty()) {
-			throw new DataAccessException("The script " + OBSERVER_SELECT_USER_ID_SCRIPT + " did not yeild results!");
-		}
-		if (results.isEmpty()) {
-			throw new DataAccessException("The first statement in " + OBSERVER_SELECT_USER_ID_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.INVALID_RESULT_COUNT_MESSAGE.formatted(OBSERVER_SELECT_USER_ID_SCRIPT));
 		}
 		LocalResult result = results.getFirst();
+		if (result == null) {
+			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(OBSERVER_SELECT_USER_ID_SCRIPT));
+		}
 		List<Inquiry> list = new ArrayList<>();
 		for (Map<String, Object> row : result) {
 			int inquiryId = (int) row.get("inquiry_id");

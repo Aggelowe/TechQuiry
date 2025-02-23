@@ -100,11 +100,11 @@ public final class UserDataDao {
 		log.debug("Selecting user data entry (userId=%s)".formatted(userId));
 		List<LocalResult> results = runner.runScript(USER_DATA_SELECT_SCRIPT, userId);
 		if (results.isEmpty()) {
-			throw new DataAccessException("The script " + USER_DATA_SELECT_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.INVALID_RESULT_COUNT_MESSAGE.formatted(USER_DATA_SELECT_SCRIPT));
 		}
 		LocalResult result = results.getFirst();
 		if (result == null) {
-			throw new DataAccessException("The first statement in " + USER_DATA_SELECT_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(USER_DATA_SELECT_SCRIPT));
 		}
 		List<Map<String, Object>> list = result.list();
 		if (list.size() == 0) {

@@ -79,15 +79,15 @@ public final class UserLoginDao {
 		log.debug("Selecting user login entry count");
 		List<LocalResult> results = runner.runScript(USER_LOGIN_COUNT_SCRIPT);
 		if (results.isEmpty()) {
-			throw new DataAccessException("The script " + USER_LOGIN_COUNT_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.INVALID_RESULT_COUNT_MESSAGE.formatted(USER_LOGIN_COUNT_SCRIPT));
 		}
 		LocalResult result = results.getFirst();
 		if (result == null) {
-			throw new DataAccessException("The first statement in " + USER_LOGIN_COUNT_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(USER_LOGIN_COUNT_SCRIPT));
 		}
 		List<Map<String, Object>> list = result.list();
 		if (list.size() == 0) {
-			throw new DataAccessException("The first statement in " + USER_LOGIN_COUNT_SCRIPT + " did not yeild a user count!");
+			throw new DataAccessException(DataAccessException.INVALID_RESULT_MESSAGE.formatted(USER_LOGIN_COUNT_SCRIPT));
 		}
 		Map<String, Object> row = list.getFirst();
 		return (int) row.get("users_count");
@@ -125,15 +125,15 @@ public final class UserLoginDao {
 		String encodedSalt = SecurityUtils.encodeBase64(passwordSalt);
 		List<LocalResult> results = runner.runScript(USER_LOGIN_INSERT_SCRIPT, username, encodedHash, encodedSalt);
 		if (results.size() < 2) {
-			throw new DataAccessException("The script " + USER_LOGIN_INSERT_SCRIPT + " did not yeild at least two results!");
+			throw new DataAccessException(DataAccessException.INVALID_RESULT_COUNT_MESSAGE.formatted(USER_LOGIN_INSERT_SCRIPT));
 		}
 		LocalResult result = results.get(1);
 		if (result == null) {
-			throw new DataAccessException("The first statement in " + USER_LOGIN_INSERT_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(USER_LOGIN_INSERT_SCRIPT));
 		}
 		List<Map<String, Object>> list = result.list();
 		if (list.size() == 0) {
-			throw new DataAccessException("The first statement in " + USER_LOGIN_INSERT_SCRIPT + " did not yeild a user id!");
+			throw new DataAccessException(DataAccessException.INVALID_RESULT_MESSAGE.formatted(USER_LOGIN_INSERT_SCRIPT));
 		}
 		Map<String, Object> row = list.getFirst();
 		return (int) row.get("user_id");
@@ -154,11 +154,11 @@ public final class UserLoginDao {
 		log.debug("Selecting user login entries (count=%s, offset=%s)".formatted(count, offset));
 		List<LocalResult> results = runner.runScript(USER_LOGIN_RANGE_SCRIPT, offset, count);
 		if (results.isEmpty()) {
-			throw new DataAccessException("The script " + USER_LOGIN_RANGE_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.INVALID_RESULT_COUNT_MESSAGE.formatted(USER_LOGIN_RANGE_SCRIPT));
 		}
 		LocalResult result = results.getFirst();
 		if (result == null) {
-			throw new DataAccessException("The first statement in " + USER_LOGIN_RANGE_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(USER_LOGIN_RANGE_SCRIPT));
 		}
 		List<UserLogin> range = new ArrayList<>(count);
 		for (Map<String, Object> row : result) {
@@ -172,7 +172,7 @@ public final class UserLoginDao {
 				passwordHash = SecurityUtils.decodeBase64(encodedHash);
 				passwordSalt = SecurityUtils.decodeBase64(encodedSalt);
 			} catch (IllegalArgumentException exception) {
-				throw new DataAccessException("There was an error while retrieving the user login information!", exception);
+				throw new DataAccessException("Could not decode the user login information!", exception);
 			}
 			UserLogin userLogin = new UserLogin(id, username, passwordHash, passwordSalt);
 			range.add(userLogin);
@@ -193,11 +193,11 @@ public final class UserLoginDao {
 		log.debug("Selecting user login entry (userId=%s)".formatted(userId));
 		List<LocalResult> results = runner.runScript(USER_LOGIN_SELECT_SCRIPT, userId);
 		if (results.isEmpty()) {
-			throw new DataAccessException("The script " + USER_LOGIN_SELECT_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.INVALID_RESULT_COUNT_MESSAGE.formatted(USER_LOGIN_SELECT_SCRIPT));
 		}
 		LocalResult result = results.getFirst();
 		if (result == null) {
-			throw new DataAccessException("The first statement in " + USER_LOGIN_SELECT_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(USER_LOGIN_SELECT_SCRIPT));
 		}
 		List<Map<String, Object>> list = result.list();
 		if (list.size() == 0) {
@@ -232,11 +232,11 @@ public final class UserLoginDao {
 		log.debug("Selecting user login entry (username=%s)".formatted(username));
 		List<LocalResult> results = runner.runScript(USER_LOGIN_SELECT_USERNAME_SCRIPT, username);
 		if (results.isEmpty()) {
-			throw new DataAccessException("The script " + USER_LOGIN_SELECT_USERNAME_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.INVALID_RESULT_COUNT_MESSAGE.formatted(USER_LOGIN_SELECT_USERNAME_SCRIPT));
 		}
 		LocalResult result = results.getFirst();
 		if (result == null) {
-			throw new DataAccessException("The first statement in " + USER_LOGIN_SELECT_USERNAME_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(USER_LOGIN_SELECT_USERNAME_SCRIPT));
 		}
 		List<Map<String, Object>> list = result.list();
 		if (list.size() == 0) {

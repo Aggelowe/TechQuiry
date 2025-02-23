@@ -81,15 +81,15 @@ public final class UpvoteDao {
 		int userId = upvote.getUserId();
 		List<LocalResult> results = runner.runScript(UPVOTE_CHECK_SCRIPT, responseId, userId);
 		if (results.isEmpty()) {
-			throw new DataAccessException("The first statement in " + UPVOTE_CHECK_SCRIPT + " did not yeild a result!");
+			throw new DataAccessException(DataAccessException.INVALID_RESULT_COUNT_MESSAGE.formatted(UPVOTE_CHECK_SCRIPT));
 		}
 		LocalResult result = results.getFirst();
 		if (result == null) {
-			throw new DataAccessException("The first statement in " + UPVOTE_CHECK_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(UPVOTE_CHECK_SCRIPT));
 		}
 		List<Map<String, Object>> list = result.list();
 		if (list.size() == 0) {
-			throw new DataAccessException("The first statement in " + UPVOTE_CHECK_SCRIPT + " did not yeild a result!");
+			throw new DataAccessException(DataAccessException.INVALID_RESULT_MESSAGE.formatted(UPVOTE_CHECK_SCRIPT));
 		}
 		Map<String, Object> row = list.getFirst();
 		return (int) row.get("exist") == 1;
@@ -108,15 +108,15 @@ public final class UpvoteDao {
 		log.debug("Selecting upvote entry count (responseId=%s)".formatted(responseId));
 		List<LocalResult> results = runner.runScript(UPVOTE_COUNT_RESPONSE_ID_SCRIPT, responseId);
 		if (results.isEmpty()) {
-			throw new DataAccessException("The first statement in " + UPVOTE_COUNT_RESPONSE_ID_SCRIPT + " did not yeild a result!");
+			throw new DataAccessException(DataAccessException.INVALID_RESULT_COUNT_MESSAGE.formatted(UPVOTE_COUNT_RESPONSE_ID_SCRIPT));
 		}
 		LocalResult result = results.getFirst();
 		if (result == null) {
-			throw new DataAccessException("The first statement in " + UPVOTE_COUNT_RESPONSE_ID_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(UPVOTE_COUNT_RESPONSE_ID_SCRIPT));
 		}
 		List<Map<String, Object>> list = result.list();
 		if (list.size() == 0) {
-			throw new DataAccessException("The first statement in " + UPVOTE_COUNT_RESPONSE_ID_SCRIPT + " did not yeild an upvote count!");
+			throw new DataAccessException(DataAccessException.INVALID_RESULT_MESSAGE.formatted(UPVOTE_COUNT_RESPONSE_ID_SCRIPT));
 		}
 		Map<String, Object> row = list.getFirst();
 		return (int) row.get("upvote_count");
@@ -164,11 +164,11 @@ public final class UpvoteDao {
 		log.debug("Selecting upvote entries (responseId=%s)".formatted(responseId));
 		List<LocalResult> results = runner.runScript(UPVOTE_SELECT_RESPONSE_ID_SCRIPT, responseId);
 		if (results.isEmpty()) {
-			throw new DataAccessException("The first statement in " + UPVOTE_SELECT_RESPONSE_ID_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.INVALID_RESULT_COUNT_MESSAGE.formatted(UPVOTE_SELECT_RESPONSE_ID_SCRIPT));
 		}
 		LocalResult result = results.getFirst();
 		if (result == null) {
-			throw new DataAccessException("The first statement in " + UPVOTE_SELECT_RESPONSE_ID_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(UPVOTE_SELECT_RESPONSE_ID_SCRIPT));
 		}
 		List<UserLogin> list = new ArrayList<>();
 		for (Map<String, Object> row : result) {
@@ -204,11 +204,11 @@ public final class UpvoteDao {
 		log.debug("Selecting upvote entries (userId=%s)".formatted(userId));
 		List<LocalResult> results = runner.runScript(UPVOTE_SELECT_USER_ID_SCRIPT, userId);
 		if (results.isEmpty()) {
-			throw new DataAccessException("The first statement in " + UPVOTE_SELECT_USER_ID_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.INVALID_RESULT_COUNT_MESSAGE.formatted(UPVOTE_SELECT_USER_ID_SCRIPT));
 		}
 		LocalResult result = results.getFirst();
 		if (result == null) {
-			throw new DataAccessException("The first statement in " + UPVOTE_SELECT_USER_ID_SCRIPT + " did not yeild results!");
+			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(UPVOTE_SELECT_USER_ID_SCRIPT));
 		}
 		List<Response> list = new ArrayList<>();
 		for (Map<String, Object> row : result) {

@@ -30,7 +30,7 @@ public final class SecurityUtils {
 	 *                                      constructor is invoked.
 	 */
 	private SecurityUtils() throws IllegalConstructionException {
-		throw new IllegalConstructionException(getClass().getName() + " objects should not be constructed!");
+		throw new IllegalConstructionException("Objects of type %s should not be constructed!".formatted(getClass().getName()));
 	}
 
 	/**

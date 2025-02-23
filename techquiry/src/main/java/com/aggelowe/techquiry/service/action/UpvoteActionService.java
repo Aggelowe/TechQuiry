@@ -63,13 +63,13 @@ public class UpvoteActionService {
 		log.debug("Checking upvote (responseId=%s)".formatted(responseId));
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
-			throw new UnauthorizedOperationException("The requested upvote check is unauthorized!");
+			throw new UnauthorizedOperationException("Checking upvotes requires an active session!");
 		}
 		Upvote upvote = new Upvote(responseId, current.getUserId());
 		try {
 			return upvoteDao.check(upvote);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while checking the upvote!", exception);
+			throw new InternalErrorException("A database error occured while checking the upvote!", exception);
 		}
 	}
 
@@ -89,7 +89,7 @@ public class UpvoteActionService {
 		log.debug("Creating upvote (responseId=%s)".formatted(responseId));
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
-			throw new UnauthorizedOperationException("The requested upvote creation is unauthorized!");
+			throw new UnauthorizedOperationException("Creating upvotes requires an active session!");
 		}
 		try {
 			Response response = responseDao.select(responseId);
@@ -98,11 +98,11 @@ public class UpvoteActionService {
 			}
 			Upvote upvote = new Upvote(responseId, current.getUserId());
 			if (upvoteDao.check(upvote)) {
-				throw new InvalidRequestException("The given upvote already exists!");
+				throw new InvalidRequestException("An upvote with the given information already exists!");
 			}
 			upvoteDao.insert(upvote);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while creating the upvote!", exception);
+			throw new InternalErrorException("A database error occured while creating the upvote!", exception);
 		}
 	}
 
@@ -120,16 +120,16 @@ public class UpvoteActionService {
 		log.debug("Deleting upvote (responseId=%s)".formatted(responseId));
 		Authentication current = sessionHelper.getAuthentication();
 		if (current == null) {
-			throw new UnauthorizedOperationException("The requested upvote deletion is unauthorized!");
+			throw new UnauthorizedOperationException("Deleting upvotes requires an active session!");
 		}
 		Upvote upvote = new Upvote(responseId, current.getUserId());
 		try {
 			if (!upvoteDao.check(upvote)) {
-				throw new EntityNotFoundException("The requested upvote does not exist!");
+				throw new EntityNotFoundException("The given upvote information does not have a corresponding upvote!");
 			}
 			upvoteDao.delete(upvote);
 		} catch (DatabaseException exception) {
-			throw new InternalErrorException("An internal error occured while deleting the upvote!", exception);
+			throw new InternalErrorException("A database error occured while deleting the upvote!", exception);
 		}
 	}
 

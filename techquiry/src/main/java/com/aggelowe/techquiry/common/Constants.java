@@ -19,7 +19,7 @@ public final class Constants {
 	 *                                      constructor is invoked.
 	 */
 	private Constants() throws IllegalConstructionException {
-		throw new IllegalConstructionException(getClass().getName() + " objects should not be constructed!");
+		throw new IllegalConstructionException("Objects of type %s should not be constructed!".formatted(getClass().getName()));
 	}
 
 	/**

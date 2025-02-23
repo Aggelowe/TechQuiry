@@ -264,9 +264,9 @@ class UserLoginServiceTest {
 		sessionHelper.setAuthentication(new Authentication(2));
 		assertThrowsExactly(ForbiddenOperationException.class, () -> userLoginActionService.authenticateUser("bob", "pass"));
 		sessionHelper.setAuthentication(null);
-		assertThrowsExactly(InvalidRequestException.class, () -> userLoginActionService.authenticateUser("bob", "word"));
+		assertThrowsExactly(UnauthorizedOperationException.class, () -> userLoginActionService.authenticateUser("bob", "word"));
 		sessionHelper.setAuthentication(null);
-		assertThrowsExactly(InvalidRequestException.class, () -> userLoginActionService.authenticateUser("david", "pass"));
+		assertThrowsExactly(UnauthorizedOperationException.class, () -> userLoginActionService.authenticateUser("david", "pass"));
 	}
 
 	@Test
