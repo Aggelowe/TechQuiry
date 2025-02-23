@@ -88,7 +88,7 @@ public final class UpvoteDao {
 			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(UPVOTE_CHECK_SCRIPT));
 		}
 		List<Map<String, Object>> list = result.list();
-		if (list.size() == 0) {
+		if (list.isEmpty()) {
 			throw new DataAccessException(DataAccessException.INVALID_RESULT_MESSAGE.formatted(UPVOTE_CHECK_SCRIPT));
 		}
 		Map<String, Object> row = list.getFirst();
@@ -115,7 +115,7 @@ public final class UpvoteDao {
 			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(UPVOTE_COUNT_RESPONSE_ID_SCRIPT));
 		}
 		List<Map<String, Object>> list = result.list();
-		if (list.size() == 0) {
+		if (list.isEmpty()) {
 			throw new DataAccessException(DataAccessException.INVALID_RESULT_MESSAGE.formatted(UPVOTE_COUNT_RESPONSE_ID_SCRIPT));
 		}
 		Map<String, Object> row = list.getFirst();

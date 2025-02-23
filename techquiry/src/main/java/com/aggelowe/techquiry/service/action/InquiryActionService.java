@@ -76,8 +76,8 @@ public class InquiryActionService {
 		}
 		String title = inquiry.getTitle();
 		String content = inquiry.getContent();
-		if (title.isEmpty() || content.isEmpty()) {
-			throw new InvalidRequestException("The given title and content must not be empty!");
+		if (title.isBlank() || content.isBlank()) {
+			throw new InvalidRequestException("The given title and content must not be blank!");
 		}
 		Inquiry copy = inquiry.toBuilder().userId(current.getUserId()).build();
 		try {
@@ -144,8 +144,8 @@ public class InquiryActionService {
 		}
 		String title = inquiry.getTitle();
 		String content = inquiry.getContent();
-		if (title.isEmpty() || content.isEmpty()) {
-			throw new InvalidRequestException("The given title and content must not be empty!");
+		if (title.isBlank() || content.isBlank()) {
+			throw new InvalidRequestException("The given title and content must not be blank!");
 		}
 		try {
 			Inquiry previous = inquiryDao.select(inquiry.getInquiryId());

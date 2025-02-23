@@ -16,7 +16,7 @@ public abstract class TechQuiryException extends Exception {
 	 *
 	 * @param message The details message of the exception.
 	 */
-	public TechQuiryException(String message) {
+	protected TechQuiryException(String message) {
 		this(message, null);
 	}
 
@@ -26,7 +26,7 @@ public abstract class TechQuiryException extends Exception {
 	 * @param message The details message of the exception.
 	 * @param cause The <i>cause</i> of the exception.
 	 */
-	public TechQuiryException(String message, Throwable cause) {
+	protected TechQuiryException(String message, Throwable cause) {
 		super(message, cause);
 	}
 

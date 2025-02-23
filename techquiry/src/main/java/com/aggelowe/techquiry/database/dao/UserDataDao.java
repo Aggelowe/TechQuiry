@@ -107,15 +107,14 @@ public final class UserDataDao {
 			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(USER_DATA_SELECT_SCRIPT));
 		}
 		List<Map<String, Object>> list = result.list();
-		if (list.size() == 0) {
+		if (list.isEmpty()) {
 			return null;
 		}
 		Map<String, Object> row = list.getFirst();
 		String firstName = (String) row.get("first_name");
 		String lastName = (String) row.get("last_name");
 		byte[] icon = (byte[]) row.get("icon");
-		UserData userData = new UserData(userId, firstName, lastName, icon);
-		return userData;
+		return new UserData(userId, firstName, lastName, icon);
 	}
 
 	/**

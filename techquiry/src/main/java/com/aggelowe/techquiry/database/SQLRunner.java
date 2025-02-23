@@ -87,11 +87,11 @@ public final class SQLRunner {
 	 */
 	public LocalResult runStatement(String statement, Object... parameters) throws SQLRunnerException {
 		try (Connection connection = dataSource.getConnection()) {
-			LocalResult result;
 			try {
 				PreparedStatement prepared = connection.prepareStatement(statement);
-				result = executeStatement(prepared, parameters);
+				LocalResult result = executeStatement(prepared, parameters);
 				connection.commit();
+				return result;
 			} catch (SQLException exception) {
 				try {
 					connection.rollback();
@@ -100,7 +100,6 @@ public final class SQLRunner {
 				}
 				throw new SQLRunnerExecuteException("Could not execute SQL statement!", exception);
 			}
-			return result;
 		} catch (SQLException exception) {
 			throw new SQLRunnerExecuteException("Could not get database connection!", exception);
 		}

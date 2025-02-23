@@ -86,7 +86,7 @@ public final class UserLoginDao {
 			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(USER_LOGIN_COUNT_SCRIPT));
 		}
 		List<Map<String, Object>> list = result.list();
-		if (list.size() == 0) {
+		if (list.isEmpty()) {
 			throw new DataAccessException(DataAccessException.INVALID_RESULT_MESSAGE.formatted(USER_LOGIN_COUNT_SCRIPT));
 		}
 		Map<String, Object> row = list.getFirst();
@@ -132,7 +132,7 @@ public final class UserLoginDao {
 			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(USER_LOGIN_INSERT_SCRIPT));
 		}
 		List<Map<String, Object>> list = result.list();
-		if (list.size() == 0) {
+		if (list.isEmpty()) {
 			throw new DataAccessException(DataAccessException.INVALID_RESULT_MESSAGE.formatted(USER_LOGIN_INSERT_SCRIPT));
 		}
 		Map<String, Object> row = list.getFirst();
@@ -200,7 +200,7 @@ public final class UserLoginDao {
 			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(USER_LOGIN_SELECT_SCRIPT));
 		}
 		List<Map<String, Object>> list = result.list();
-		if (list.size() == 0) {
+		if (list.isEmpty()) {
 			return null;
 		}
 		Map<String, Object> row = list.getFirst();
@@ -215,8 +215,7 @@ public final class UserLoginDao {
 		} catch (IllegalArgumentException exception) {
 			throw new DataAccessException("There was an error while retrieving the user login information!", exception);
 		}
-		UserLogin userLogin = new UserLogin(userId, username, passwordHash, passwordSalt);
-		return userLogin;
+		return new UserLogin(userId, username, passwordHash, passwordSalt);
 	}
 
 	/**
@@ -239,7 +238,7 @@ public final class UserLoginDao {
 			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(USER_LOGIN_SELECT_USERNAME_SCRIPT));
 		}
 		List<Map<String, Object>> list = result.list();
-		if (list.size() == 0) {
+		if (list.isEmpty()) {
 			return null;
 		}
 		Map<String, Object> row = list.getFirst();
@@ -254,8 +253,7 @@ public final class UserLoginDao {
 		} catch (IllegalArgumentException exception) {
 			throw new DataAccessException("There was an error while retrieving the user login information!", exception);
 		}
-		UserLogin userLogin = new UserLogin(id, username, passwordHash, passwordSalt);
-		return userLogin;
+		return new UserLogin(id, username, passwordHash, passwordSalt);
 	}
 
 	/**

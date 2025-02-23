@@ -64,8 +64,8 @@ public class UserDataActionService {
 		}
 		String firstName = data.getFirstName();
 		String lastName = data.getLastName();
-		if (firstName.isEmpty() || lastName.isEmpty()) {
-			throw new InvalidRequestException("The given first and last name must not be empty!");
+		if (firstName.isBlank() || lastName.isBlank()) {
+			throw new InvalidRequestException("The given first and last name must not be blank!");
 		}
 		try {
 			UserData userData = userDataDao.select(current.getUserId());
@@ -139,8 +139,8 @@ public class UserDataActionService {
 		}
 		String firstName = data.getFirstName();
 		String lastName = data.getLastName();
-		if (firstName.isEmpty() || lastName.isEmpty()) {
-			throw new InvalidRequestException("The given first and last name must not be empty!");
+		if (firstName.isBlank() || lastName.isBlank()) {
+			throw new InvalidRequestException("The given first and last name must not be blank!");
 		}
 		try {
 			UserData userData = userDataDao.select(data.getUserId());

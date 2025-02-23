@@ -83,7 +83,7 @@ public final class ResponseDao {
 			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(RESPONSE_COUNT_INQUIRY_ID_SCRIPT));
 		}
 		List<Map<String, Object>> list = result.list();
-		if (list.size() == 0) {
+		if (list.isEmpty()) {
 			throw new DataAccessException(DataAccessException.INVALID_RESULT_MESSAGE.formatted(RESPONSE_COUNT_INQUIRY_ID_SCRIPT));
 		}
 		Map<String, Object> row = list.getFirst();
@@ -128,7 +128,7 @@ public final class ResponseDao {
 			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(RESPONSE_INSERT_SCRIPT));
 		}
 		List<Map<String, Object>> list = result.list();
-		if (list.size() == 0) {
+		if (list.isEmpty()) {
 			throw new DataAccessException(DataAccessException.INVALID_RESULT_MESSAGE.formatted(RESPONSE_INSERT_SCRIPT));
 		}
 		Map<String, Object> row = list.getFirst();
@@ -186,7 +186,7 @@ public final class ResponseDao {
 			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(RESPONSE_SELECT_SCRIPT));
 		}
 		List<Map<String, Object>> list = result.list();
-		if (list.size() == 0) {
+		if (list.isEmpty()) {
 			return null;
 		}
 		Map<String, Object> row = list.getFirst();
@@ -194,8 +194,7 @@ public final class ResponseDao {
 		int userId = (int) row.get("user_id");
 		boolean anonymous = (int) row.get("anonymous") == 1;
 		String content = (String) row.get("content");
-		Response response = new Response(responseId, inquiryId, userId, anonymous, content);
-		return response;
+		return new Response(responseId, inquiryId, userId, anonymous, content);
 	}
 
 	/**

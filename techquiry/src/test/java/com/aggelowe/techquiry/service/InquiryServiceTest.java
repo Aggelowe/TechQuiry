@@ -179,10 +179,10 @@ class InquiryServiceTest {
 		sessionHelper.setAuthentication(null);
 		Inquiry target0 = new Inquiry(0, 0, "Fail", "Fail Content", true);
 		assertThrowsExactly(UnauthorizedOperationException.class, () -> inquiryActionService.createInquiry(target0));
-		Inquiry target1 = new Inquiry(0, 0, "", "Fail Content", false);
+		Inquiry target1 = new Inquiry(0, 0, "\t", "Fail Content", false);
 		sessionHelper.setAuthentication(new Authentication(1));
 		assertThrowsExactly(InvalidRequestException.class, () -> inquiryActionService.createInquiry(target1));
-		Inquiry target2 = new Inquiry(0, 0, "Fail", "", false);
+		Inquiry target2 = new Inquiry(0, 0, "Fail", "\t", false);
 		assertThrowsExactly(InvalidRequestException.class, () -> inquiryActionService.createInquiry(target2));
 	}
 
@@ -241,10 +241,10 @@ class InquiryServiceTest {
 		assertThrowsExactly(ForbiddenOperationException.class, () -> inquiryActionService.updateInquiry(target1));
 		Inquiry target2 = new Inquiry(3, 0, "Fail", "Fail Content", true);
 		assertThrowsExactly(EntityNotFoundException.class, () -> inquiryActionService.updateInquiry(target2));
-		Inquiry target3 = new Inquiry(0, 0, "", "Fail Content", false);
+		Inquiry target3 = new Inquiry(0, 0, "\t", "Fail Content", false);
 		sessionHelper.setAuthentication(new Authentication(1));
 		assertThrowsExactly(InvalidRequestException.class, () -> inquiryActionService.updateInquiry(target3));
-		Inquiry target4 = new Inquiry(0, 0, "Fail", "", false);
+		Inquiry target4 = new Inquiry(0, 0, "Fail", "\t", false);
 		assertThrowsExactly(InvalidRequestException.class, () -> inquiryActionService.updateInquiry(target4));
 	}
 

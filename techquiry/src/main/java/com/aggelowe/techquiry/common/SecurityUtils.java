@@ -43,8 +43,7 @@ public final class SecurityUtils {
 	public static String encodeBase64(byte[] source) {
 		Encoder encoder = Base64.getEncoder();
 		byte[] raw = encoder.encode(source);
-		String encoded = new String(raw, StandardCharsets.UTF_8);
-		return encoded;
+		return new String(raw, StandardCharsets.UTF_8);
 	}
 
 	/**
@@ -58,8 +57,7 @@ public final class SecurityUtils {
 	public static byte[] decodeBase64(String encoded) {
 		Decoder decoder = Base64.getDecoder();
 		byte[] raw = encoded.getBytes(StandardCharsets.UTF_8);
-		byte[] decoded = decoder.decode(raw);
-		return decoded;
+		return decoder.decode(raw);
 	}
 
 	/**

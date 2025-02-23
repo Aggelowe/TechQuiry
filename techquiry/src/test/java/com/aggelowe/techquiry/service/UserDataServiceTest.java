@@ -135,10 +135,10 @@ class UserDataServiceTest {
 		UserData target0 = new UserData(0, "Charlie", "Brown", null);
 		sessionHelper.setAuthentication(null);
 		assertThrowsExactly(UnauthorizedOperationException.class, () -> userDataActionService.createData(target0));
-		UserData target1 = new UserData(0, "", "Brown", null);
+		UserData target1 = new UserData(0, "\t", "Brown", null);
 		sessionHelper.setAuthentication(new Authentication(2));
 		assertThrowsExactly(InvalidRequestException.class, () -> userDataActionService.createData(target1));
-		UserData target2 = new UserData(0, "Charlie", "", null);
+		UserData target2 = new UserData(0, "Charlie", "\t", null);
 		assertThrowsExactly(InvalidRequestException.class, () -> userDataActionService.createData(target2));
 		sessionHelper.setAuthentication(new Authentication(1));
 		UserData target3 = new UserData(0, "Charlie", "Brown", null);
@@ -197,10 +197,10 @@ class UserDataServiceTest {
 		assertThrowsExactly(UnauthorizedOperationException.class, () -> userDataActionService.updateData(target0));
 		sessionHelper.setAuthentication(new Authentication(0));
 		assertThrowsExactly(ForbiddenOperationException.class, () -> userDataActionService.updateData(target0));
-		UserData target1 = new UserData(1, "", "Brown", null);
+		UserData target1 = new UserData(1, "\t", "Brown", null);
 		sessionHelper.setAuthentication(new Authentication(1));
 		assertThrowsExactly(InvalidRequestException.class, () -> userDataActionService.updateData(target1));
-		UserData target2 = new UserData(1, "Charlie", "", null);
+		UserData target2 = new UserData(1, "Charlie", "\t", null);
 		assertThrowsExactly(InvalidRequestException.class, () -> userDataActionService.updateData(target2));
 		UserData target3 = new UserData(2, "Charlie", "Brown", null);
 		sessionHelper.setAuthentication(new Authentication(2));

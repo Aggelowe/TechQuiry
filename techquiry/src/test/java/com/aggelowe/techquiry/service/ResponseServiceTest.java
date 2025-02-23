@@ -188,7 +188,7 @@ class ResponseServiceTest {
 		Response target1 = new Response(0, 3, 0, true, "Fail Response");
 		sessionHelper.setAuthentication(new Authentication(1));
 		assertThrowsExactly(EntityNotFoundException.class, () -> responseActionService.createResponse(target1));
-		Response target2 = new Response(0, 2, 0, true, "");
+		Response target2 = new Response(0, 2, 0, true, "\t");
 		assertThrowsExactly(InvalidRequestException.class, () -> responseActionService.createResponse(target2));
 	}
 
@@ -247,7 +247,7 @@ class ResponseServiceTest {
 		Response target1 = new Response(3, 1, 0, false, "Fail Response");
 		sessionHelper.setAuthentication(new Authentication(0));
 		assertThrowsExactly(EntityNotFoundException.class, () -> responseActionService.updateResponse(target1));
-		Response target2 = new Response(0, 1, 0, false, "");
+		Response target2 = new Response(0, 1, 0, false, "\t");
 		assertThrowsExactly(InvalidRequestException.class, () -> responseActionService.updateResponse(target2));
 	}
 

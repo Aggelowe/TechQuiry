@@ -89,7 +89,7 @@ public final class ObserverDao {
 			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(OBSERVER_CHECK_SCRIPT));
 		}
 		List<Map<String, Object>> list = result.list();
-		if (list.size() == 0) {
+		if (list.isEmpty()) {
 			throw new DataAccessException(DataAccessException.INVALID_RESULT_MESSAGE.formatted(OBSERVER_CHECK_SCRIPT));
 		}
 		Map<String, Object> row = list.getFirst();
@@ -116,7 +116,7 @@ public final class ObserverDao {
 			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(OBSERVER_COUNT_INQUIRY_ID_SCRIPT));
 		}
 		List<Map<String, Object>> list = result.list();
-		if (list.size() == 0) {
+		if (list.isEmpty()) {
 			throw new DataAccessException(DataAccessException.INVALID_RESULT_MESSAGE.formatted(OBSERVER_COUNT_INQUIRY_ID_SCRIPT));
 		}
 		Map<String, Object> row = list.getFirst();

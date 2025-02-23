@@ -92,7 +92,7 @@ public final class InquiryDao {
 			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(INQUIRY_COUNT_SCRIPT));
 		}
 		List<Map<String, Object>> list = result.list();
-		if (list.size() == 0) {
+		if (list.isEmpty()) {
 			throw new DataAccessException(DataAccessException.INVALID_RESULT_MESSAGE.formatted(INQUIRY_COUNT_SCRIPT));
 		}
 		Map<String, Object> row = list.getFirst();
@@ -136,7 +136,7 @@ public final class InquiryDao {
 			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(INQUIRY_INSERT_SCRIPT));
 		}
 		List<Map<String, Object>> list = result.list();
-		if (list.size() == 0) {
+		if (list.isEmpty()) {
 			throw new DataAccessException(DataAccessException.INVALID_RESULT_MESSAGE.formatted(INQUIRY_INSERT_SCRIPT));
 		}
 		Map<String, Object> row = list.getFirst();
@@ -259,7 +259,7 @@ public final class InquiryDao {
 			throw new DataAccessException(DataAccessException.MISSING_RESULT_MESSAGE.formatted(INQUIRY_SELECT_SCRIPT));
 		}
 		List<Map<String, Object>> list = result.list();
-		if (list.size() == 0) {
+		if (list.isEmpty()) {
 			return null;
 		}
 		Map<String, Object> row = list.getFirst();
@@ -267,8 +267,7 @@ public final class InquiryDao {
 		String title = (String) row.get("title");
 		String content = (String) row.get("content");
 		boolean anonymous = (int) row.get("anonymous") == 1;
-		Inquiry inquiry = new Inquiry(inquiryId, userId, title, content, anonymous);
-		return inquiry;
+		return new Inquiry(inquiryId, userId, title, content, anonymous);
 	}
 
 	/**

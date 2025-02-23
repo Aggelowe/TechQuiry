@@ -73,8 +73,8 @@ public class ResponseActionService {
 			throw new UnauthorizedOperationException("Creating responses requires an active session!");
 		}
 		String content = response.getContent();
-		if (content.isEmpty()) {
-			throw new InvalidRequestException("The given content must not be empty!");
+		if (content.isBlank()) {
+			throw new InvalidRequestException("The given content must not be blank!");
 		}
 		try {
 			Inquiry inquiry = inquiryDao.select(response.getInquiryId());
@@ -143,7 +143,7 @@ public class ResponseActionService {
 			throw new UnauthorizedOperationException("Updating responses requires an active session!");
 		}
 		String content = response.getContent();
-		if (content.isEmpty()) {
+		if (content.isBlank()) {
 			throw new InvalidRequestException("The given content must not be empty!");
 		}
 		try {
