@@ -7,12 +7,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.aggelowe.techquiry.dto.InquiryDto;
 import com.aggelowe.techquiry.dto.ResponseDto;
@@ -49,7 +49,7 @@ import lombok.extern.log4j.Log4j2;
  * @author Aggelowe
  * @since 0.0.1
  */
-@Controller
+@RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
 @Log4j2
@@ -128,7 +128,7 @@ public class UserController {
 	 * @return The response with the user count.
 	 * @throws ServiceException If an error occurs while getting the login count
 	 */
-	@PostMapping("/count")
+	@GetMapping("/count")
 	public ResponseEntity<Integer> getCount() throws ServiceException {
 		log.debug("Requested user login count");
 		int count = userLoginService.getLoginCount();
@@ -144,7 +144,7 @@ public class UserController {
 	 * @return The response with the requested user range.
 	 * @throws ServiceException If an exception occurs while getting the range
 	 */
-	@PostMapping("/range/{count}/{page}")
+	@GetMapping("/range/{count}/{page}")
 	public ResponseEntity<List<UserLoginDto>> getRange(@PathVariable int count, @PathVariable int page) throws ServiceException {
 		log.debug("Requested user login range (count=%s, page=%s)".formatted(count, page));
 		List<UserLogin> entities = userLoginService.getLoginRange(count, page);
@@ -177,7 +177,7 @@ public class UserController {
 	 * @return The response with the requested user login
 	 * @throws ServiceException If an exception occurs while getting the user
 	 */
-	@PostMapping("/current")
+	@GetMapping("/current")
 	public ResponseEntity<UserLoginDto> getCurrentLogin() throws ServiceException {
 		log.debug("Requested current user login");
 		UserLogin entity = userLoginActionService.getCurrentLogin();
@@ -243,7 +243,7 @@ public class UserController {
 	 * @return The response with the requested user login
 	 * @throws ServiceException If an exception occurs while getting the user login
 	 */
-	@PostMapping("/u/{username}")
+	@GetMapping("/u/{username}")
 	public ResponseEntity<UserLoginDto> getUserLogin(@PathVariable String username) throws ServiceException {
 		log.debug("Requested user login (username=%s)".formatted(username));
 		UserLogin entity = userLoginService.getLoginByUsername(username);
@@ -259,7 +259,7 @@ public class UserController {
 	 * @return The response with the requested user login
 	 * @throws ServiceException If an exception occurs while getting the user login
 	 */
-	@PostMapping("/id/{userId}")
+	@GetMapping("/id/{userId}")
 	public ResponseEntity<UserLoginDto> getUserLogin(@PathVariable int userId) throws ServiceException {
 		log.debug("Requested user login (userId=%s)".formatted(userId));
 		UserLogin entity = userLoginService.getLoginByUserId(userId);
@@ -304,7 +304,7 @@ public class UserController {
 	 * @return The response with the requested list of inquiries
 	 * @throws ServiceException If an exception occurs while getting the inquiries
 	 */
-	@PostMapping("/id/{userId}/inquiries")
+	@GetMapping("/id/{userId}/inquiries")
 	public ResponseEntity<List<InquiryDto>> getInquiries(@PathVariable int userId) throws ServiceException {
 		log.debug("Requested posted inquiries (userId=%s)".formatted(userId));
 		List<Inquiry> entities = inquiryActionService.getInquiryListByUserId(userId);
@@ -320,7 +320,7 @@ public class UserController {
 	 * @return The response with the requested list of inquiries
 	 * @throws ServiceException If an exception occurs while getting the inquiries
 	 */
-	@PostMapping("/id/{userId}/observed")
+	@GetMapping("/id/{userId}/observed")
 	public ResponseEntity<List<InquiryDto>> getObservedInquiries(@PathVariable int userId) throws ServiceException {
 		log.debug("Requested observed inquiries (userId=%s)".formatted(userId));
 		List<Inquiry> entities = observerService.getObservedInquiryListByUserId(userId);
@@ -336,7 +336,7 @@ public class UserController {
 	 * @return The response with the requested list of responses
 	 * @throws ServiceException If an exception occurs while getting the responses
 	 */
-	@PostMapping("/id/{userId}/upvotes")
+	@GetMapping("/id/{userId}/upvotes")
 	public ResponseEntity<List<ResponseDto>> getUpvotedResponses(@PathVariable int userId) throws ServiceException {
 		log.debug("Requested upvoted responses (userId=%s)".formatted(userId));
 		List<Response> entities = upvoteService.getUpvotedResponseListByUserId(userId);
@@ -352,7 +352,7 @@ public class UserController {
 	 * @return The response with the requested user data
 	 * @throws ServiceException If an exception occurs while getting the user data
 	 */
-	@PostMapping("/id/{userId}/data")
+	@GetMapping("/id/{userId}/data")
 	public ResponseEntity<UserDataDto> getUserData(@PathVariable int userId) throws ServiceException {
 		log.debug("Requested user data (userId=%s)".formatted(userId));
 		UserData entity = userDataService.getDataByUserId(userId);

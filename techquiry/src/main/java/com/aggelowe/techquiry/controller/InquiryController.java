@@ -3,11 +3,12 @@ package com.aggelowe.techquiry.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.aggelowe.techquiry.dto.InquiryDto;
 import com.aggelowe.techquiry.dto.ResponseDto;
@@ -38,7 +39,7 @@ import lombok.extern.log4j.Log4j2;
  * @author Aggelowe
  * @since 0.0.1
  */
-@Controller
+@RestController
 @RequestMapping("/api/inquiry")
 @RequiredArgsConstructor
 @Log4j2
@@ -105,7 +106,7 @@ public class InquiryController {
 	 * @return The response with the inquiry count
 	 * @throws ServiceException If an error occurs while getting the inquiry count
 	 */
-	@PostMapping("/count")
+	@GetMapping("/count")
 	public ResponseEntity<Integer> getCount() throws ServiceException {
 		log.debug("Requested inquiry count");
 		int count = inquiryService.getInquiryCount();
@@ -121,7 +122,7 @@ public class InquiryController {
 	 * @return The response with the requested inquiry range.
 	 * @throws ServiceException If an exception occurs while getting the range
 	 */
-	@PostMapping("/range/{count}/{page}")
+	@GetMapping("/range/{count}/{page}")
 	public ResponseEntity<List<InquiryDto>> getRange(@PathVariable int count, @PathVariable int page) throws ServiceException {
 		log.debug("Requested inquiry range (count=%s, page=%s)".formatted(count, page));
 		List<Inquiry> entities = inquiryService.getInquiryRange(count, page);
@@ -155,7 +156,7 @@ public class InquiryController {
 	 * @return The response with the requested inquiry
 	 * @throws ServiceException If an exception occurs while getting the inquiry
 	 */
-	@PostMapping("/id/{inquiryId}")
+	@GetMapping("/id/{inquiryId}")
 	public ResponseEntity<InquiryDto> getInquiry(@PathVariable int inquiryId) throws ServiceException {
 		log.debug("Requested inquiry (inquiryId=%s)".formatted(inquiryId));
 		Inquiry entity = inquiryService.getInquiryByInquiryId(inquiryId);
@@ -201,7 +202,7 @@ public class InquiryController {
 	 * @return The response with the requested list of responses
 	 * @throws ServiceException If an exception occurs while getting the responses
 	 */
-	@PostMapping("/id/{inquiryId}/response")
+	@GetMapping("/id/{inquiryId}/response")
 	public ResponseEntity<List<ResponseDto>> getResponses(@PathVariable int inquiryId) throws ServiceException {
 		log.debug("Requested responses (inquiryId=%s)".formatted(inquiryId));
 		List<Response> entities = responseService.getResponseListByInquiryId(inquiryId);
@@ -217,7 +218,7 @@ public class InquiryController {
 	 * @return The response with the requested responses count
 	 * @throws ServiceException If an exception occurs while getting the responses
 	 */
-	@PostMapping("/id/{inquiryId}/response/count")
+	@GetMapping("/id/{inquiryId}/response/count")
 	public ResponseEntity<Integer> getResponseCount(@PathVariable int inquiryId) throws ServiceException {
 		log.debug("Requested response count (inquiryId=%s)".formatted(inquiryId));
 		int count = responseService.getResponseCountByInquiryId(inquiryId);
@@ -253,7 +254,7 @@ public class InquiryController {
 	 * @return The response with the requested list of user logins
 	 * @throws ServiceException If an exception occurs while getting the observers
 	 */
-	@PostMapping("/id/{inquiryId}/observer")
+	@GetMapping("/id/{inquiryId}/observer")
 	public ResponseEntity<List<UserLoginDto>> getObservers(@PathVariable int inquiryId) throws ServiceException {
 		log.debug("Requested observers (inquiryId=%s)".formatted(inquiryId));
 		List<UserLogin> entities = observerService.getObserverUserLoginListByInquiryId(inquiryId);
@@ -269,7 +270,7 @@ public class InquiryController {
 	 * @return The response with the requested observer count
 	 * @throws ServiceException If an exception occurs while getting the observers
 	 */
-	@PostMapping("/id/{inquiryId}/observer/count")
+	@GetMapping("/id/{inquiryId}/observer/count")
 	public ResponseEntity<Integer> getObserverCount(@PathVariable int inquiryId) throws ServiceException {
 		log.debug("Requested observer count (inquiryId=%s)".formatted(inquiryId));
 		int count = observerService.getObserverCountByInquiryId(inquiryId);
@@ -284,7 +285,7 @@ public class InquiryController {
 	 * @return The response with whether the user is observing the inquiry
 	 * @throws ServiceException If an exception occurs while checking the observer
 	 */
-	@PostMapping("/id/{inquiryId}/observer/check")
+	@GetMapping("/id/{inquiryId}/observer/check")
 	public ResponseEntity<Boolean> checkObserver(@PathVariable int inquiryId) throws ServiceException {
 		log.debug("Requested observer check (inquiryId=%s)".formatted(inquiryId));
 		boolean check = observerActionService.checkObserver(inquiryId);

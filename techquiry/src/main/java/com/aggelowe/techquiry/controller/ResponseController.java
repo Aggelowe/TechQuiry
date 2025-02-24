@@ -3,11 +3,12 @@ package com.aggelowe.techquiry.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.aggelowe.techquiry.dto.ResponseDto;
 import com.aggelowe.techquiry.dto.UserLoginDto;
@@ -32,7 +33,7 @@ import lombok.extern.log4j.Log4j2;
  * @author Aggelowe
  * @since 0.0.1
  */
-@Controller
+@RestController
 @RequestMapping("/api/response")
 @RequiredArgsConstructor
 @Log4j2
@@ -82,7 +83,7 @@ public class ResponseController {
 	 * @return The response with the requested response
 	 * @throws ServiceException If an exception occurs while getting the response
 	 */
-	@PostMapping("/id/{responseId}")
+	@GetMapping("/id/{responseId}")
 	public ResponseEntity<ResponseDto> getResponse(@PathVariable int responseId) throws ServiceException {
 		log.debug("Requested response (responseId=%s)".formatted(responseId));
 		Response entity = responseService.getResponseByResponseId(responseId);
@@ -129,7 +130,7 @@ public class ResponseController {
 	 * @return The response with the requested list of user logins
 	 * @throws ServiceException If an exception occurs while getting the upvotes
 	 */
-	@PostMapping("/id/{responseId}/upvote")
+	@GetMapping("/id/{responseId}/upvote")
 	public ResponseEntity<List<UserLoginDto>> getUpvotes(@PathVariable int responseId) throws ServiceException {
 		log.debug("Requested upvotes (responseId=%s)".formatted(responseId));
 		List<UserLogin> entities = upvoteService.getUpvoteUserLoginListByResponseId(responseId);
@@ -145,7 +146,7 @@ public class ResponseController {
 	 * @return The response with the requested upvote count
 	 * @throws ServiceException If an exception occurs while getting the upvotes
 	 */
-	@PostMapping("/id/{responseId}/upvote/count")
+	@GetMapping("/id/{responseId}/upvote/count")
 	public ResponseEntity<Integer> getUpvoteCount(@PathVariable int responseId) throws ServiceException {
 		log.debug("Requested upvote count (responseId=%s)".formatted(responseId));
 		int count = upvoteService.getUpvoteCountByResponseId(responseId);
@@ -160,7 +161,7 @@ public class ResponseController {
 	 * @return The response with whether the user is upvoting the response
 	 * @throws ServiceException If an exception occurs while checking the upvote
 	 */
-	@PostMapping("/id/{responseId}/upvote/check")
+	@GetMapping("/id/{responseId}/upvote/check")
 	public ResponseEntity<Boolean> checkUpvote(@PathVariable int responseId) throws ServiceException {
 		log.debug("Requested upvote check (responseId=%s)".formatted(responseId));
 		boolean check = upvoteActionService.checkUpvote(responseId);
