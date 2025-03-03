@@ -2,7 +2,7 @@ package com.aggelowe.techquiry.common.exception;
 
 /**
  * {@link IllegalConstructionException} is an {@link TechQuiryException}
- * subclass that is thrown when an invalid invocation of a constructor is
+ * subclass that is thrown when an illegal invocation of a constructor is
  * performed.
  * 
  * @author Aggelowe

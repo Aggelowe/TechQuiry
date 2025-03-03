@@ -21,7 +21,12 @@ import com.aggelowe.techquiry.service.ResponseService;
 import com.aggelowe.techquiry.service.UpvoteService;
 import com.aggelowe.techquiry.service.action.ResponseActionService;
 import com.aggelowe.techquiry.service.action.UpvoteActionService;
+import com.aggelowe.techquiry.service.exception.EntityNotFoundException;
+import com.aggelowe.techquiry.service.exception.ForbiddenOperationException;
+import com.aggelowe.techquiry.service.exception.InternalErrorException;
+import com.aggelowe.techquiry.service.exception.InvalidRequestException;
 import com.aggelowe.techquiry.service.exception.ServiceException;
+import com.aggelowe.techquiry.service.exception.UnauthorizedOperationException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -46,8 +51,8 @@ public class ResponseController {
 	private final ResponseService responseService;
 
 	/**
-	 * The service responsible for managing personal {@link Response} operations in
-	 * the TechQuiry application.
+	 * The service responsible for managing personalized {@link Response} operations
+	 * in the TechQuiry application.
 	 */
 	private final ResponseActionService responseActionService;
 
@@ -64,8 +69,8 @@ public class ResponseController {
 	private final UpvoteService upvoteService;
 
 	/**
-	 * The service responsible for managing personal {@link Upvote} operations in
-	 * the TechQuiry application.
+	 * The service responsible for managing personalized {@link Upvote} operations
+	 * in the TechQuiry application.
 	 */
 	private final UpvoteActionService upvoteActionService;
 
@@ -76,12 +81,15 @@ public class ResponseController {
 	private final UserLoginMapper userLoginMapper;
 
 	/**
-	 * This method will respond to the received request with the response with the
-	 * given response id.
+	 * This method responds to the received request with the response with the given
+	 * response id.
 	 * 
-	 * @param responseId The response id of the response to select
+	 * @param responseId The response id of the response to retrieve
 	 * @return The response with the requested response
-	 * @throws ServiceException If an exception occurs while getting the response
+	 * @throws EntityNotFoundException If the given response id does not correspond
+	 *                                 to a response
+	 * @throws InternalErrorException  If a database error occurs while retrieving
+	 *                                 the response
 	 */
 	@GetMapping("/id/{responseId}")
 	public ResponseEntity<ResponseDto> getResponse(@PathVariable int responseId) throws ServiceException {
@@ -92,11 +100,18 @@ public class ResponseController {
 	}
 
 	/**
-	 * This method will delete the response with the given response id from the
-	 * server.
+	 * This method deletes the response with the given response id from the
+	 * database.
 	 * 
 	 * @param responseId The response id of the response to delete
-	 * @throws ServiceException If an exception occurs while deleting the response
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws ForbiddenOperationException    If the current user does not have the
+	 *                                        user id of the response in the
+	 *                                        database
+	 * @throws EntityNotFoundException        If the given response id does not
+	 *                                        correspond to a response
+	 * @throws InternalErrorException         If a database error occurs while
+	 *                                        deleting the response
 	 */
 	@PostMapping("/id/{responseId}/delete")
 	public ResponseEntity<Void> deleteResponse(@PathVariable int responseId) throws ServiceException {
@@ -106,12 +121,19 @@ public class ResponseController {
 	}
 
 	/**
-	 * This method will update the response with the given response id in the
-	 * server.
+	 * This method updates the response with the given response id in the database.
 	 * 
 	 * @param responseId  The response id of the response to update
 	 * @param responseDto The DTO containing the response
-	 * @throws ServiceException If an exception occurs while deleting the response
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws ForbiddenOperationException    If the current user does not have the
+	 *                                        user id of the response already in the
+	 *                                        database
+	 * @throws EntityNotFoundException        If the given inquiry id do not
+	 *                                        correspond to an inquiry
+	 * @throws InvalidRequestException        If the given content is blank
+	 * @throws InternalErrorException         If a database error occurs while
+	 *                                        updating the response
 	 */
 	@PostMapping("/id/{responseId}/update")
 	public ResponseEntity<Void> updateResponse(@PathVariable int responseId, @RequestBody ResponseDto responseDto) throws ServiceException {
@@ -123,12 +145,15 @@ public class ResponseController {
 	}
 
 	/**
-	 * This method will respond to the received request with the list of upvotes of
-	 * the response with the given response id.
+	 * This method responds to the received request with the list of upvotes of the
+	 * response with the given response id.
 	 * 
-	 * @param responseId The id of the response to get the upvotes
+	 * @param responseId The id of the response of which to get the upvotes
 	 * @return The response with the requested list of user logins
-	 * @throws ServiceException If an exception occurs while getting the upvotes
+	 * @throws EntityNotFoundException If the given response id does not correspond
+	 *                                 to a response
+	 * @throws InternalErrorException  If a database error occurs while retrieving
+	 *                                 the upvotes
 	 */
 	@GetMapping("/id/{responseId}/upvote")
 	public ResponseEntity<List<UserLoginDto>> getUpvotes(@PathVariable int responseId) throws ServiceException {
@@ -139,12 +164,15 @@ public class ResponseController {
 	}
 
 	/**
-	 * This method will respond to the received request with the number of upvotes
-	 * of the response with the given response id.
+	 * This method responds to the received request with the number of upvotes of
+	 * the response with the given response id.
 	 * 
-	 * @param responseId The id of the response to get the upvote count
+	 * @param responseId The id of the response of which to get the upvote count
 	 * @return The response with the requested upvote count
-	 * @throws ServiceException If an exception occurs while getting the upvotes
+	 * @throws EntityNotFoundException If the given response id does not correspond
+	 *                                 to a response
+	 * @throws InternalErrorException  If a database error occurs while retrieving
+	 *                                 the count
 	 */
 	@GetMapping("/id/{responseId}/upvote/count")
 	public ResponseEntity<Integer> getUpvoteCount(@PathVariable int responseId) throws ServiceException {
@@ -154,12 +182,14 @@ public class ResponseController {
 	}
 
 	/**
-	 * This method will respond to the received request with whether the current
-	 * user is upvoting the response with the given response id.
+	 * This method responds to the received request with whether the current user is
+	 * upvoting the response with the given response id.
 	 * 
 	 * @param responseId The id of the response to check
 	 * @return The response with whether the user is upvoting the response
-	 * @throws ServiceException If an exception occurs while checking the upvote
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws InternalErrorException         If a database error occurs while
+	 *                                        checking the upvote
 	 */
 	@GetMapping("/id/{responseId}/upvote/check")
 	public ResponseEntity<Boolean> checkUpvote(@PathVariable int responseId) throws ServiceException {
@@ -169,11 +199,16 @@ public class ResponseController {
 	}
 
 	/**
-	 * This method will create an upvote with the given response id and the id of
+	 * This method creates an upvote with the given response id and the user id of
 	 * the currently logged in user in the database.
 	 * 
-	 * @param responseId The id of the response to create the upvote for
-	 * @throws ServiceException If an exception occurs while creating the upvote
+	 * @param responseId The id of the response for which to create the upvote
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws EntityNotFoundException        If the given response id does not
+	 *                                        correspond to a response
+	 * @throws InvalidRequestException        If the given upvote already exists
+	 * @throws InternalErrorException         If a database error occurs while
+	 *                                        creating the upvote
 	 */
 	@PostMapping("/id/{responseId}/upvote/create")
 	public ResponseEntity<Void> createUpvote(@PathVariable int responseId) throws ServiceException {
@@ -183,11 +218,15 @@ public class ResponseController {
 	}
 
 	/**
-	 * This method will delete the upvote with the given response id and the id of
+	 * This method deletes the upvote with the given response id and the user id of
 	 * the currently logged in user from the database.
 	 * 
-	 * @param responseId The id of the response to delete the upvote for
-	 * @throws ServiceException If an exception occurs while deleting the upvote
+	 * @param responseId The id of the response for which to delete the upvote
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws EntityNotFoundException        If the given response id does not
+	 *                                        correspond to a response
+	 * @throws InternalErrorException         If a database error occurred while
+	 *                                        deleting the upvote
 	 */
 	@PostMapping("/id/{responseId}/upvote/delete")
 	public ResponseEntity<Void> deleteUpvote(@PathVariable int responseId) throws ServiceException {

@@ -23,11 +23,10 @@ public final class DatabaseManager {
 	/**
 	 * The path of the SQL script for applying the database schema.
 	 */
-	public static final String CREATE_SCHEMA_SCRIPT = "/database/schema.sql";
+	private static final String CREATE_SCHEMA_SCRIPT = "/database/schema.sql";
 
 	/**
-	 * This object is responsible for executing SQL scripts on the application
-	 * database
+	 * The object responsible for executing SQL scripts on the application database
 	 */
 	private final SQLRunner runner;
 

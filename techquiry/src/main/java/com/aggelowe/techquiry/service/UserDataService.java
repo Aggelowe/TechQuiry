@@ -35,8 +35,9 @@ public class UserDataService {
 	 *
 	 * @param userId The user id
 	 * @return The user data with the given id
-	 * @throws EntityNotFoundException If the requested user data do not exist
-	 * @throws InternalErrorException  If an internal error occurs while retrieving
+	 * @throws EntityNotFoundException If the given id does not correspond to user
+	 *                                 data
+	 * @throws InternalErrorException  If a database error occurs while retrieving
 	 *                                 the user data
 	 */
 	public UserData getDataByUserId(int userId) throws ServiceException {

@@ -9,8 +9,8 @@ import lombok.Getter;
 import lombok.ToString;
 
 /**
- * This class contains the error data to be transfered from the client to the
- * server.
+ * This class contains the error data to be transfered from the server to the
+ * client.
  * 
  * @author Aggelowe
  * @since 0.0.1
@@ -23,13 +23,13 @@ import lombok.ToString;
 public class ErrorResponse {
 
 	/**
-	 * The error status code
+	 * The error status code.
 	 */
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Integer status;
 
 	/**
-	 * The error message
+	 * The error message.
 	 */
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private String message;

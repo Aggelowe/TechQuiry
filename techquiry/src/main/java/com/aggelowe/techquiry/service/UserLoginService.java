@@ -34,10 +34,10 @@ public class UserLoginService {
 	private final UserLoginDao userLoginDao;
 
 	/**
-	 * This method retrieves and returns the total count of user logins.
+	 * This method returns the total count of user logins.
 	 *
 	 * @return The total number of user logins
-	 * @throws InternalErrorException If an internal error occurs while retrieving
+	 * @throws InternalErrorException If a database error occurs while retrieving
 	 *                                the count
 	 */
 	public int getLoginCount() throws ServiceException {
@@ -57,8 +57,8 @@ public class UserLoginService {
 	 * @param page  The page number of user logins to return
 	 * @return The requested page of user logins
 	 * @throws InvalidRequestException If the count/page is smaller than 0
-	 * @throws InternalErrorException  If an internal error occurs while retrieving
-	 *                                 the user
+	 * @throws InternalErrorException  If a database error occurs while retrieving
+	 *                                 the user logins
 	 */
 	public List<UserLogin> getLoginRange(int count, int page) throws ServiceException {
 		log.debug("Getting user login range (count=%s, page=%s)".formatted(count, page));
@@ -78,10 +78,11 @@ public class UserLoginService {
 	 * This method returns the user login with the given user id.
 	 *
 	 * @param userId The user id
-	 * @return The user login with the given id
-	 * @throws EntityNotFoundException If the requested user does not exist
-	 * @throws InternalErrorException  If an internal error occurs while retrieving
-	 *                                 the user
+	 * @return The user login with the given user id
+	 * @throws EntityNotFoundException If the given user id does not correspond to
+	 *                                 an user login
+	 * @throws InternalErrorException  If a database error occurs while retrieving
+	 *                                 the user login
 	 */
 	public UserLogin getLoginByUserId(int userId) throws ServiceException {
 		log.debug("Getting user login (userId=%s)".formatted(userId));
@@ -102,9 +103,10 @@ public class UserLoginService {
 	 *
 	 * @param username The user's username
 	 * @return The user login with the given username
-	 * @throws EntityNotFoundException If the requested user does not exist
-	 * @throws InternalErrorException  If an internal error occurs while retrieving
-	 *                                 the user
+	 * @throws EntityNotFoundException If the given username does not correspond to
+	 *                                 an user login
+	 * @throws InternalErrorException  If a database error occurs while retrieving
+	 *                                 the user login
 	 */
 	public UserLogin getLoginByUsername(String username) throws ServiceException {
 		log.debug("Getting user login (username=%s)".formatted(username));

@@ -49,13 +49,14 @@ public class UpvoteService {
 	private final UserLoginDao userLoginDao;
 
 	/**
-	 * This method retrieves and returns the total count of upvotes to the response
-	 * with the given response id.
+	 * This method returns the total count of upvotes to the response with the given
+	 * response id.
 	 *
-	 * @param responseId The id of the response
+	 * @param responseId The response id
 	 * @return The total number of upvotes of the response
-	 * @throws EntityNotFoundException If the requested response does not exist
-	 * @throws InternalErrorException  If an internal error occurs while retrieving
+	 * @throws EntityNotFoundException If the given response id does not correspond
+	 *                                 to a response
+	 * @throws InternalErrorException  If a database error occurs while retrieving
 	 *                                 the count
 	 */
 	public int getUpvoteCountByResponseId(int responseId) throws ServiceException {
@@ -80,11 +81,11 @@ public class UpvoteService {
 	 * This method returns the list of user logins who have upvoted the response
 	 * with the given response id.
 	 *
-	 * @param responseId The id of the response
+	 * @param responseId The response id
 	 * @return The upvoter user logins
 	 * @throws EntityNotFoundException If the given response id does not correspond
-	 *                                 to an response
-	 * @throws InternalErrorException  If an internal error occurs while retrieving
+	 *                                 to a response
+	 * @throws InternalErrorException  If a database error occurs while retrieving
 	 *                                 the upvote entries
 	 */
 	public List<UserLogin> getUpvoteUserLoginListByResponseId(int responseId) throws ServiceException {
@@ -109,11 +110,11 @@ public class UpvoteService {
 	 * This method returns the list of responses who have been upvoted by the user
 	 * login with the given user id.
 	 *
-	 * @param userId The id of the user login
+	 * @param userId The user id
 	 * @return The upvoted responses
 	 * @throws EntityNotFoundException If the given user id does not correspond to a
 	 *                                 user login
-	 * @throws InternalErrorException  If an internal error occurs while retrieving
+	 * @throws InternalErrorException  If a database error occurs while retrieving
 	 *                                 the upvote entries
 	 */
 	public List<Response> getUpvotedResponseListByUserId(int userId) throws ServiceException {

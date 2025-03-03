@@ -56,7 +56,7 @@ public class UpvoteActionService {
 	 * @param responseId The response id of the response to check
 	 * @return Whether the logged in user is upvoting the given response
 	 * @throws UnauthorizedOperationException If the current user is not logged in
-	 * @throws InternalErrorException         If an internal error occurs while
+	 * @throws InternalErrorException         If a database error occurs while
 	 *                                        checking the upvote
 	 */
 	public boolean checkUpvote(int responseId) throws ServiceException {
@@ -82,7 +82,7 @@ public class UpvoteActionService {
 	 * @throws EntityNotFoundException        If the given response id does not
 	 *                                        correspond to a response
 	 * @throws InvalidRequestException        If the given upvote already exists
-	 * @throws InternalErrorException         If an internal error occurs while
+	 * @throws InternalErrorException         If a database error occurs while
 	 *                                        creating the upvote
 	 */
 	public void createUpvote(int responseId) throws ServiceException {
@@ -112,8 +112,9 @@ public class UpvoteActionService {
 	 *
 	 * @param responseId The responseId of the response to stop upvoting
 	 * @throws UnauthorizedOperationException If the current user is not logged in
-	 * @throws EntityNotFoundException        If the requested upvote does not exist
-	 * @throws InternalErrorException         If an internal error occurred while
+	 * @throws EntityNotFoundException        If the given response id does not
+	 *                                        correspond to a response
+	 * @throws InternalErrorException         If a database error occurred while
 	 *                                        deleting the upvote
 	 */
 	public void deleteUpvote(int responseId) throws ServiceException {

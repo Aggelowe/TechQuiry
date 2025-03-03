@@ -49,13 +49,14 @@ public class ObserverService {
 	private final UserLoginDao userLoginDao;
 
 	/**
-	 * This method retrieves and returns the total count of observers to the inquiry
-	 * with the given inquiry id.
+	 * This method returns the total count of observers of the inquiry with the
+	 * given inquiry id.
 	 *
-	 * @param inquiryId The id of the inquiry
+	 * @param inquiryId The inquiry id
 	 * @return The total number of observers of the inquiry
-	 * @throws EntityNotFoundException If the requested inquiry does not exist
-	 * @throws InternalErrorException  If an internal error occurs while retrieving
+	 * @throws EntityNotFoundException If the given inquiry id does not correspond
+	 *                                 to an inquiry
+	 * @throws InternalErrorException  If a database error occurs while retrieving
 	 *                                 the count
 	 */
 	public int getObserverCountByInquiryId(int inquiryId) throws ServiceException {
@@ -80,11 +81,11 @@ public class ObserverService {
 	 * This method returns the list of user logins who are observing the inquiry
 	 * with the given inquiry id.
 	 *
-	 * @param inquiryId The id of the inquiry
+	 * @param inquiryId The inquiry id
 	 * @return The observer user logins
 	 * @throws EntityNotFoundException If the given inquiry id does not correspond
 	 *                                 to an inquiry
-	 * @throws InternalErrorException  If an internal error occurs while retrieving
+	 * @throws InternalErrorException  If a database error occurs while retrieving
 	 *                                 the observer entries
 	 */
 	public List<UserLogin> getObserverUserLoginListByInquiryId(int inquiryId) throws ServiceException {
@@ -109,11 +110,11 @@ public class ObserverService {
 	 * This method returns the list of inquiries who are being observed by the user
 	 * login with the given user id.
 	 *
-	 * @param userId The id of the user login
+	 * @param userId The user id
 	 * @return The observed inquiries
 	 * @throws EntityNotFoundException If the given user id does not correspond to a
 	 *                                 user login
-	 * @throws InternalErrorException  If an internal error occurs while retrieving
+	 * @throws InternalErrorException  If a database error occurs while retrieving
 	 *                                 the observer entries
 	 */
 	public List<Inquiry> getObservedInquiryListByUserId(int userId) throws ServiceException {

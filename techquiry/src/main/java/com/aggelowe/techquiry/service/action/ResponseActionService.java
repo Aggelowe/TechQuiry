@@ -61,8 +61,8 @@ public class ResponseActionService {
 	 * @throws UnauthorizedOperationException If the current user is not logged in
 	 * @throws EntityNotFoundException        If the given inquiry id does not
 	 *                                        correspond to a inquiry
-	 * @throws InvalidRequestException        If the given content is empty
-	 * @throws InternalErrorException         If an internal error occurs while
+	 * @throws InvalidRequestException        If the given content is blank
+	 * @throws InternalErrorException         If a database error occurs while
 	 *                                        creating the response
 	 * 
 	 */
@@ -94,10 +94,11 @@ public class ResponseActionService {
 	 * @param responseId The response id
 	 * @throws UnauthorizedOperationException If the current user is not logged in
 	 * @throws ForbiddenOperationException    If the current user does not have the
-	 *                                        given user id
-	 * @throws EntityNotFoundException        If the requested response does not
-	 *                                        exist
-	 * @throws InternalErrorException         If an internal error occurred while
+	 *                                        user id of the response in the
+	 *                                        database
+	 * @throws EntityNotFoundException        If the given response id does not
+	 *                                        correspond to a response
+	 * @throws InternalErrorException         If a database error occurred while
 	 *                                        deleting the response
 	 */
 	public void deleteResponse(int responseId) throws ServiceException {
@@ -128,12 +129,12 @@ public class ResponseActionService {
 	 * @param response The response object
 	 * @throws UnauthorizedOperationException If the current user is not logged in
 	 * @throws ForbiddenOperationException    If the current user does not have the
-	 *                                        user id contained in the the response
-	 *                                        contained in the database
+	 *                                        user id of the response in the
+	 *                                        database
 	 * @throws EntityNotFoundException        If the given inquiry id do not
 	 *                                        correspond to an inquiry
-	 * @throws InvalidRequestException        If the given content is empty
-	 * @throws InternalErrorException         If an internal error occurred while
+	 * @throws InvalidRequestException        If the given content is blank
+	 * @throws InternalErrorException         If a database error occurred while
 	 *                                        updating the response
 	 */
 	public void updateResponse(Response response) throws ServiceException {

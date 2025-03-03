@@ -17,8 +17,8 @@ import com.aggelowe.techquiry.service.exception.UnauthorizedOperationException;
 import lombok.extern.log4j.Log4j2;
 
 /**
- * This {@link ErrorHelper} class is responsible for handling all the exceptions
- * that are thrown by the controller methods.
+ * The {@link ErrorHelper} class contains methods on how to handle the
+ * exceptions that are thrown by the controller methods.
  * 
  * @author Aggelowe
  * @since 0.0.1
@@ -28,11 +28,13 @@ import lombok.extern.log4j.Log4j2;
 public class ErrorHelper {
 
 	/**
-	 * This method is invoked when a controller method throws an exception for a
-	 * unauthorized operation.
-	 * 
-	 * @param exception The causing exception
-	 * @return The constructed error response
+	 * Handles exceptions of type {@link UnauthorizedOperationException} when thrown
+	 * by a controller by returning a {@link ResponseEntity} with the UNAUTHORIZED
+	 * (401) status code and an {@link ErrorResponse} containing the exception
+	 * message.
+	 *
+	 * @param exception The exception that was thrown
+	 * @return The {@link ResponseEntity} containing the {@link ErrorResponse}
 	 */
 	@ExceptionHandler(UnauthorizedOperationException.class)
 	public ResponseEntity<ErrorResponse> resolveUnauthorized(Exception exception) {
@@ -40,11 +42,12 @@ public class ErrorHelper {
 	}
 
 	/**
-	 * This method is invoked when a controller method throws an exception for a
-	 * forbidden operation.
-	 * 
-	 * @param exception The causing exception
-	 * @return The constructed error response
+	 * Handles exceptions of type {@link ForbiddenOperationException} when thrown by
+	 * a controller by returning a {@link ResponseEntity} with the FORBIDDEN (403)
+	 * status code and an {@link ErrorResponse} containing the exception message.
+	 *
+	 * @param exception The exception that was thrown
+	 * @return The {@link ResponseEntity} containing the {@link ErrorResponse}
 	 */
 	@ExceptionHandler(ForbiddenOperationException.class)
 	public ResponseEntity<ErrorResponse> resolveForbidden(Exception exception) {
@@ -52,11 +55,12 @@ public class ErrorHelper {
 	}
 
 	/**
-	 * This method is invoked when a controller method throws an exception for a
-	 * requested entity that was not found.
-	 * 
-	 * @param exception The causing exception
-	 * @return The constructed error response
+	 * Handles exceptions of type {@link EntityNotFoundException} when thrown by a
+	 * controller by returning a {@link ResponseEntity} with the NOT_FOUND (404)
+	 * status code and an {@link ErrorResponse} containing the exception message.
+	 *
+	 * @param exception The exception that was thrown
+	 * @return The {@link ResponseEntity} containing the {@link ErrorResponse}
 	 */
 	@ExceptionHandler(EntityNotFoundException.class)
 	public ResponseEntity<ErrorResponse> resolveNotFound(Exception exception) {
@@ -64,11 +68,13 @@ public class ErrorHelper {
 	}
 
 	/**
-	 * This method is invoked when a controller method throws an exception for an
-	 * invalid received request.
-	 * 
-	 * @param exception The causing exception
-	 * @return The constructed error response
+	 * Handles exceptions of type {@link InvalidRequestException} and
+	 * {@link MissingValueException} when thrown by a controller by returning a
+	 * {@link ResponseEntity} with the BAD_REQUEST (400) status code and an
+	 * {@link ErrorResponse} containing the exception message.
+	 *
+	 * @param exception The exception that was thrown
+	 * @return The {@link ResponseEntity} containing the {@link ErrorResponse}
 	 */
 	@ExceptionHandler({ InvalidRequestException.class, MissingValueException.class })
 	public ResponseEntity<ErrorResponse> resolveBadRequest(Exception exception) {
@@ -76,11 +82,14 @@ public class ErrorHelper {
 	}
 
 	/**
-	 * This method is invoked when a controller method throws an exception for an
-	 * internal server error that occured.
-	 * 
-	 * @param exception The causing exception
-	 * @return The constructed error response
+	 * Handles exceptions of type {@link InternalServerError},
+	 * {@link ServiceException} and {@link MapperException} when thrown by a
+	 * controller by returning a {@link ResponseEntity} with the
+	 * INTERNAL_SERVER_ERROR (500) status code and an {@link ErrorResponse}
+	 * containing the exception message.
+	 *
+	 * @param exception The exception that was thrown
+	 * @return The {@link ResponseEntity} containing the {@link ErrorResponse}
 	 */
 	@ExceptionHandler({ InternalServerError.class, ServiceException.class, MapperException.class })
 	public ResponseEntity<ErrorResponse> resolveInternalServerError(Exception exception) {
@@ -88,12 +97,12 @@ public class ErrorHelper {
 	}
 
 	/**
-	 * This method returns a response containing the message of the given exception
-	 * and the given status.
-	 * 
-	 * @param exception The exception to resolve
-	 * @param status    The status of the error
-	 * @return The constructed error response
+	 * Resolves a given exception by returning a new {@link ErrorResponse} with the
+	 * specified {@link HttpStatus} and the exception's message.
+	 *
+	 * @param exception The exception that was thrown
+	 * @param status    The {@link HttpStatus} to be used in the response
+	 * @return The {@link ResponseEntity} containing the {@link ErrorResponse}
 	 */
 	private ResponseEntity<ErrorResponse> resolveException(Exception exception, HttpStatus status) {
 		ErrorResponse response = new ErrorResponse(status.value(), exception.getMessage());

@@ -63,8 +63,8 @@ public class InquiryActionService {
 	 * @throws EntityNotFoundException        If the given user id does not
 	 *                                        correspond to a user login
 	 * @throws InvalidRequestException        If the given title or content are
-	 *                                        empty
-	 * @throws InternalErrorException         If an internal error occurs while
+	 *                                        blank
+	 * @throws InternalErrorException         If a database error occurs while
 	 *                                        creating the user data
 	 * 
 	 */
@@ -93,10 +93,10 @@ public class InquiryActionService {
 	 * @param inquiryId The inquiry id
 	 * @throws UnauthorizedOperationException If the current user is not logged in
 	 * @throws ForbiddenOperationException    If the current user does not have the
-	 *                                        given user id
-	 * @throws EntityNotFoundException        If the requested inquiry does not
-	 *                                        exist
-	 * @throws InternalErrorException         If an internal error occurred while
+	 *                                        user id of the inquiry in the database
+	 * @throws EntityNotFoundException        If the given inquiry id does not
+	 *                                        correspond to an inquiry
+	 * @throws InternalErrorException         If a database error occurred while
 	 *                                        deleting the inquiry
 	 */
 	public void deleteInquiry(int inquiryId) throws ServiceException {
@@ -127,13 +127,12 @@ public class InquiryActionService {
 	 * @param inquiry The inquiry object
 	 * @throws UnauthorizedOperationException If the current user is not logged in
 	 * @throws ForbiddenOperationException    If the current user does not have the
-	 *                                        user id contained in the inquiry
-	 *                                        contained in the database
-	 * @throws EntityNotFoundException        If the given id does not correspond to
-	 *                                        an inquiry id
+	 *                                        user id of the inquiry in the database
+	 * @throws EntityNotFoundException        If the given inquiry id does not
+	 *                                        correspond to an inquiry
 	 * @throws InvalidRequestException        If the given title or content are
-	 *                                        empty
-	 * @throws InternalErrorException         If an internal error occurred while
+	 *                                        blank
+	 * @throws InternalErrorException         If a database error occurred while
 	 *                                        updating the inquiry
 	 */
 	public void updateInquiry(Inquiry inquiry) throws ServiceException {
@@ -171,7 +170,7 @@ public class InquiryActionService {
 	 * @return The inquiries with the given user id
 	 * @throws EntityNotFoundException If the given user id does not correspond to a
 	 *                                 user login
-	 * @throws InternalErrorException  If an internal error occurs while retrieving
+	 * @throws InternalErrorException  If a database error occurs while retrieving
 	 *                                 the inquiry
 	 */
 	public List<Inquiry> getInquiryListByUserId(int userId) throws ServiceException {

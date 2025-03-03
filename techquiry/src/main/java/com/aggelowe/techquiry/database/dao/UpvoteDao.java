@@ -19,8 +19,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 /**
- * The {@link UpvoteDao} interface provides methods to interact with the
- * database for managing upvote information in the TechQuiry application.
+ * The {@link UpvoteDao} class provides methods to interact with the database
+ * for managing upvote entries in the TechQuiry application.
  *
  * @author Aggelowe
  * @since 0.0.1
@@ -28,39 +28,39 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2
 @RequiredArgsConstructor
-public final class UpvoteDao {
+public class UpvoteDao {
 
 	/**
 	 * The path of the SQL script for obtaining the count of upvote entries with an
 	 * inquiry id.
 	 */
-	public static final String UPVOTE_CHECK_SCRIPT = "/database/upvote/check.sql";
+	private static final String UPVOTE_CHECK_SCRIPT = "/database/upvote/check.sql";
 
 	/**
 	 * The path of the SQL script for obtaining the count of upvote entries with a
 	 * response id.
 	 */
-	public static final String UPVOTE_COUNT_RESPONSE_ID_SCRIPT = "/database/upvote/count_response_id.sql";
+	private static final String UPVOTE_COUNT_RESPONSE_ID_SCRIPT = "/database/upvote/count_response_id.sql";
 
 	/**
 	 * The path of the SQL script for deleting an upvote entry.
 	 */
-	public static final String UPVOTE_DELETE_SCRIPT = "/database/upvote/delete.sql";
+	private static final String UPVOTE_DELETE_SCRIPT = "/database/upvote/delete.sql";
 
 	/**
 	 * The path of the SQL script for inserting an upvote entry.
 	 */
-	public static final String UPVOTE_INSERT_SCRIPT = "/database/upvote/insert.sql";
+	private static final String UPVOTE_INSERT_SCRIPT = "/database/upvote/insert.sql";
 
 	/**
 	 * The path of the SQL script for selecting an upvote entry with a response id.
 	 */
-	public static final String UPVOTE_SELECT_RESPONSE_ID_SCRIPT = "/database/upvote/select_response_id.sql";
+	private static final String UPVOTE_SELECT_RESPONSE_ID_SCRIPT = "/database/upvote/select_response_id.sql";
 
 	/**
 	 * The path of the SQL script for selecting an upvote entry with a user id.
 	 */
-	public static final String UPVOTE_SELECT_USER_ID_SCRIPT = "/database/upvote/select_user_id.sql";
+	private static final String UPVOTE_SELECT_USER_ID_SCRIPT = "/database/upvote/select_user_id.sql";
 
 	/**
 	 * The runner responsible for executing the SQL scripts.
@@ -68,12 +68,13 @@ public final class UpvoteDao {
 	private final SQLRunner runner;
 
 	/**
-	 * This method checks whether the given {@link Upvote} object exists inside the
+	 * This method checks whether the given upvote entry exists inside the
 	 * application database.
 	 * 
 	 * @param upvote The upvote entry to check
-	 * @return Whether the entry exists
-	 * @throws DatabaseException If an error occurs while checking for the upvote
+	 * @return Whether the upvote entry exists
+	 * @throws DatabaseException If a database error occurs while checking for the
+	 *                           upvote
 	 */
 	public boolean check(Upvote upvote) throws DatabaseException {
 		log.debug("Selecting upvote exists (upvote=%s)".formatted(upvote));
@@ -99,10 +100,10 @@ public final class UpvoteDao {
 	 * This method returns the number of upvote entries inside the application
 	 * database with the given response id.
 	 * 
-	 * @param responseId the response id
+	 * @param responseId The response id
 	 * @return The number of upvote entries in the database
-	 * @throws DatabaseException If an error occurs while retrieving the upvote
-	 *                           count
+	 * @throws DatabaseException If a database error occurs while retrieving the
+	 *                           upvote count
 	 */
 	public int countFromResponseId(int responseId) throws DatabaseException {
 		log.debug("Selecting upvote entry count (responseId=%s)".formatted(responseId));
@@ -123,11 +124,12 @@ public final class UpvoteDao {
 	}
 
 	/**
-	 * This method deletes the upvote with the provided information from the
+	 * This method deletes the upvote entry with the provided information from the
 	 * application database.
 	 * 
-	 * @param upvote The upvote to delete
-	 * @throws DatabaseException If an error occurs while deleting the upvote entry
+	 * @param upvote The upvote entry to delete
+	 * @throws DatabaseException If a database error occurs while deleting the
+	 *                           upvote entry
 	 */
 	public void delete(Upvote upvote) throws DatabaseException {
 		log.debug("Deleting upvote entry (upvote=%s)".formatted(upvote));
@@ -141,7 +143,8 @@ public final class UpvoteDao {
 	 * the application database.
 	 * 
 	 * @param upvote The upvote to insert
-	 * @throws DatabaseException If an error occurs while inserting the upvote entry
+	 * @throws DatabaseException If a database error occurs while inserting the
+	 *                           upvote entry
 	 */
 	public void insert(Upvote upvote) throws DatabaseException {
 		log.debug("Inserting upvote entry (upvote=%s)".formatted(upvote));
@@ -151,14 +154,14 @@ public final class UpvoteDao {
 	}
 
 	/**
-	 * This method returns and retrieves the list of {@link UserLogin} objects from
-	 * the application database where the user id matches with the user id in the
-	 * upvote objects with the given response id.
+	 * This method returns the list of user login entries from the application
+	 * database where the user id matches with the user id in the upvote objects
+	 * with the given response id.
 	 * 
 	 * @param responseId The response id
-	 * @return The selected user logins
-	 * @throws DatabaseException If an error occurs while retrieving the response
-	 *                           information
+	 * @return The selected user login entries
+	 * @throws DatabaseException If a database error occurs while retrieving the
+	 *                           response information
 	 */
 	public List<UserLogin> selectFromResponseId(int responseId) throws DatabaseException {
 		log.debug("Selecting upvote entries (responseId=%s)".formatted(responseId));
@@ -191,14 +194,14 @@ public final class UpvoteDao {
 	}
 
 	/**
-	 * This method returns and retrieves the list of {@link Response} objects from
-	 * the application database where the response id matches with the response id
-	 * in the upvote objects with the given user id.
+	 * This method returns the list of response entries from the application
+	 * database where the response id matches with the response id in the upvote
+	 * objects with the given user id.
 	 * 
 	 * @param userId The user id
-	 * @return The selected responses
-	 * @throws DatabaseException If an error occurs while retrieving the response
-	 *                           information
+	 * @return The selected response entries
+	 * @throws DatabaseException If a database error occurs while retrieving the
+	 *                           response information
 	 */
 	public List<Response> selectFromUserId(int userId) throws DatabaseException {
 		log.debug("Selecting upvote entries (userId=%s)".formatted(userId));

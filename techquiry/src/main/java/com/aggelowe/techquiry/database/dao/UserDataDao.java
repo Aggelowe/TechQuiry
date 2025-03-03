@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Component;
-import org.sqlite.SQLiteErrorCode;
 
 import com.aggelowe.techquiry.database.LocalResult;
 import com.aggelowe.techquiry.database.SQLRunner;
@@ -17,8 +16,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 /**
- * The {@link UserDataDao} interface provides methods to interact with the
- * database for managing user data information in the TechQuiry application.
+ * The {@link UserDataDao} class provides methods to interact with the database
+ * for managing user data entries in the TechQuiry application.
  *
  * @author Aggelowe
  * @since 0.0.1
@@ -26,27 +25,27 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2
 @RequiredArgsConstructor
-public final class UserDataDao {
+public class UserDataDao {
 
 	/**
 	 * The path of the SQL script for deleting a user data entry.
 	 */
-	public static final String USER_DATA_DELETE_SCRIPT = "/database/user_data/delete.sql";
+	private static final String USER_DATA_DELETE_SCRIPT = "/database/user_data/delete.sql";
 
 	/**
 	 * The path of the SQL script for inserting a user data entry.
 	 */
-	public static final String USER_DATA_INSERT_SCRIPT = "/database/user_data/insert.sql";
+	private static final String USER_DATA_INSERT_SCRIPT = "/database/user_data/insert.sql";
 
 	/**
 	 * The path of the SQL script for selecting a user data entry.
 	 */
-	public static final String USER_DATA_SELECT_SCRIPT = "/database/user_data/select.sql";
+	private static final String USER_DATA_SELECT_SCRIPT = "/database/user_data/select.sql";
 
 	/**
 	 * The path of the SQL script for updating a user data entry.
 	 */
-	public static final String USER_DATA_UPDATE_SCRIPT = "/database/user_data/update.sql";
+	private static final String USER_DATA_UPDATE_SCRIPT = "/database/user_data/update.sql";
 
 	/**
 	 * The runner responsible for executing the SQL scripts.
@@ -57,9 +56,9 @@ public final class UserDataDao {
 	 * This method deletes the user data entry with the provided user id from the
 	 * application database.
 	 * 
-	 * @param userId The id of the user data entry
-	 * @throws DatabaseException If an error occurs while deleting the user data
-	 *                           entry
+	 * @param userId The user id of the user data entry
+	 * @throws DatabaseException If a database error occurs while deleting the user
+	 *                           data entry
 	 */
 	public void delete(int userId) throws DatabaseException {
 		log.debug("Deleting user data entry (userId=%s)".formatted(userId));
@@ -74,8 +73,8 @@ public final class UserDataDao {
 	 * This method inserts the given {@link UserData} object as a new user data
 	 * entry in the application database.
 	 * 
-	 * @param userData The user data to insert
-	 * @throws DatabaseException If an error occurs while inserting the user data
+	 * @param userData The user data entry to insert
+	 * @throws DatabaseException If a database occurs while inserting the user data
 	 *                           entry
 	 */
 	public void insert(UserData userData) throws DatabaseException {
@@ -88,13 +87,13 @@ public final class UserDataDao {
 	}
 
 	/**
-	 * This method returns and retrieves the only {@link UserData} object with the
-	 * given user id from the application database.
+	 * This method returns the only user data entry with the given user id from the
+	 * application database.
 	 * 
 	 * @param userId The user id
-	 * @return The user data with the given id
-	 * @throws DatabaseException If an error occurs while retrieving the user data
-	 *                           information
+	 * @return The user data entry with the given id
+	 * @throws DatabaseException If a database error occurs while retrieving the
+	 *                           user data information
 	 */
 	public UserData select(int userId) throws DatabaseException {
 		log.debug("Selecting user data entry (userId=%s)".formatted(userId));
@@ -122,10 +121,9 @@ public final class UserDataDao {
 	 * contained in the {@link UserData} object, using the user id from the object
 	 * to select the correct entry.
 	 * 
-	 * @param userData The user data to update
-	 * @return The {@link SQLiteErrorCode}, if it exists
-	 * @throws DatabaseException If an error occurs while updating the user data
-	 *                           entry
+	 * @param userData The user data entry to update
+	 * @throws DatabaseException If a database error occurs while updating the user
+	 *                           data entry
 	 */
 	public void update(UserData userData) throws DatabaseException {
 		log.debug("Updating user data entry (userData=%s)".formatted(userData));

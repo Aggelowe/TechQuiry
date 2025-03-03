@@ -34,10 +34,10 @@ public class InquiryService {
 	private final InquiryDao inquiryDao;
 
 	/**
-	 * This method retrieves and returns the total count of inquiries.
+	 * This method returns the total count of inquiries.
 	 *
-	 * @return The total number of of inquiries
-	 * @throws InternalErrorException If an internal error occurs while retrieving
+	 * @return The total number of inquiries
+	 * @throws InternalErrorException If a database error occurs while retrieving
 	 *                                the count
 	 */
 	public int getInquiryCount() throws ServiceException {
@@ -57,7 +57,7 @@ public class InquiryService {
 	 * @param page  The page number of inquiries to return
 	 * @return The requested page of inquiries
 	 * @throws InvalidRequestException If the count/page is smaller than 0
-	 * @throws InternalErrorException  If an internal error occurs while retrieving
+	 * @throws InternalErrorException  If a database error occurs while retrieving
 	 *                                 the inquiries
 	 */
 	public List<Inquiry> getInquiryRange(int count, int page) throws ServiceException {
@@ -78,9 +78,10 @@ public class InquiryService {
 	 * This method returns the inquiry with the given inquiry id.
 	 *
 	 * @param inquiryId The inquiry id
-	 * @return The inquiry with the given id
-	 * @throws EntityNotFoundException If the requested inquiry does not exist
-	 * @throws InternalErrorException  If an internal error occurs while retrieving
+	 * @return The inquiry with the given inquiry id
+	 * @throws EntityNotFoundException If the given inquiry id does not correspond
+	 *                                 to an inquiry
+	 * @throws InternalErrorException  If a database error occurs while retrieving
 	 *                                 the inquiry
 	 */
 	public Inquiry getInquiryByInquiryId(int inquiryId) throws ServiceException {

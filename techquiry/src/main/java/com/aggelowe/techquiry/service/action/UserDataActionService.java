@@ -50,9 +50,9 @@ public class UserDataActionService {
 	 * @param data The user data object to create
 	 * @throws UnauthorizedOperationException If the current user is not logged in
 	 * @throws InvalidRequestException        If the given first or last name are
-	 *                                        empty or if the given id is not
+	 *                                        blank or if the given user id is not
 	 *                                        available
-	 * @throws InternalErrorException         If an internal error occurs while
+	 * @throws InternalErrorException         If a database error occurs while
 	 *                                        creating the user data
 	 * 
 	 */
@@ -85,11 +85,11 @@ public class UserDataActionService {
 	 * @param userId The user id
 	 * @throws UnauthorizedOperationException If the current user is not logged in
 	 * @throws ForbiddenOperationException    If the current user does not have the
-	 *                                        given id
-	 * @throws EntityNotFoundException        If the requested user data do not
-	 *                                        exist
-	 * @throws InternalErrorException         If an internal error occurred while
-	 *                                        deleting the user
+	 *                                        given user id
+	 * @throws EntityNotFoundException        If the given id does not correspond to
+	 *                                        user data
+	 * @throws InternalErrorException         If a database error occurred while
+	 *                                        deleting the user data
 	 */
 	public void deleteData(int userId) throws ServiceException {
 		log.debug("Deleting user data (userId=%s)".formatted(userId));
@@ -118,13 +118,13 @@ public class UserDataActionService {
 	 * @param data The user data
 	 * @throws UnauthorizedOperationException If the current user is not logged in
 	 * @throws ForbiddenOperationException    If the current user does not have the
-	 *                                        given id
+	 *                                        given user id
 	 * @throws EntityNotFoundException        If the given id does not correspond to
-	 *                                        a user login id
+	 *                                        user data
 	 * @throws InvalidRequestException        If the given first or last name are
-	 *                                        empty or if the given id is not
+	 *                                        blank or if the given id is not
 	 *                                        available
-	 * @throws InternalErrorException         If an internal error occurred while
+	 * @throws InternalErrorException         If a database error occurred while
 	 *                                        updating the user data
 	 * 
 	 */

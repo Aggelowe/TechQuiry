@@ -19,8 +19,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 /**
- * The {@link ObserverDao} interface provides methods to interact with the
- * database for managing observer information in the TechQuiry application.
+ * The {@link ObserverDao} class provides methods to interact with the database
+ * for managing observer entries in the TechQuiry application.
  *
  * @author Aggelowe
  * @since 0.0.1
@@ -28,40 +28,40 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2
 @RequiredArgsConstructor
-public final class ObserverDao {
+public class ObserverDao {
 
 	/**
 	 * The path of the SQL script for obtaining the count of observer entries with
 	 * an inquiry id.
 	 */
-	public static final String OBSERVER_CHECK_SCRIPT = "/database/observer/check.sql";
+	private static final String OBSERVER_CHECK_SCRIPT = "/database/observer/check.sql";
 
 	/**
 	 * The path of the SQL script for obtaining the count of observer entries with
 	 * an inquiry id.
 	 */
-	public static final String OBSERVER_COUNT_INQUIRY_ID_SCRIPT = "/database/observer/count_inquiry_id.sql";
+	private static final String OBSERVER_COUNT_INQUIRY_ID_SCRIPT = "/database/observer/count_inquiry_id.sql";
 
 	/**
 	 * The path of the SQL script for deleting an observer entry.
 	 */
-	public static final String OBSERVER_DELETE_SCRIPT = "/database/observer/delete.sql";
+	private static final String OBSERVER_DELETE_SCRIPT = "/database/observer/delete.sql";
 
 	/**
 	 * The path of the SQL script for inserting an observer entry.
 	 */
-	public static final String OBSERVER_INSERT_SCRIPT = "/database/observer/insert.sql";
+	private static final String OBSERVER_INSERT_SCRIPT = "/database/observer/insert.sql";
 
 	/**
 	 * The path of the SQL script for selecting an observer entry with an inquiry
 	 * id.
 	 */
-	public static final String OBSERVER_SELECT_INQUIRY_ID_SCRIPT = "/database/observer/select_inquiry_id.sql";
+	private static final String OBSERVER_SELECT_INQUIRY_ID_SCRIPT = "/database/observer/select_inquiry_id.sql";
 
 	/**
 	 * The path of the SQL script for selecting an observer entry with a user id.
 	 */
-	public static final String OBSERVER_SELECT_USER_ID_SCRIPT = "/database/observer/select_user_id.sql";
+	private static final String OBSERVER_SELECT_USER_ID_SCRIPT = "/database/observer/select_user_id.sql";
 
 	/**
 	 * The runner responsible for executing the SQL scripts.
@@ -69,12 +69,13 @@ public final class ObserverDao {
 	private final SQLRunner runner;
 
 	/**
-	 * This method checks whether the given {@link Observer} object exists inside
-	 * the application database.
+	 * This method checks whether the given observer entry exists inside the
+	 * application database.
 	 * 
 	 * @param observer The observer entry to check
-	 * @return Whether the entry exists
-	 * @throws DatabaseException If an error occurs while checking for the observer
+	 * @return Whether the observer entry exists
+	 * @throws DatabaseException If a database occurs while checking for the
+	 *                           observer
 	 */
 	public boolean check(Observer observer) throws DatabaseException {
 		log.debug("Selecting observer exists (observer=%s)".formatted(observer));
@@ -100,9 +101,9 @@ public final class ObserverDao {
 	 * This method returns the number of observer entries inside the application
 	 * database with the given inquiry id.
 	 * 
-	 * @param inquiryId the inquiry id
+	 * @param inquiryId The inquiry id
 	 * @return The number of observer entries in the database
-	 * @throws DatabaseException If an error occurs while retrieving the observer
+	 * @throws DatabaseException If a database occurs while retrieving the observer
 	 *                           count
 	 */
 	public int countFromInquiryId(int inquiryId) throws DatabaseException {
@@ -124,12 +125,12 @@ public final class ObserverDao {
 	}
 
 	/**
-	 * This method deletes the observer with the provided information from the
+	 * This method deletes the observer entry with the provided information from the
 	 * application database.
 	 * 
-	 * @param observer The observer to delete
-	 * @throws DatabaseException If an error occurs while deleting the observer
-	 *                           entry
+	 * @param observer The observer entry to delete
+	 * @throws DatabaseException If a database error occurs while deleting the
+	 *                           observer entry
 	 */
 	public void delete(Observer observer) throws DatabaseException {
 		log.debug("Deleting observer entry (observer=%s)".formatted(observer));
@@ -142,9 +143,9 @@ public final class ObserverDao {
 	 * This method inserts the given {@link Observer} object as a new observer entry
 	 * in the application database.
 	 * 
-	 * @param observer The observer to insert
-	 * @throws DatabaseException If an error occurs while inserting the observer
-	 *                           entry
+	 * @param observer The observer entry to insert
+	 * @throws DatabaseException If a database error occurs while inserting the
+	 *                           observer entry
 	 */
 	public void insert(Observer observer) throws DatabaseException {
 		log.debug("Inserting observer entry (observer=%s)".formatted(observer));
@@ -154,12 +155,12 @@ public final class ObserverDao {
 	}
 
 	/**
-	 * This method returns and retrieves the list of {@link UserLogin} objects from
-	 * the application database where the user id matches with the user id in the
-	 * observer objects with the given inquiry id.
+	 * This method returns the list of user login entries from the application
+	 * database where the user id matches with the user id in the observer objects
+	 * with the given inquiry id.
 	 * 
 	 * @param inquiryId The inquiry id
-	 * @return The selected user logins
+	 * @return The selected user login entries
 	 * @throws DatabaseException If an error occurs while retrieving the observer
 	 *                           information
 	 */
@@ -194,14 +195,14 @@ public final class ObserverDao {
 	}
 
 	/**
-	 * This method returns and retrieves the list of {@link Inquiry} objects from
-	 * the application database where the inquiry id matches with the inquiry id in
-	 * the observer objects with the given user id.
+	 * This method returns the list of inquiry entries from the application database
+	 * where the inquiry id matches with the inquiry id in the observer objects with
+	 * the given user id.
 	 * 
 	 * @param userId The user id
-	 * @return The selected inquiries
-	 * @throws DatabaseException If an error occurs while retrieving the observer
-	 *                           information
+	 * @return The selected inquiry entries
+	 * @throws DatabaseException If a database error occurs while retrieving the
+	 *                           observer information
 	 */
 	public List<Inquiry> selectFromUserId(int userId) throws DatabaseException {
 		log.debug("Selecting observer entries (userId=%s)".formatted(userId));

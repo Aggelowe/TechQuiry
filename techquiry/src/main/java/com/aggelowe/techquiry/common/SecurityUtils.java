@@ -13,7 +13,7 @@ import com.aggelowe.techquiry.common.exception.IllegalConstructionException;
 import lombok.extern.log4j.Log4j2;
 
 /**
- * The {@link SecurityUtils} contains several security methods that are
+ * The {@link SecurityUtils} class contains security utility methods that are
  * important for the functionality of the TechQuiry application.
  * 
  * @author Aggelowe
@@ -34,10 +34,9 @@ public final class SecurityUtils {
 	}
 
 	/**
-	 * This method is responsible for encoding a byte array to a string using the
-	 * Base64 format.
+	 * This method encodes the given byte array to a Base64 encoded string.
 	 * 
-	 * @param source The source byte array
+	 * @param source The byte array to encode
 	 * @return The encoded string
 	 */
 	public static String encodeBase64(byte[] source) {
@@ -47,10 +46,9 @@ public final class SecurityUtils {
 	}
 
 	/**
-	 * This method is responsible for decoding a Base64 encoded string to a raw byte
-	 * array.
+	 * This method decodes the given Base64 encoded string to a raw byte array.
 	 * 
-	 * @param encoded The encoded string
+	 * @param encoded The encoded string to decode
 	 * @return The decoded byte array
 	 * @throws IllegalArgumentException If the string is not in the Base64 scheme
 	 */
@@ -61,8 +59,8 @@ public final class SecurityUtils {
 	}
 
 	/**
-	 * This method generates a secure random salt of the length specified by the
-	 * respective environment variable.
+	 * This method returns a new secure random salt of the specified contained in a
+	 * byte array.
 	 * 
 	 * @return The bytes containing the generated salt
 	 */
@@ -75,8 +73,8 @@ public final class SecurityUtils {
 	}
 
 	/**
-	 * This method verifies the given password against the given hash using the
-	 * algorithm defined in {@link Constants} and the given salt.
+	 * This method hashes the given password along with the given hash and returns
+	 * whether it is equal to the given hash.
 	 * 
 	 * @param password The plain password to verify
 	 * @param salt     The salt used in the hashing

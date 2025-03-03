@@ -52,12 +52,12 @@ public class UserLoginActionService {
 	 *
 	 * @param login The user login object to create
 	 * @return The id of the created {@link UserLogin}
-	 * @throws ForbiddenOperationException If the user is logged-in
+	 * @throws ForbiddenOperationException If there is an active session
 	 * @throws InvalidRequestException     If the given username does not abide by
 	 *                                     the requirements or if the given username
 	 *                                     is not available
-	 * @throws InternalErrorException      If an internal error occurs while
-	 *                                     creating the user
+	 * @throws InternalErrorException      If a database error occurs while creating
+	 *                                     the user login
 	 * 
 	 */
 	public int createLogin(UserLogin login) throws ServiceException {
@@ -92,10 +92,11 @@ public class UserLoginActionService {
 	 * @param userId The user id
 	 * @throws UnauthorizedOperationException If the current user is not logged in
 	 * @throws ForbiddenOperationException    If the current user does not have the
-	 *                                        given id
-	 * @throws EntityNotFoundException        If the requested user does not exist
-	 * @throws InternalErrorException         If an internal error occurred while
-	 *                                        deleting the user
+	 *                                        given user id
+	 * @throws EntityNotFoundException        If the given user id does not
+	 *                                        correspond to an user login
+	 * @throws InternalErrorException         If a database error occurred while
+	 *                                        deleting the user login
 	 */
 	public void deleteLogin(int userId) throws ServiceException {
 		log.debug("Deleting user login (userId=%s)".formatted(userId));
@@ -127,11 +128,12 @@ public class UserLoginActionService {
 	 * @throws ForbiddenOperationException    If the current user does not have the
 	 *                                        same id as the one contained in the
 	 *                                        given login.
-	 * @throws EntityNotFoundException        If the requested user does not exist
+	 * @throws EntityNotFoundException        If the given user id does not
+	 *                                        correspond to an user login
 	 * @throws InvalidRequestException        If the given username does not abide
 	 *                                        by the requirements.
-	 * @throws InternalErrorException         If an internal error occurred while
-	 *                                        updating the user
+	 * @throws InternalErrorException         If a database error occurred while
+	 *                                        updating the user login
 	 * 
 	 */
 	public void updateLogin(UserLogin login) throws ServiceException {
@@ -166,10 +168,10 @@ public class UserLoginActionService {
 	/**
 	 * This method returns the currently logged in user's {@link UserLogin}.
 	 * 
-	 * @return The current {@link UserLogin}
+	 * @return The current user login
 	 * @throws UnauthorizedOperationException If the current user is not logged in
-	 * @throws InternalErrorException         If an error occurs while retrieving
-	 *                                        the user
+	 * @throws InternalErrorException         If a database occurs while retrieving
+	 *                                        the user login
 	 */
 	public UserLogin getCurrentLogin() throws ServiceException {
 		log.debug("Getting current user login");
@@ -199,7 +201,7 @@ public class UserLoginActionService {
 	 * @return The current {@link UserLogin}
 	 * @throws ForbiddenOperationException If there is an active session
 	 * @throws InvalidRequestException     If the username or password is incorrect
-	 * @throws InternalErrorException      If an internal error occurs while
+	 * @throws InternalErrorException      If a database error occurs while
 	 *                                     authenticating
 	 */
 	public UserLogin authenticateUser(String username, String password) throws ServiceException {

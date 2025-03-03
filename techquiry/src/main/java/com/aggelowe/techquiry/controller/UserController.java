@@ -37,7 +37,12 @@ import com.aggelowe.techquiry.service.UserLoginService;
 import com.aggelowe.techquiry.service.action.InquiryActionService;
 import com.aggelowe.techquiry.service.action.UserDataActionService;
 import com.aggelowe.techquiry.service.action.UserLoginActionService;
+import com.aggelowe.techquiry.service.exception.EntityNotFoundException;
+import com.aggelowe.techquiry.service.exception.ForbiddenOperationException;
+import com.aggelowe.techquiry.service.exception.InternalErrorException;
+import com.aggelowe.techquiry.service.exception.InvalidRequestException;
 import com.aggelowe.techquiry.service.exception.ServiceException;
+import com.aggelowe.techquiry.service.exception.UnauthorizedOperationException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -62,8 +67,8 @@ public class UserController {
 	private final UserLoginService userLoginService;
 
 	/**
-	 * The service responsible for managing personal {@link UserLogin} operations in
-	 * the TechQuiry application.
+	 * The service responsible for managing personalized {@link UserLogin}
+	 * operations in the TechQuiry application.
 	 */
 	private final UserLoginActionService userLoginActionService;
 
@@ -80,8 +85,8 @@ public class UserController {
 	private final UserDataService userDataService;
 
 	/**
-	 * The service responsible for managing personal {@link UserData} operations in
-	 * the TechQuiry application.
+	 * The service responsible for managing personalized {@link UserData} operations
+	 * in the TechQuiry application.
 	 */
 	private final UserDataActionService userDataActionService;
 
@@ -98,8 +103,8 @@ public class UserController {
 	private final ObserverService observerService;
 
 	/**
-	 * The service responsible for managing personal {@link Inquiry} operations in
-	 * the TechQuiry application.
+	 * The service responsible for managing personalized {@link Inquiry} operations
+	 * in the TechQuiry application.
 	 */
 	private final InquiryActionService inquiryActionService;
 
@@ -122,11 +127,12 @@ public class UserController {
 	private final ResponseMapper responseMapper;
 
 	/**
-	 * This method will respond to the received request with the number of user
-	 * logins in the database.
+	 * This method responds to the received request with the number of user logins
+	 * in the database.
 	 * 
-	 * @return The response with the user count.
-	 * @throws ServiceException If an error occurs while getting the login count
+	 * @return The response with the user count
+	 * @throws InternalErrorException If a database error occurs while retrieving
+	 *                                the count
 	 */
 	@GetMapping("/count")
 	public ResponseEntity<Integer> getCount() throws ServiceException {
@@ -136,13 +142,15 @@ public class UserController {
 	}
 
 	/**
-	 * This method will respond to the received request with the requested range of
-	 * user logins.
+	 * This method responds to the received request with the requested range of user
+	 * logins.
 	 * 
 	 * @param count The count of user logins in the range
 	 * @param page  The page of user logins
-	 * @return The response with the requested user range.
-	 * @throws ServiceException If an exception occurs while getting the range
+	 * @return The response with the requested user range
+	 * @throws InvalidRequestException If the count/page is smaller than 0
+	 * @throws InternalErrorException  If a database error occurs while retrieving
+	 *                                 the user
 	 */
 	@GetMapping("/range/{count}/{page}")
 	public ResponseEntity<List<UserLoginDto>> getRange(@PathVariable int count, @PathVariable int page) throws ServiceException {
@@ -153,14 +161,19 @@ public class UserController {
 	}
 
 	/**
-	 * This method will create the user with the given information to the database
-	 * and will respond with the id of the newly constructed user.
+	 * This method creates the user with the given information to the database and
+	 * will respond with the user id of the newly constructed user.
 	 * 
 	 * @param userLoginDto The DTO containing the user data
 	 * @return The user id of the user login
-	 * @throws ServiceException If an exception occurs while creating the user login
-	 * @throws MapperException  If the required data contained in the received user
-	 *                          login DTO are missing.
+	 * @throws ForbiddenOperationException If the user is logged in
+	 * @throws InvalidRequestException     If the given username does not abide by
+	 *                                     the requirements or if the given username
+	 *                                     is not available
+	 * @throws MissingValueException       If the username or password in the DTO
+	 *                                     are missing
+	 * @throws InternalErrorException      If a database error occurs while creating
+	 *                                     the user
 	 */
 	@PostMapping("/create")
 	public ResponseEntity<Integer> createUserLogin(@RequestBody UserLoginDto userLoginDto) throws ServiceException, MapperException {
@@ -171,11 +184,12 @@ public class UserController {
 	}
 
 	/**
-	 * This method will respond to the received request with the current user's
-	 * login.
+	 * This method responds to the received request with the current user's login.
 	 * 
 	 * @return The response with the requested user login
-	 * @throws ServiceException If an exception occurs while getting the user
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws InternalErrorException         If a database occurs while retrieving
+	 *                                        the user
 	 */
 	@GetMapping("/current")
 	public ResponseEntity<UserLoginDto> getCurrentLogin() throws ServiceException {
@@ -186,12 +200,13 @@ public class UserController {
 	}
 
 	/**
-	 * This method will login to the server with the given user credentials.
+	 * This method login the user with the given user credentials to the server.
 	 * 
 	 * @param userLoginDto The DTO containing the user credentials
-	 * @throws ServiceException      If an exception occurs while authenticating
-	 * @throws MissingValueException If the data provided to the method are
-	 *                               incomplete
+	 * @throws ForbiddenOperationException If there is an active session
+	 * @throws InvalidRequestException     If the username or password is incorrect
+	 * @throws InternalErrorException      If a database error occurs while
+	 *                                     authenticating
 	 */
 	@PostMapping("/login")
 	public ResponseEntity<UserLoginDto> login(@RequestBody UserLoginDto userLoginDto) throws ServiceException {
@@ -204,9 +219,9 @@ public class UserController {
 	}
 
 	/**
-	 * This method will logout the currently logged in user from the server.
+	 * This method logs out the currently logged in user from the server.
 	 * 
-	 * @throws ServiceException If an exception occurs while logging out
+	 * @throws UnauthorizedOperationException If there is no active user session
 	 */
 	@PostMapping("/logout")
 	public ResponseEntity<Void> logout() throws ServiceException {
@@ -216,16 +231,17 @@ public class UserController {
 	}
 
 	/**
-	 * This method will create the user data with the given information and user id
-	 * in the database.
+	 * This method creates the user data with the given information in the database.
 	 * 
 	 * @param userDataDto The DTO containing the user data
-	 * @throws ServiceException      If an exception occurs while creating the user
-	 *                               login
-	 * @throws MapperException       If the required data contained in the received
-	 *                               user data DTO are missing
-	 * @throws MissingValueException If the data provided to the method are
-	 *                               incomplete
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws InvalidRequestException        If the given first or last name are
+	 *                                        blank or if the given user id is not
+	 *                                        available
+	 * @throws MissingValueException          If the first or last name in the DTO
+	 *                                        are missing
+	 * @throws InternalErrorException         If a database error occurs while
+	 *                                        creating the user data
 	 */
 	@PostMapping("/data/create")
 	public ResponseEntity<Void> createUserData(@RequestBody UserDataDto userDataDto) throws ServiceException, MapperException {
@@ -236,12 +252,15 @@ public class UserController {
 	}
 
 	/**
-	 * This method will respond to the received request with the user login with the
+	 * This method responds to the received request with the user login with the
 	 * given username.
 	 * 
-	 * @param username The username of the user login to select
+	 * @param username The username of the user login to retrieve
 	 * @return The response with the requested user login
-	 * @throws ServiceException If an exception occurs while getting the user login
+	 * @throws EntityNotFoundException If the given username does not correspond to
+	 *                                 an user login
+	 * @throws InternalErrorException  If a database error occurs while retrieving
+	 *                                 the user
 	 */
 	@GetMapping("/u/{username}")
 	public ResponseEntity<UserLoginDto> getUserLogin(@PathVariable String username) throws ServiceException {
@@ -252,12 +271,15 @@ public class UserController {
 	}
 
 	/**
-	 * This method will respond to the received request with the user login with the
+	 * This method responds to the received request with the user login with the
 	 * given user id.
 	 * 
-	 * @param userId The user id of the user login to select
+	 * @param userId The user id of the user login to retrieve
 	 * @return The response with the requested user login
-	 * @throws ServiceException If an exception occurs while getting the user login
+	 * @throws EntityNotFoundException If the given user id does not correspond to
+	 *                                 an user login
+	 * @throws InternalErrorException  If a database error occurs while retrieving
+	 *                                 the user
 	 */
 	@GetMapping("/id/{userId}")
 	public ResponseEntity<UserLoginDto> getUserLogin(@PathVariable int userId) throws ServiceException {
@@ -268,10 +290,16 @@ public class UserController {
 	}
 
 	/**
-	 * This method will delete the user with the given user id from the server.
+	 * This method deletes the user with the given user id from the database.
 	 * 
 	 * @param userId The user id of the user login to delete
-	 * @throws ServiceException If an exception occurs while deleting the user
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws ForbiddenOperationException    If the current user does not have the
+	 *                                        given id
+	 * @throws EntityNotFoundException        If the given user id does not
+	 *                                        correspond to an user login
+	 * @throws InternalErrorException         If a database error occurred while
+	 *                                        deleting the user
 	 */
 	@PostMapping("/id/{userId}/delete")
 	public ResponseEntity<Void> deleteUserLogin(@PathVariable int userId) throws ServiceException {
@@ -281,11 +309,20 @@ public class UserController {
 	}
 
 	/**
-	 * This method will update the user login with the given user id in the server.
+	 * This method updates the user login with the given user id in the database.
 	 * 
 	 * @param userId       The user id of the user login to update
 	 * @param userLoginDto The DTO containing the user login
-	 * @throws ServiceException If an exception occurs while deleting the user
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws ForbiddenOperationException    If the current user does not have the
+	 *                                        same id as the one contained in the
+	 *                                        given login
+	 * @throws EntityNotFoundException        If the given user id does not
+	 *                                        correspond to an user login
+	 * @throws InvalidRequestException        If the given username does not abide
+	 *                                        by the requirements
+	 * @throws InternalErrorException         If a database error occurred while
+	 *                                        updating the user
 	 */
 	@PostMapping("/id/{userId}/update")
 	public ResponseEntity<Void> updateUserLogin(@PathVariable int userId, @RequestBody UserLoginDto userLoginDto) throws ServiceException {
@@ -297,12 +334,15 @@ public class UserController {
 	}
 
 	/**
-	 * This method will respond to the received request with the list of inquiries
-	 * that the user with the given user id has posted.
+	 * This method responds to the received request with the list of inquiries that
+	 * the user with the given user id has posted.
 	 * 
 	 * @param userId The id of the user to get the inquiries
 	 * @return The response with the requested list of inquiries
-	 * @throws ServiceException If an exception occurs while getting the inquiries
+	 * @throws EntityNotFoundException If the given user id does not correspond to a
+	 *                                 user login
+	 * @throws InternalErrorException  If a database error occurs while retrieving
+	 *                                 the inquiry
 	 */
 	@GetMapping("/id/{userId}/inquiries")
 	public ResponseEntity<List<InquiryDto>> getInquiries(@PathVariable int userId) throws ServiceException {
@@ -313,12 +353,15 @@ public class UserController {
 	}
 
 	/**
-	 * This method will respond to the received request with the list of inquiries
-	 * that the user with the given user id is observing.
+	 * This method responds to the received request with the list of inquiries that
+	 * the user with the given user id is observing.
 	 * 
-	 * @param userId The id of the user to get the observed inquiries
+	 * @param userId The id of the user of which to get the observed inquiries
 	 * @return The response with the requested list of inquiries
-	 * @throws ServiceException If an exception occurs while getting the inquiries
+	 * @throws EntityNotFoundException If the given user id does not correspond to a
+	 *                                 user login
+	 * @throws InternalErrorException  If a database error occurs while retrieving
+	 *                                 the observed inquiries
 	 */
 	@GetMapping("/id/{userId}/observed")
 	public ResponseEntity<List<InquiryDto>> getObservedInquiries(@PathVariable int userId) throws ServiceException {
@@ -329,12 +372,15 @@ public class UserController {
 	}
 
 	/**
-	 * This method will respond to the received request with the list of responses
-	 * that the user with the given user id has upvoted.
+	 * This method responds to the received request with the list of responses that
+	 * the user with the given user id has upvoted.
 	 * 
-	 * @param userId The id of the user to get the upvoted responses
+	 * @param userId The id of the user of which to get the upvoted responses
 	 * @return The response with the requested list of responses
-	 * @throws ServiceException If an exception occurs while getting the responses
+	 * @throws EntityNotFoundException If the given user id does not correspond to a
+	 *                                 user login
+	 * @throws InternalErrorException  If a database error occurs while retrieving
+	 *                                 the upvoted responses
 	 */
 	@GetMapping("/id/{userId}/upvotes")
 	public ResponseEntity<List<ResponseDto>> getUpvotedResponses(@PathVariable int userId) throws ServiceException {
@@ -345,12 +391,15 @@ public class UserController {
 	}
 
 	/**
-	 * This method will respond to the received request with the user data with the
+	 * This method responds to the received request with the user data with the
 	 * given user id.
 	 * 
-	 * @param userId The user id of the user data to select
+	 * @param userId The user id of the user data to retrieve
 	 * @return The response with the requested user data
-	 * @throws ServiceException If an exception occurs while getting the user data
+	 * @throws EntityNotFoundException If the given id does not correspond to user
+	 *                                 data
+	 * @throws InternalErrorException  If a database error occurs while retrieving
+	 *                                 the user data
 	 */
 	@GetMapping("/id/{userId}/data")
 	public ResponseEntity<UserDataDto> getUserData(@PathVariable int userId) throws ServiceException {
@@ -361,11 +410,20 @@ public class UserController {
 	}
 
 	/**
-	 * This method will update the user data with the given user id in the server.
+	 * This method updates the user data with the given user id in the database.
 	 * 
 	 * @param userId      The user id of the user data to update
 	 * @param userDataDto The DTO containing the user data
-	 * @throws ServiceException If an exception occurs while updating the user data
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws ForbiddenOperationException    If the current user does not have the
+	 *                                        given user id
+	 * @throws EntityNotFoundException        If the given id does not correspond to
+	 *                                        user data
+	 * @throws InvalidRequestException        If the given first or last name are
+	 *                                        blank or if the given id is not
+	 *                                        available
+	 * @throws InternalErrorException         If a database error occurred while
+	 *                                        updating the user data
 	 */
 	@PostMapping("/id/{userId}/data/update")
 	public ResponseEntity<Void> updateUserData(@PathVariable int userId, @RequestBody UserDataDto userDataDto) throws ServiceException {
@@ -377,10 +435,16 @@ public class UserController {
 	}
 
 	/**
-	 * This method will delete the user data with the given user id from the server.
+	 * This method deletes the user data with the given user id from the database.
 	 * 
 	 * @param userId The user id of the user data to delete
-	 * @throws ServiceException If an exception occurs while deleting the user data
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws ForbiddenOperationException    If the current user does not have the
+	 *                                        given user id
+	 * @throws EntityNotFoundException        If the given id does not correspond to
+	 *                                        user data
+	 * @throws InternalErrorException         If a database error occurred while
+	 *                                        deleting the user data
 	 */
 	@PostMapping("/id/{userId}/data/delete")
 	public ResponseEntity<Void> deleteUserData(@PathVariable int userId) throws ServiceException {
@@ -390,12 +454,15 @@ public class UserController {
 	}
 
 	/**
-	 * This method will respond to the received request with the user icon with the
+	 * This method responds to the received request with the user icon with the
 	 * given user id.
 	 * 
-	 * @param userId The user id of the user data to select
+	 * @param userId The user id of the user icon to retrieve
 	 * @return The response with the requested user icon
-	 * @throws ServiceException If an exception occurs while getting the user icon
+	 * @throws EntityNotFoundException If the given id does not correspond to user
+	 *                                 data
+	 * @throws InternalErrorException  If a database error occurs while retrieving
+	 *                                 the user data
 	 */
 	@GetMapping("/id/{userId}/data/icon")
 	public ResponseEntity<byte[]> getUserIcon(@PathVariable int userId) throws ServiceException {
@@ -413,11 +480,19 @@ public class UserController {
 	}
 
 	/**
-	 * This method will update the user icon with the given user id in the server.
+	 * This method updates the user icon with the given user id in the database.
 	 * 
 	 * @param userId The user id of the user icon to update
 	 * @param icon   The user icon binary data
-	 * @throws ServiceException If an exception occurs while updating the user icon
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws ForbiddenOperationException    If the current user does not have the
+	 *                                        given user id
+	 * @throws EntityNotFoundException        If the given id does not correspond to
+	 *                                        user data
+	 * @throws InvalidRequestException        If the given first or last name are
+	 *                                        blank
+	 * @throws InternalErrorException         If a database error occurred while
+	 *                                        updating the user data
 	 */
 	@PostMapping("/id/{userId}/data/icon/update")
 	public ResponseEntity<Void> updateUserIcon(@PathVariable int userId, @RequestBody byte[] icon) throws ServiceException {
@@ -429,10 +504,18 @@ public class UserController {
 	}
 
 	/**
-	 * This method will delete the user icon with the given user id from the server.
+	 * This method deletes the user icon with the given user id from the database.
 	 * 
 	 * @param userId The user id of the user icon to delete
-	 * @throws ServiceException If an exception occurs while deleting the user icon
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws ForbiddenOperationException    If the current user does not have the
+	 *                                        given user id
+	 * @throws EntityNotFoundException        If the given id does not correspond to
+	 *                                        user data
+	 * @throws InvalidRequestException        If the given first or last name are
+	 *                                        blank
+	 * @throws InternalErrorException         If a database error occurred while
+	 *                                        updating the user data
 	 */
 	@PostMapping("/id/{userId}/data/icon/delete")
 	public ResponseEntity<Void> deleteUserIcon(@PathVariable int userId) throws ServiceException {

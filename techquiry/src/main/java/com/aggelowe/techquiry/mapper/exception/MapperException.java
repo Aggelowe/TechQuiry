@@ -10,14 +10,14 @@ import com.aggelowe.techquiry.common.exception.TechQuiryException;
  * @author Aggelowe
  * @since 0.0.1
  */
-public class MapperException extends TechQuiryException {
+public abstract class MapperException extends TechQuiryException {
 
 	/**
 	 * Constructs a new {@link MapperException} with the given message.
 	 *
 	 * @param message The details message of the exception.
 	 */
-	public MapperException(String message) {
+	protected MapperException(String message) {
 		super(message);
 	}
 
@@ -27,7 +27,7 @@ public class MapperException extends TechQuiryException {
 	 * @param message The details message of the exception.
 	 * @param cause   The <i>cause</i> of the exception.
 	 */
-	public MapperException(String message, Throwable cause) {
+	protected MapperException(String message, Throwable cause) {
 		super(message, cause);
 	}
 

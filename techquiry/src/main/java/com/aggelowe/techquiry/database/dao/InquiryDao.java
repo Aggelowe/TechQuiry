@@ -16,8 +16,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 /**
- * The {@link InquiryDao} interface provides methods to interact with the
- * database for managing inquiry information in the TechQuiry application.
+ * The {@link InquiryDao} class provides methods to interact with the database
+ * for managing inquiry entries inside the database.
  *
  * @author Aggelowe
  * @since 0.0.1
@@ -25,48 +25,48 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2
 @RequiredArgsConstructor
-public final class InquiryDao {
+public class InquiryDao {
 
 	/**
 	 * The path of the SQL script for obtaining the count of inquiry entries.
 	 */
-	public static final String INQUIRY_COUNT_SCRIPT = "/database/inquiry/count.sql";
+	private static final String INQUIRY_COUNT_SCRIPT = "/database/inquiry/count.sql";
 
 	/**
 	 * The path of the SQL script for deleting an inquiry entry.
 	 */
-	public static final String INQUIRY_DELETE_SCRIPT = "/database/inquiry/delete.sql";
+	private static final String INQUIRY_DELETE_SCRIPT = "/database/inquiry/delete.sql";
 
 	/**
 	 * The path of the SQL script for inserting an inquiry entry.
 	 */
-	public static final String INQUIRY_INSERT_SCRIPT = "/database/inquiry/insert.sql";
+	private static final String INQUIRY_INSERT_SCRIPT = "/database/inquiry/insert.sql";
 
 	/**
 	 * The path of the SQL script for selecting an inquiry entry range.
 	 */
-	public static final String INQUIRY_RANGE_SCRIPT = "/database/inquiry/range.sql";
+	private static final String INQUIRY_RANGE_SCRIPT = "/database/inquiry/range.sql";
 
 	/**
 	 * The path of the SQL script for selecting inquiry entries with a user id which
 	 * are non-anonymous.
 	 */
-	public static final String INQUIRY_SELECT_USER_ID_NON_ANONYMOUS_SCRIPT = "/database/inquiry/select_user_id_non_anonymous.sql";
+	private static final String INQUIRY_SELECT_USER_ID_NON_ANONYMOUS_SCRIPT = "/database/inquiry/select_user_id_non_anonymous.sql";
 
 	/**
 	 * The path of the SQL script for selecting inquiry entries with a user id.
 	 */
-	public static final String INQUIRY_SELECT_USER_ID_SCRIPT = "/database/inquiry/select_user_id.sql";
+	private static final String INQUIRY_SELECT_USER_ID_SCRIPT = "/database/inquiry/select_user_id.sql";
 
 	/**
 	 * The path of the SQL script for selecting an inquiry entry.
 	 */
-	public static final String INQUIRY_SELECT_SCRIPT = "/database/inquiry/select.sql";
+	private static final String INQUIRY_SELECT_SCRIPT = "/database/inquiry/select.sql";
 
 	/**
 	 * The path of the SQL script for updating an inquiry entry.
 	 */
-	public static final String INQUIRY_UPDATE_SCRIPT = "/database/inquiry/update.sql";
+	private static final String INQUIRY_UPDATE_SCRIPT = "/database/inquiry/update.sql";
 
 	/**
 	 * The runner responsible for executing the SQL scripts.
@@ -78,8 +78,8 @@ public final class InquiryDao {
 	 * database.
 	 * 
 	 * @return The number of inquiry entries in the database
-	 * @throws DatabaseException If an error occurs while retrieving the inquiry
-	 *                           count
+	 * @throws DatabaseException If a database error occurs while retrieving the
+	 *                           inquiry count
 	 */
 	public int count() throws DatabaseException {
 		log.debug("Selecting inquiry entry count");
@@ -100,11 +100,12 @@ public final class InquiryDao {
 	}
 
 	/**
-	 * This method deletes the inquiry with the provided inquiry id from the
+	 * This method deletes the inquiry entry with the provided inquiry id from the
 	 * application database.
 	 * 
-	 * @param inquiryId The id of the inquiry entry
-	 * @throws DatabaseException If an error occurs while deleting the inquiry entry
+	 * @param inquiryId The inquiry id of the inquiry entry
+	 * @throws DatabaseException If a database error occurs while deleting the
+	 *                           inquiry entry
 	 */
 	public void delete(int inquiryId) throws DatabaseException {
 		log.debug("Deleting inquiry entry (inquiryId=%s)".formatted(inquiryId));
@@ -117,9 +118,9 @@ public final class InquiryDao {
 	 * database.
 	 * 
 	 * @param inquiry The inquiry to insert
-	 * @return The id of the inserted inquiry
-	 * @throws DatabaseException If an error occurs while inserting the inquiry
-	 *                           entry
+	 * @return The inquiry id of the inserted inquiry
+	 * @throws DatabaseException If a database error occurs while inserting the
+	 *                           inquiry entry
 	 */
 	public int insert(Inquiry inquiry) throws DatabaseException {
 		log.debug("Inserting inquiry entry (inquiry=%s)".formatted(inquiry));
@@ -144,15 +145,14 @@ public final class InquiryDao {
 	}
 
 	/**
-	 * This method returns and retrieves a list of {@link Inquiry} objects from the
-	 * application database, that has the given size and starts with the given
-	 * offset.
+	 * This method returns a list of inquiry entries from the application database,
+	 * that has the given size and starts with the given offset.
 	 * 
-	 * @param count  The number of entries
-	 * @param offset The number of entries to skip
-	 * @return The selected range
-	 * @throws DatabaseException If an error occurs while retrieving the inquiry
-	 *                           information
+	 * @param count  The number of inquiry entries
+	 * @param offset The number of inquiry entries to offset
+	 * @return The selected inquiry entry range
+	 * @throws DatabaseException If a database error occurs while retrieving the
+	 *                           inquiry information
 	 */
 	public List<Inquiry> range(int count, int offset) throws DatabaseException {
 		log.debug("Selecting inquiry entries (count=%s, offset=%s)".formatted(count, offset));
@@ -178,13 +178,13 @@ public final class InquiryDao {
 	}
 
 	/**
-	 * This method returns and retrieves the list of non-anonymous {@link Inquiry}
-	 * objects with the given user id from the application database.
+	 * This method returns the list of non-anonymous inquiry entries with the given
+	 * user id from the application database.
 	 * 
 	 * @param userId The user id
-	 * @return The non-anonymous inquiries with the given id
-	 * @throws DatabaseException If an error occurs while retrieving the inquiry
-	 *                           information
+	 * @return The non-anonymous inquiry entries with the given user id
+	 * @throws DatabaseException If a database error occurs while retrieving the
+	 *                           inquiry information
 	 */
 	public List<Inquiry> selectFromUserIdNonAnonymous(int userId) throws DatabaseException {
 		log.debug("Selecting non-anonymous inquiry entries (userId=%s)".formatted(userId));
@@ -209,13 +209,13 @@ public final class InquiryDao {
 	}
 
 	/**
-	 * This method returns and retrieves the list of {@link Inquiry} objects with
-	 * the given user id from the application database.
+	 * This method returns the list of inquiry entries with the given user id from
+	 * the application database.
 	 * 
 	 * @param userId The user id
-	 * @return The inquiries with the given id
-	 * @throws DatabaseException If an error occurs while retrieving the inquiry
-	 *                           information
+	 * @return The inquiry entries with the given user id
+	 * @throws DatabaseException If a database error occurs while retrieving the
+	 *                           inquiry information
 	 */
 	public List<Inquiry> selectFromUserId(int userId) throws DatabaseException {
 		log.debug("Selecting inquiry entries (userId=%s)".formatted(userId));
@@ -240,13 +240,13 @@ public final class InquiryDao {
 	}
 
 	/**
-	 * This method returns and retrieves the only {@link Inquiry} object with the
-	 * given inquiry id from the application database.
+	 * This method returns the only inquiry entry with the given inquiry id from the
+	 * application database.
 	 * 
 	 * @param inquiryId The inquiry id
-	 * @return The inquiry with the given id
-	 * @throws DatabaseException If an error occurs while retrieving the inquiry
-	 *                           information
+	 * @return The inquiry entry with the given inquiry id
+	 * @throws DatabaseException If a database error occurs while retrieving the
+	 *                           inquiry information
 	 */
 	public Inquiry select(int inquiryId) throws DatabaseException {
 		log.debug("Selecting inquiry entry (inquiryId=%s)".formatted(inquiryId));
@@ -275,8 +275,9 @@ public final class InquiryDao {
 	 * contained in the {@link Inquiry} object, using the inquiry id from the object
 	 * to select the correct entry.
 	 * 
-	 * @param inquiry The inquiry to update
-	 * @throws DatabaseException If an error occurs while updating the inquiry entry
+	 * @param inquiry The inquiry entry to update
+	 * @throws DatabaseException If a database error occurs while updating the
+	 *                           inquiry entry
 	 */
 	public void update(Inquiry inquiry) throws DatabaseException {
 		log.debug("Updating inquiry entry (inquiry=%s)".formatted(inquiry));

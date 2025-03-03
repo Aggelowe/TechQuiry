@@ -21,13 +21,19 @@ import com.aggelowe.techquiry.mapper.InquiryMapper;
 import com.aggelowe.techquiry.mapper.ResponseMapper;
 import com.aggelowe.techquiry.mapper.UserLoginMapper;
 import com.aggelowe.techquiry.mapper.exception.MapperException;
+import com.aggelowe.techquiry.mapper.exception.MissingValueException;
 import com.aggelowe.techquiry.service.InquiryService;
 import com.aggelowe.techquiry.service.ObserverService;
 import com.aggelowe.techquiry.service.ResponseService;
 import com.aggelowe.techquiry.service.action.InquiryActionService;
 import com.aggelowe.techquiry.service.action.ObserverActionService;
 import com.aggelowe.techquiry.service.action.ResponseActionService;
+import com.aggelowe.techquiry.service.exception.EntityNotFoundException;
+import com.aggelowe.techquiry.service.exception.ForbiddenOperationException;
+import com.aggelowe.techquiry.service.exception.InternalErrorException;
+import com.aggelowe.techquiry.service.exception.InvalidRequestException;
 import com.aggelowe.techquiry.service.exception.ServiceException;
+import com.aggelowe.techquiry.service.exception.UnauthorizedOperationException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -52,8 +58,8 @@ public class InquiryController {
 	private final InquiryService inquiryService;
 
 	/**
-	 * The service responsible for managing personal {@link Inquiry} operations in
-	 * the TechQuiry application.
+	 * The service responsible for managing personalized {@link Inquiry} operations
+	 * in the TechQuiry application.
 	 */
 	private final InquiryActionService inquiryActionService;
 
@@ -70,8 +76,8 @@ public class InquiryController {
 	private final ResponseService responseService;
 
 	/**
-	 * The service responsible for managing personal {@link Response} operations in
-	 * the TechQuiry application.
+	 * The service responsible for managing personalized {@link Response} operations
+	 * in the TechQuiry application.
 	 */
 	private final ResponseActionService responseActionService;
 
@@ -88,8 +94,8 @@ public class InquiryController {
 	private final ObserverService observerService;
 
 	/**
-	 * The service responsible for managing personal {@link Observer} operations in
-	 * the TechQuiry application.
+	 * The service responsible for managing personalized {@link Observer} operations
+	 * in the TechQuiry application.
 	 */
 	private final ObserverActionService observerActionService;
 
@@ -100,11 +106,12 @@ public class InquiryController {
 	private final UserLoginMapper userLoginMapper;
 
 	/**
-	 * This method will respond to the received request with the number of inquiries
-	 * in the database.
+	 * This method responds to the received request with the number of inquiries in
+	 * the database.
 	 * 
 	 * @return The response with the inquiry count
-	 * @throws ServiceException If an error occurs while getting the inquiry count
+	 * @throws InternalErrorException If a database error occurs while getting the
+	 *                                inquiry count
 	 */
 	@GetMapping("/count")
 	public ResponseEntity<Integer> getCount() throws ServiceException {
@@ -114,13 +121,15 @@ public class InquiryController {
 	}
 
 	/**
-	 * This method will respond to the received request with the requested range of
+	 * This method responds to the received request with the requested range of
 	 * inquiries.
 	 * 
 	 * @param count The count of inquiries in the range
 	 * @param page  The page of inquiries
-	 * @return The response with the requested inquiry range.
-	 * @throws ServiceException If an exception occurs while getting the range
+	 * @return The response with the requested inquiry range
+	 * @throws InvalidRequestException If the count/page is smaller than 0
+	 * @throws InternalErrorException  If an internal error occurs while retrieving
+	 *                                 the inquiries
 	 */
 	@GetMapping("/range/{count}/{page}")
 	public ResponseEntity<List<InquiryDto>> getRange(@PathVariable int count, @PathVariable int page) throws ServiceException {
@@ -131,14 +140,20 @@ public class InquiryController {
 	}
 
 	/**
-	 * This method will create the inquiry with the given information in the
-	 * database and will respond with the id of the newly constructed inquiry.
+	 * This method creates the inquiry with the given information in the database
+	 * and responds with the inquiry id of the newly constructed inquiry.
 	 * 
 	 * @param inquiryDto The DTO containing the inquiry data
-	 * @return The inquiry id of the inquiry
-	 * @throws ServiceException If an exception occurs while creating the inquiry
-	 * @throws MapperException  If the required data contained in the received
-	 *                          inquiry DTO are missing.
+	 * @return The response with the inquiry id of the inquiry
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws EntityNotFoundException        If the given user id does not
+	 *                                        correspond to a user login
+	 * @throws InvalidRequestException        If the given title or content are
+	 *                                        blank
+	 * @throws MissingValueException          If the title, content or anonymous
+	 *                                        flag in the DTO are missing
+	 * @throws InternalErrorException         If a database error occurs while
+	 *                                        creating the user data
 	 */
 	@PostMapping("/create")
 	public ResponseEntity<Integer> createInquiry(@RequestBody InquiryDto inquiryDto) throws ServiceException, MapperException {
@@ -149,12 +164,15 @@ public class InquiryController {
 	}
 
 	/**
-	 * This method will respond to the received request with the inquiry with the
-	 * given inquiry id.
+	 * This method responds to the received request with the inquiry with the given
+	 * inquiry id.
 	 * 
-	 * @param inquiryId The inquiry id of the inquiry to select
+	 * @param inquiryId The inquiry id of the inquiry to retrieve
 	 * @return The response with the requested inquiry
-	 * @throws ServiceException If an exception occurs while getting the inquiry
+	 * @throws EntityNotFoundException If the given inquiry id does not correspond
+	 *                                 to an inquiry
+	 * @throws InternalErrorException  If a database error occurs while retrieving
+	 *                                 the inquiry
 	 */
 	@GetMapping("/id/{inquiryId}")
 	public ResponseEntity<InquiryDto> getInquiry(@PathVariable int inquiryId) throws ServiceException {
@@ -165,11 +183,16 @@ public class InquiryController {
 	}
 
 	/**
-	 * This method will delete the inquiry with the given inquiry id from the
-	 * server.
+	 * This method deletes the inquiry with the given inquiry id from the database.
 	 * 
 	 * @param inquiryId The inquiry id of the inquiry to delete
-	 * @throws ServiceException If an exception occurs while deleting the inquiry
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws ForbiddenOperationException    If the current user does not have the
+	 *                                        user id of the inquiry in the database
+	 * @throws EntityNotFoundException        If the given inquiry id does not
+	 *                                        correspond to an inquiry
+	 * @throws InternalErrorException         If a database error occurs while
+	 *                                        deleting the inquiry
 	 */
 	@PostMapping("/id/{inquiryId}/delete")
 	public ResponseEntity<Void> deleteInquiry(@PathVariable int inquiryId) throws ServiceException {
@@ -179,11 +202,20 @@ public class InquiryController {
 	}
 
 	/**
-	 * This method will update the inquiry with the given inquiry id in the server.
+	 * This method updates the inquiry with the given inquiry id in the database.
 	 * 
 	 * @param inquiryId  The inquiry id of the inquiry to update
 	 * @param inquiryDto The DTO containing the inquiry
-	 * @throws ServiceException If an exception occurs while deleting the inquiry
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws ForbiddenOperationException    If the current user does not have the
+	 *                                        user id of the inquiry already in the
+	 *                                        database
+	 * @throws EntityNotFoundException        If the given inquiry id does not
+	 *                                        correspond to an inquiry
+	 * @throws InvalidRequestException        If the given title or content are
+	 *                                        blank
+	 * @throws InternalErrorException         If a database error occurs while
+	 *                                        updating the inquiry
 	 */
 	@PostMapping("/id/{inquiryId}/update")
 	public ResponseEntity<Void> updateInquiry(@PathVariable int inquiryId, @RequestBody InquiryDto inquiryDto) throws ServiceException {
@@ -195,12 +227,15 @@ public class InquiryController {
 	}
 
 	/**
-	 * This method will respond to the received request with the list of responses
-	 * that the inquiry with the given inquiry id has.
+	 * This method responds to the received request with the list of responses that
+	 * the inquiry with the given inquiry id has.
 	 * 
-	 * @param inquiryId The id of the inquiry to get the responses
+	 * @param inquiryId The id of the inquiry of which to get the responses
 	 * @return The response with the requested list of responses
-	 * @throws ServiceException If an exception occurs while getting the responses
+	 * @throws EntityNotFoundException If the given inquiry id does not correspond
+	 *                                 to an inquiry
+	 * @throws InternalErrorException  If a database error occurs while retrieving
+	 *                                 the responses
 	 */
 	@GetMapping("/id/{inquiryId}/response")
 	public ResponseEntity<List<ResponseDto>> getResponses(@PathVariable int inquiryId) throws ServiceException {
@@ -211,12 +246,15 @@ public class InquiryController {
 	}
 
 	/**
-	 * This method will respond to the received request with the number of responses
+	 * This method responds to the received request with the number of responses
 	 * that the inquiry with the given inquiry id has.
 	 * 
-	 * @param inquiryId The id of the inquiry to get the response count
+	 * @param inquiryId The id of the inquiry of which to get the response count
 	 * @return The response with the requested responses count
-	 * @throws ServiceException If an exception occurs while getting the responses
+	 * @throws EntityNotFoundException If the given inquiry id does not correspond
+	 *                                 to an inquiry
+	 * @throws InternalErrorException  If a database error occurs while retrieving
+	 *                                 the count
 	 */
 	@GetMapping("/id/{inquiryId}/response/count")
 	public ResponseEntity<Integer> getResponseCount(@PathVariable int inquiryId) throws ServiceException {
@@ -226,16 +264,21 @@ public class InquiryController {
 	}
 
 	/**
-	 * This method will create the response with the given information to the
-	 * inquiry with the given inquiry id in the database and will respond with the
-	 * id of the newly constructed response.
+	 * This method creates the response with the given information to the inquiry
+	 * with the given inquiry id in the database and responds with the response id
+	 * of the newly constructed response.
 	 * 
 	 * @param inquiryId   The inquiry id of the inquiry
 	 * @param responseDto The DTO containing the response data
 	 * @return The response id of the response
-	 * @throws ServiceException If an exception occurs while creating the response
-	 * @throws MapperException  If the required data contained in the received
-	 *                          response DTO are missing.
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws EntityNotFoundException        If the given inquiry id does not
+	 *                                        correspond to a inquiry
+	 * @throws InvalidRequestException        If the given content is blank
+	 * @throws MissingValueException          If the content or anonymous flag in
+	 *                                        the DTO are missing
+	 * @throws InternalErrorException         If a database error occurs while
+	 *                                        creating the response
 	 */
 	@PostMapping("/id/{inquiryId}/response/create")
 	public ResponseEntity<Integer> createResponse(@PathVariable int inquiryId, @RequestBody ResponseDto responseDto) throws ServiceException, MapperException {
@@ -247,12 +290,15 @@ public class InquiryController {
 	}
 
 	/**
-	 * This method will respond to the received request with the list of observers
-	 * of the inquiry with the given inquiry id.
+	 * This method responds to the received request with the list of observers of
+	 * the inquiry with the given inquiry id.
 	 * 
-	 * @param inquiryId The id of the inquiry to get the observers
+	 * @param inquiryId The id of the inquiry of which to get the observers
 	 * @return The response with the requested list of user logins
-	 * @throws ServiceException If an exception occurs while getting the observers
+	 * @throws EntityNotFoundException If the given inquiry id does not correspond
+	 *                                 to an inquiry
+	 * @throws InternalErrorException  If a database error occurs while retrieving
+	 *                                 the observers
 	 */
 	@GetMapping("/id/{inquiryId}/observer")
 	public ResponseEntity<List<UserLoginDto>> getObservers(@PathVariable int inquiryId) throws ServiceException {
@@ -263,12 +309,15 @@ public class InquiryController {
 	}
 
 	/**
-	 * This method will respond to the received request with the number of observers
-	 * of the inquiry with the given inquiry id.
+	 * This method responds to the received request with the number of observers of
+	 * the inquiry with the given inquiry id.
 	 * 
-	 * @param inquiryId The id of the inquiry to get the observer count
+	 * @param inquiryId The id of the inquiry of which to get the observer count
 	 * @return The response with the requested observer count
-	 * @throws ServiceException If an exception occurs while getting the observers
+	 * @throws EntityNotFoundException If the given inquiry id does not correspond
+	 *                                 to an inquiry
+	 * @throws InternalErrorException  If a database error occurs while retrieving
+	 *                                 the count
 	 */
 	@GetMapping("/id/{inquiryId}/observer/count")
 	public ResponseEntity<Integer> getObserverCount(@PathVariable int inquiryId) throws ServiceException {
@@ -278,12 +327,14 @@ public class InquiryController {
 	}
 
 	/**
-	 * This method will respond to the received request with whether the current
-	 * user is observing the inquiry with the given inquiry id.
+	 * This method responds to the received request with whether the current user is
+	 * observing the inquiry with the given inquiry id.
 	 * 
-	 * @param inquiryId The id of the inquiry to check
+	 * @param inquiryId The inquiry id of the inquiry to check
 	 * @return The response with whether the user is observing the inquiry
-	 * @throws ServiceException If an exception occurs while checking the observer
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws InternalErrorException         If a database error occurs while
+	 *                                        checking the observer
 	 */
 	@GetMapping("/id/{inquiryId}/observer/check")
 	public ResponseEntity<Boolean> checkObserver(@PathVariable int inquiryId) throws ServiceException {
@@ -293,11 +344,16 @@ public class InquiryController {
 	}
 
 	/**
-	 * This method will create an observer with the given inquiry id and the id of
+	 * This method creates an observer with the given inquiry id and the user id of
 	 * the currently logged in user in the database.
 	 * 
-	 * @param inquiryId The id of the inquiry to create the observer for
-	 * @throws ServiceException If an exception occurs while creating the observer
+	 * @param inquiryId The id of the inquiry for which to create the observer
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws EntityNotFoundException        If the given inquiry id does not
+	 *                                        correspond to an inquiry
+	 * @throws InvalidRequestException        If the given observer already exists
+	 * @throws InternalErrorException         If a database error occurs while
+	 *                                        creating the observer
 	 */
 	@PostMapping("/id/{inquiryId}/observer/create")
 	public ResponseEntity<Void> createObserver(@PathVariable int inquiryId) throws ServiceException {
@@ -307,11 +363,15 @@ public class InquiryController {
 	}
 
 	/**
-	 * This method will delete the observer with the given inquiry id and the id of
+	 * This method deletes the observer with the given inquiry id and the user id of
 	 * the currently logged in user from the database.
 	 * 
-	 * @param inquiryId The id of the inquiry to delete the observer for
-	 * @throws ServiceException If an exception occurs while deleting the observer
+	 * @param inquiryId The id of the inquiry from which to delete the observer
+	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws EntityNotFoundException        If the requested observer does not
+	 *                                        exist
+	 * @throws InternalErrorException         If a database error occurs while
+	 *                                        deleting the observer
 	 */
 	@PostMapping("/id/{inquiryId}/observer/delete")
 	public ResponseEntity<Void> deleteObserver(@PathVariable int inquiryId) throws ServiceException {

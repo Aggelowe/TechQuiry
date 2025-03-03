@@ -29,6 +29,9 @@ import lombok.extern.log4j.Log4j2;
 @RequiredArgsConstructor
 public class TechQuiry {
 
+	/**
+	 * The manager responsible for initializing the database.
+	 */
 	private final DatabaseManager databaseManager;
 
 	public static void main(String[] args) {
@@ -41,10 +44,10 @@ public class TechQuiry {
 	}
 
 	/**
-	 * This method is responsible for applying specific properties to the given
-	 * {@link SpringApplication} object before the execution.
+	 * This method applies specific properties to the given
+	 * {@link SpringApplication} object.
 	 * 
-	 * @param application The object representing the spring application
+	 * @param application The object of the spring application
 	 */
 	private static void properties(SpringApplication application) {
 		log.debug("Setting up Spring application properties");
@@ -54,8 +57,8 @@ public class TechQuiry {
 	}
 
 	/**
-	 * This method is invoked when the application's context has been initialized
-	 * and is responsible for initializing the core application components.
+	 * This method initializes the core application components when the
+	 * application's context has been initialized.
 	 */
 	@EventListener(ContextRefreshedEvent.class)
 	void start() {
@@ -64,8 +67,8 @@ public class TechQuiry {
 	}
 
 	/**
-	 * This method is invoked when the application's context is closed and is
-	 * responsible for cleaning up core application components.
+	 * This method cleans up core application components invoked when the
+	 * application's context is closed.
 	 */
 	@EventListener(ContextClosedEvent.class)
 	void shutdown() {

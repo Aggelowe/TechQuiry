@@ -17,8 +17,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 /**
- * The {@link UserLoginDao} interface provides methods to interact with the
- * database for managing user login information in the TechQuiry application.
+ * The {@link UserLoginDao} class provides methods to interact with the database
+ * for managing user login entries in the TechQuiry application.
  *
  * @author Aggelowe
  * @since 0.0.1
@@ -26,42 +26,42 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2
 @RequiredArgsConstructor
-public final class UserLoginDao {
+public class UserLoginDao {
 
 	/**
 	 * The path of the SQL script for obtaining the count of user login entries.
 	 */
-	public static final String USER_LOGIN_COUNT_SCRIPT = "/database/user_login/count.sql";
+	private static final String USER_LOGIN_COUNT_SCRIPT = "/database/user_login/count.sql";
 
 	/**
 	 * The path of the SQL script for deleting a user login entry.
 	 */
-	public static final String USER_LOGIN_DELETE_SCRIPT = "/database/user_login/delete.sql";
+	private static final String USER_LOGIN_DELETE_SCRIPT = "/database/user_login/delete.sql";
 
 	/**
 	 * The path of the SQL script for inserting a user login entry.
 	 */
-	public static final String USER_LOGIN_INSERT_SCRIPT = "/database/user_login/insert.sql";
+	private static final String USER_LOGIN_INSERT_SCRIPT = "/database/user_login/insert.sql";
 
 	/**
 	 * The path of the SQL script for selecting a user login entry range.
 	 */
-	public static final String USER_LOGIN_RANGE_SCRIPT = "/database/user_login/range.sql";
+	private static final String USER_LOGIN_RANGE_SCRIPT = "/database/user_login/range.sql";
 
 	/**
 	 * The path of the SQL script for selecting a user login entry with an id.
 	 */
-	public static final String USER_LOGIN_SELECT_SCRIPT = "/database/user_login/select.sql";
+	private static final String USER_LOGIN_SELECT_SCRIPT = "/database/user_login/select.sql";
 
 	/**
 	 * The path of the SQL script for selecting a user login entry with a username.
 	 */
-	public static final String USER_LOGIN_SELECT_USERNAME_SCRIPT = "/database/user_login/select_username.sql";
+	private static final String USER_LOGIN_SELECT_USERNAME_SCRIPT = "/database/user_login/select_username.sql";
 
 	/**
 	 * The path of the SQL script for updating a user login entry.
 	 */
-	public static final String USER_LOGIN_UPDATE_SCRIPT = "/database/user_login/update.sql";
+	private static final String USER_LOGIN_UPDATE_SCRIPT = "/database/user_login/update.sql";
 
 	/**
 	 * The runner responsible for executing the SQL scripts.
@@ -73,7 +73,8 @@ public final class UserLoginDao {
 	 * database.
 	 * 
 	 * @return The number of user logins in the database
-	 * @throws DatabaseException If an error occurs while retrieving the user count
+	 * @throws DatabaseException If a database error occurs while retrieving the
+	 *                           user count
 	 */
 	public int count() throws DatabaseException {
 		log.debug("Selecting user login entry count");
@@ -97,9 +98,9 @@ public final class UserLoginDao {
 	 * This method deletes the user login entry with the provided user id from the
 	 * application database.
 	 * 
-	 * @param userId The id of the user login entry
-	 * @throws DatabaseException If an error occurs while deleting the user login
-	 *                           entry
+	 * @param userId The user id of the user login entry
+	 * @throws DatabaseException If a database error occurs while deleting the user
+	 *                           login entry
 	 */
 	public void delete(int userId) throws DatabaseException {
 		log.debug("Deleting user login entry (userId=%s)".formatted(userId));
@@ -111,10 +112,10 @@ public final class UserLoginDao {
 	 * entry in the application database. The user id is not carried over to the
 	 * database.
 	 * 
-	 * @param userLogin The user login to insert
-	 * @return The id of the inserted user
-	 * @throws DatabaseException If an error occurs while inserting the user login
-	 *                           entry
+	 * @param userLogin The user login entry to insert
+	 * @return The user id of the inserted user
+	 * @throws DatabaseException If a database error occurs while inserting the user
+	 *                           login entry
 	 */
 	public int insert(UserLogin userLogin) throws DatabaseException {
 		log.debug("Inserting user login entry (userLogin=%s)".formatted(userLogin));
@@ -140,15 +141,15 @@ public final class UserLoginDao {
 	}
 
 	/**
-	 * This method returns and retrieves a list of {@link UserLogin} objects from
-	 * the application database, that has the given size and starts with the given
+	 * This method returns and retrieves a list of user login entries from the
+	 * application database, that has the given size and starts with the given
 	 * offset.
 	 * 
-	 * @param count  The number of entries
-	 * @param offset The number of entries to skip
-	 * @return The selected range
-	 * @throws DatabaseException If an error occurs while retrieving the user login
-	 *                           information
+	 * @param count  The number of user login entries
+	 * @param offset The number of user login entries to skip
+	 * @return The selected user login range range
+	 * @throws DatabaseException If a database error occurs while retrieving the
+	 *                           user login information
 	 */
 	public List<UserLogin> range(int count, int offset) throws DatabaseException {
 		log.debug("Selecting user login entries (count=%s, offset=%s)".formatted(count, offset));
@@ -181,13 +182,13 @@ public final class UserLoginDao {
 	}
 
 	/**
-	 * This method returns and retrieves the only {@link UserLogin} object with the
-	 * given user id from the application database.
+	 * This method returns and retrieves the only user login entry with the given
+	 * user id from the application database.
 	 * 
 	 * @param userId The user id
-	 * @return The user login with the given id
-	 * @throws DatabaseException If an error occurs while retrieving the user login
-	 *                           information
+	 * @return The user login entry with the given id
+	 * @throws DatabaseException If a database error occurs while retrieving the
+	 *                           user login information
 	 */
 	public UserLogin select(int userId) throws DatabaseException {
 		log.debug("Selecting user login entry (userId=%s)".formatted(userId));
@@ -219,13 +220,13 @@ public final class UserLoginDao {
 	}
 
 	/**
-	 * This method returns and retrieves the only {@link UserLogin} object with the
-	 * given username from the application database.
+	 * This method returns the only user login entry with the given username from
+	 * the application database.
 	 * 
 	 * @param username The username
-	 * @return The user login with the given username
-	 * @throws DatabaseException If an error occurs while retrieving the user login
-	 *                           information
+	 * @return The user login entry with the given username
+	 * @throws DatabaseException If a database error occurs while retrieving the
+	 *                           user login information
 	 */
 	public UserLogin selectFromUsername(String username) throws DatabaseException {
 		log.debug("Selecting user login entry (username=%s)".formatted(username));
@@ -261,9 +262,9 @@ public final class UserLoginDao {
 	 * contained in the {@link UserLogin} object, using the user id from the object
 	 * to select the correct entry.
 	 * 
-	 * @param userLogin The user login to update
-	 * @throws DatabaseException If an error occurs while updating the user login
-	 *                           entry
+	 * @param userLogin The user login entry to update
+	 * @throws DatabaseException If a database error occurs while updating the user
+	 *                           login entry
 	 */
 	public void update(UserLogin userLogin) throws DatabaseException {
 		log.debug("Updating user login entry (userLogin=%s)".formatted(userLogin));

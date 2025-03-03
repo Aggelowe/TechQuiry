@@ -57,7 +57,7 @@ public class ObserverActionService {
 	 * @param inquiryId The inquiry id of the inquiry to check
 	 * @return Whether the logged in user is observing the given inquiry
 	 * @throws UnauthorizedOperationException If the current user is not logged in
-	 * @throws InternalErrorException         If an internal error occurs while
+	 * @throws InternalErrorException         If a database error occurs while
 	 *                                        checking the observer
 	 */
 	public boolean checkObserver(int inquiryId) throws ServiceException {
@@ -83,7 +83,7 @@ public class ObserverActionService {
 	 * @throws EntityNotFoundException        If the given inquiry id does not
 	 *                                        correspond to an inquiry
 	 * @throws InvalidRequestException        If the given observer already exists
-	 * @throws InternalErrorException         If an internal error occurs while
+	 * @throws InternalErrorException         If a database error occurs while
 	 *                                        creating the observer
 	 */
 	public void createObserver(int inquiryId) throws ServiceException {
@@ -115,7 +115,7 @@ public class ObserverActionService {
 	 * @throws UnauthorizedOperationException If the current user is not logged in
 	 * @throws EntityNotFoundException        If the requested observer does not
 	 *                                        exist
-	 * @throws InternalErrorException         If an internal error occurred while
+	 * @throws InternalErrorException         If a database error occurred while
 	 *                                        deleting the observer
 	 */
 	public void deleteObserver(int inquiryId) throws ServiceException {

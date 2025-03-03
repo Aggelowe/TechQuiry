@@ -41,13 +41,14 @@ public class ResponseService {
 	private final InquiryDao inquiryDao;
 
 	/**
-	 * This method retrieves and returns the total count of responses to the inquiry
-	 * with the given inquiry id.
+	 * This method returns the total count of responses to the inquiry with the
+	 * given inquiry id.
 	 *
-	 * @param inquiryId The id of the inquiry
+	 * @param inquiryId The inquiry id
 	 * @return The total number of responses of the inquiry
-	 * @throws EntityNotFoundException If the requested inquiry does not exist
-	 * @throws InternalErrorException  If an internal error occurs while retrieving
+	 * @throws EntityNotFoundException If the given inquiry id does not correspond
+	 *                                 to an inquiry
+	 * @throws InternalErrorException  If a database error occurs while retrieving
 	 *                                 the count
 	 */
 	public int getResponseCountByInquiryId(int inquiryId) throws ServiceException {
@@ -72,11 +73,11 @@ public class ResponseService {
 	 * This method returns the list of responses to the inquiry with the given
 	 * inquiry id.
 	 *
-	 * @param inquiryId The id of the inquiry
+	 * @param inquiryId The inquiry id
 	 * @return The responses with the given inquiry id
 	 * @throws EntityNotFoundException If the given inquiry id does not correspond
 	 *                                 to an inquiry
-	 * @throws InternalErrorException  If an internal error occurs while retrieving
+	 * @throws InternalErrorException  If a database error occurs while retrieving
 	 *                                 the responses
 	 */
 	public List<Response> getResponseListByInquiryId(int inquiryId) throws ServiceException {
@@ -102,8 +103,9 @@ public class ResponseService {
 	 *
 	 * @param responseId The response id
 	 * @return The response with the given id
-	 * @throws EntityNotFoundException If the requested response does not exist
-	 * @throws InternalErrorException  If an internal error occurs while retrieving
+	 * @throws EntityNotFoundException If the given response id does not correspond
+	 *                                 to a response
+	 * @throws InternalErrorException  If a database error occurs while retrieving
 	 *                                 the response
 	 */
 	public Response getResponseByResponseId(int responseId) throws ServiceException {

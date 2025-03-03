@@ -7,9 +7,8 @@ import com.aggelowe.techquiry.common.exception.IllegalConstructionException;
 import lombok.extern.log4j.Log4j2;
 
 /**
- * The {@link Environment} class is the one responsible for providing the
- * environment variables used for the configuration of the TechQuiry
- * application.
+ * The {@link Environment} class is responsible for providing the environment
+ * variables for configuring different aspects of the TechQuiry application.
  * 
  * @author Aggelowe
  * @since 0.0.1
@@ -23,17 +22,17 @@ public final class Environment {
 	public static final int SERVER_PORT = getVariable("TQ_SERVER_PORT", 9850, Integer::valueOf, v -> v >= 0 && v < 65536);
 
 	/**
-	 * The work directory of the application's server.
+	 * The directory where the application's work files are located.
 	 */
 	public static final File SERVER_WORK_DIRECTORY = getVariable("TQ_SERVER_PATH", new File(System.getProperty("user.dir")), File::new, File::isDirectory);
 
 	/**
-	 * v The salt length for hashing the application users' passwords.
+	 * The length of the salt used for hashing the users' passwords.
 	 */
 	public static final int SECURITY_SALT_LENGTH = getVariable("TQ_SECURITY_SALT_SIZE", 16, Integer::valueOf, v -> v > 0 && v <= 64);
 
 	/**
-	 * The whether to perform the initial setup.
+	 * Whether to setup the database's schema on the application's start.
 	 */
 	public static final boolean DATABASE_SETUP = getVariable("TQ_DATABASE_SETUP", false, Boolean::parseBoolean);
 

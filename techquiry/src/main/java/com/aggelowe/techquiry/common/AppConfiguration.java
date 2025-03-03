@@ -14,7 +14,7 @@ import com.zaxxer.hikari.HikariDataSource;
 
 /**
  * The {@link AppConfiguration} class is a Spring configuration class that is
- * responsible for defining key application configuration settings.
+ * responsible for defining key application configuration beans.
  * 
  * @author Aggelowe
  * @since 0.0.1

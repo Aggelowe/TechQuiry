@@ -16,8 +16,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 /**
- * The {@link ResponseDao} interface provides methods to interact with the
- * database for managing response information in the TechQuiry application.
+ * The {@link ResponseDao} class provides methods to interact with the database
+ * for managing response entries in the TechQuiry application.
  *
  * @author Aggelowe
  * @since 0.0.1
@@ -25,38 +25,38 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2
 @RequiredArgsConstructor
-public final class ResponseDao {
+public class ResponseDao {
 
 	/**
 	 * The path of the SQL script for obtaining the count of response entries with
 	 * an inquiry id.
 	 */
-	public static final String RESPONSE_COUNT_INQUIRY_ID_SCRIPT = "/database/response/count_inquiry_id.sql";
+	private static final String RESPONSE_COUNT_INQUIRY_ID_SCRIPT = "/database/response/count_inquiry_id.sql";
 
 	/**
 	 * The path of the SQL script for deleting a response entry.
 	 */
-	public static final String RESPONSE_DELETE_SCRIPT = "/database/response/delete.sql";
+	private static final String RESPONSE_DELETE_SCRIPT = "/database/response/delete.sql";
 
 	/**
 	 * The path of the SQL script for inserting a response entry.
 	 */
-	public static final String RESPONSE_INSERT_SCRIPT = "/database/response/insert.sql";
+	private static final String RESPONSE_INSERT_SCRIPT = "/database/response/insert.sql";
 
 	/**
 	 * The path of the SQL script for selecting response entries with an inquiry id.
 	 */
-	public static final String RESPONSE_SELECT_INQUIRY_ID_SCRIPT = "/database/response/select_inquiry_id.sql";
+	private static final String RESPONSE_SELECT_INQUIRY_ID_SCRIPT = "/database/response/select_inquiry_id.sql";
 
 	/**
 	 * The path of the SQL script for selecting a response entry.
 	 */
-	public static final String RESPONSE_SELECT_SCRIPT = "/database/response/select.sql";
+	private static final String RESPONSE_SELECT_SCRIPT = "/database/response/select.sql";
 
 	/**
 	 * The path of the SQL script for updating a response entry.
 	 */
-	public static final String RESPONSE_UPDATE_SCRIPT = "/database/response/update.sql";
+	private static final String RESPONSE_UPDATE_SCRIPT = "/database/response/update.sql";
 
 	/**
 	 * The runner responsible for executing the SQL scripts.
@@ -67,10 +67,10 @@ public final class ResponseDao {
 	 * This method returns the number of response entries inside the application
 	 * database with the given inquiry id.
 	 * 
-	 * @param inquiryId the inquiry id
+	 * @param inquiryId The inquiry id
 	 * @return The number of inquiry entries in the database
-	 * @throws DatabaseException If an error occurs while retrieving the response
-	 *                           count
+	 * @throws DatabaseException If a database error occurs while retrieving the
+	 *                           response count
 	 */
 	public int countFromInquiryId(int inquiryId) throws DatabaseException {
 		log.debug("Selecting inquiry entry count (inquiryId=%s)".formatted(inquiryId));
@@ -91,12 +91,12 @@ public final class ResponseDao {
 	}
 
 	/**
-	 * This method deletes the response with the provided response id from the
+	 * This method deletes the response entry with the provided response id from the
 	 * application database.
 	 * 
-	 * @param responseId The id of the response entry
-	 * @throws DatabaseException If an error occurs while deleting the response
-	 *                           entry
+	 * @param responseId The response id of the response entry
+	 * @throws DatabaseException If a database error occurs while deleting the
+	 *                           response entry
 	 */
 	public void delete(int responseId) throws DatabaseException {
 		log.debug("Deleting response entry (responseId=%s)".formatted(responseId));
@@ -108,10 +108,10 @@ public final class ResponseDao {
 	 * in the application database. The response id is not carried over to the
 	 * database.
 	 * 
-	 * @param response The response to insert
-	 * @return The id of the inserted response
-	 * @throws DatabaseException If an error occurs while inserting the response
-	 *                           entry
+	 * @param response The response entry to insert
+	 * @return The response id of the inserted response entry
+	 * @throws DatabaseException If a database error occurs while inserting the
+	 *                           response entry
 	 */
 	public int insert(Response response) throws DatabaseException {
 		log.debug("Inserting response entry (response=%s)".formatted(response));
@@ -136,13 +136,13 @@ public final class ResponseDao {
 	}
 
 	/**
-	 * This method returns and retrieves the list of {@link Response} objects with
-	 * the given inquiry id from the application database.
+	 * This method returns the list of response entries with the given inquiry id
+	 * from the application database.
 	 * 
 	 * @param inquiryId The inquiry id
-	 * @return The responses with the given id
-	 * @throws DatabaseException If an error occurs while retrieving the response
-	 *                           information
+	 * @return The response entries with the given inquiry id
+	 * @throws DatabaseException If a database error occurs while retrieving the
+	 *                           response information
 	 */
 	public List<Response> selectFromInquiryId(int inquiryId) throws DatabaseException {
 		log.debug("Selecting response entries (inquiryId=%s)".formatted(inquiryId));
@@ -167,13 +167,13 @@ public final class ResponseDao {
 	}
 
 	/**
-	 * This method returns and retrieves the only {@link Response} object with the
-	 * given response id from the application database.
+	 * This method returns the only response entry with the given response id from
+	 * the application database.
 	 * 
 	 * @param responseId The response id
-	 * @return The response with the given id
-	 * @throws DatabaseException If an error occurs while retrieving the response
-	 *                           information
+	 * @return The response entry with the given response id
+	 * @throws DatabaseException If a database error occurs while retrieving the
+	 *                           response information
 	 */
 	public Response select(int responseId) throws DatabaseException {
 		log.debug("Selecting response entry (responseId=%s)".formatted(responseId));
@@ -202,9 +202,9 @@ public final class ResponseDao {
 	 * contained in the {@link Response} object, using the response id from the
 	 * object to select the correct entry.
 	 * 
-	 * @param response The response to update
-	 * @throws DatabaseException If an error occurs while updating the response
-	 *                           entry
+	 * @param response The response entry to update
+	 * @throws DatabaseException If a database error occurs while updating the
+	 *                           response entry
 	 */
 	public void update(Response response) throws DatabaseException {
 		log.debug("Updating response entry (response=%s)".formatted(response));

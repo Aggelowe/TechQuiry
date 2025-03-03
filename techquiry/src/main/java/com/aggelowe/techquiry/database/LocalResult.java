@@ -13,6 +13,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+
 /* 
  * The {@link LocalResult} class provides a way for data of a {@link ResultSet}
  * to be copied to memory and thus not depend on the connection with the
@@ -21,6 +24,7 @@ import java.util.Map;
  * @author Aggelowe
  * @since 0.0.1
  */
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class LocalResult implements Iterable<Map<String, Object>> {
 
 	/**
@@ -28,16 +32,6 @@ public class LocalResult implements Iterable<Map<String, Object>> {
 	 * a row of the result table.
 	 */
 	private final List<Map<String, Object>> result;
-
-	/**
-	 * This constructor constructs a new {@link LocalResult} instance with the
-	 * provided parameter as the result set data.
-	 * 
-	 * @param result The result data
-	 */
-	private LocalResult(List<Map<String, Object>> result) {
-		this.result = result;
-	}
 
 	/**
 	 * This method returns a copy of the list containing the result data.

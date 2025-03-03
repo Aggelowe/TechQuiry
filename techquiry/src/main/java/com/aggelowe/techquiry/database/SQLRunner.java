@@ -220,25 +220,23 @@ public final class SQLRunner {
 		ResultSet result = null;
 		LocalResult local;
 		try {
-			int index = 1;
-			for (Object parameter : parameters) {
-				statement.setObject(index, parameter);
-				index++;
-			}
-			statement.execute();
-			result = statement.getResultSet();
-			local = LocalResult.of(result);
-		} catch (SQLException exception) {
-			throw new SQLRunnerExecuteException("Could not execute SQL statement!", exception);
-		} finally {
 			try {
+				int index = 1;
+				for (Object parameter : parameters) {
+					statement.setObject(index, parameter);
+					index++;
+				}
+				statement.execute();
+				result = statement.getResultSet();
+				local = LocalResult.of(result);
+			} finally {
 				statement.close();
 				if (result != null) {
 					result.close();
 				}
-			} catch (SQLException exception) {
-				throw new SQLRunnerExecuteException("Could not close database resources!", exception);
 			}
+		} catch (SQLException exception) {
+			throw new SQLRunnerExecuteException("Could not execute SQL statement!", exception);
 		}
 		return local;
 	}
