@@ -60,8 +60,6 @@ public class InquiryActionService {
 	 * 
 	 * @param inquiry The inquiry object to create
 	 * @throws UnauthorizedOperationException If the current user is not logged in
-	 * @throws EntityNotFoundException        If the given user id does not
-	 *                                        correspond to a user login
 	 * @throws InvalidRequestException        If the given title or content are
 	 *                                        blank
 	 * @throws InternalErrorException         If a database error occurs while

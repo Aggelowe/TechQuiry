@@ -56,6 +56,8 @@ public class UpvoteActionService {
 	 * @param responseId The response id of the response to check
 	 * @return Whether the logged in user is upvoting the given response
 	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws EntityNotFoundException        If the given response id does not
+	 *                                        correspond to a responses
 	 * @throws InternalErrorException         If a database error occurs while
 	 *                                        checking the upvote
 	 */
@@ -67,6 +69,10 @@ public class UpvoteActionService {
 		}
 		Upvote upvote = new Upvote(responseId, current.getUserId());
 		try {
+			Response response = responseDao.select(responseId);
+			if (response == null) {
+				throw new EntityNotFoundException("The given response id does not have a corresponding response!");
+			}
 			return upvoteDao.check(upvote);
 		} catch (DatabaseException exception) {
 			throw new InternalErrorException("A database error occured while checking the upvote!", exception);

@@ -2,8 +2,8 @@ package com.aggelowe.techquiry.controller.error;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpServerErrorException.InternalServerError;
 
 import com.aggelowe.techquiry.mapper.exception.MapperException;
@@ -23,7 +23,7 @@ import lombok.extern.log4j.Log4j2;
  * @author Aggelowe
  * @since 0.0.1
  */
-@ControllerAdvice
+@RestControllerAdvice
 @Log4j2
 public class ErrorHelper {
 

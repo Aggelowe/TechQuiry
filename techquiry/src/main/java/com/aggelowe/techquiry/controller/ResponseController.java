@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.aggelowe.techquiry.controller.error.ErrorResponse;
 import com.aggelowe.techquiry.dto.ResponseDto;
 import com.aggelowe.techquiry.dto.UserLoginDto;
 import com.aggelowe.techquiry.entity.Response;
@@ -28,6 +29,11 @@ import com.aggelowe.techquiry.service.exception.InvalidRequestException;
 import com.aggelowe.techquiry.service.exception.ServiceException;
 import com.aggelowe.techquiry.service.exception.UnauthorizedOperationException;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -42,6 +48,7 @@ import lombok.extern.log4j.Log4j2;
 @RequestMapping("/api/response")
 @RequiredArgsConstructor
 @Log4j2
+@Tag(name = "response-controller", description = "Controller for handling response operations")
 public class ResponseController {
 
 	/**
@@ -92,6 +99,10 @@ public class ResponseController {
 	 *                                 the response
 	 */
 	@GetMapping("/id/{responseId}")
+	@Operation(summary = "Get response")
+	@ApiResponse(responseCode = "200", description = "Response obtained successfully")
+	@ApiResponse(responseCode = "404", description = "Response id does not correspond to response", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "500", description = "Database error occured", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	public ResponseEntity<ResponseDto> getResponse(@PathVariable int responseId) throws ServiceException {
 		log.debug("Requested response (responseId=%s)".formatted(responseId));
 		Response entity = responseService.getResponseByResponseId(responseId);
@@ -114,6 +125,12 @@ public class ResponseController {
 	 *                                        deleting the response
 	 */
 	@PostMapping("/id/{responseId}/delete")
+	@Operation(summary = "Delete response")
+	@ApiResponse(responseCode = "204", description = "Response deleted successfully")
+	@ApiResponse(responseCode = "401", description = "User is not logged in", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "403", description = "Current user does not have user id of existing response", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "404", description = "Response id does not correspond to response", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "500", description = "Database error occured", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	public ResponseEntity<Void> deleteResponse(@PathVariable int responseId) throws ServiceException {
 		log.debug("Requested response deletion (responseId=%s)".formatted(responseId));
 		responseActionService.deleteResponse(responseId);
@@ -136,6 +153,13 @@ public class ResponseController {
 	 *                                        updating the response
 	 */
 	@PostMapping("/id/{responseId}/update")
+	@Operation(summary = "Update response")
+	@ApiResponse(responseCode = "204", description = "Response updated successfully")
+	@ApiResponse(responseCode = "401", description = "User is not logged in", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "403", description = "Current user does not have user id of existing response", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "404", description = "Response id does not correspond to inquiry", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "400", description = "Content blank", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "500", description = "Database error occured", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	public ResponseEntity<Void> updateResponse(@PathVariable int responseId, @RequestBody ResponseDto responseDto) throws ServiceException {
 		log.debug("Requested response update (responseId=%s, responseDto=%s)".formatted(responseId, responseDto));
 		Response original = responseService.getResponseByResponseId(responseId);
@@ -156,6 +180,10 @@ public class ResponseController {
 	 *                                 the upvotes
 	 */
 	@GetMapping("/id/{responseId}/upvote")
+	@Operation(summary = "Get upvotes")
+	@ApiResponse(responseCode = "200", description = "Upvotes obtained successfully")
+	@ApiResponse(responseCode = "404", description = "Response id does not correspond to response", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "500", description = "Database error occured", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	public ResponseEntity<List<UserLoginDto>> getUpvotes(@PathVariable int responseId) throws ServiceException {
 		log.debug("Requested upvotes (responseId=%s)".formatted(responseId));
 		List<UserLogin> entities = upvoteService.getUpvoteUserLoginListByResponseId(responseId);
@@ -175,6 +203,10 @@ public class ResponseController {
 	 *                                 the count
 	 */
 	@GetMapping("/id/{responseId}/upvote/count")
+	@Operation(summary = "Get upvote count")
+	@ApiResponse(responseCode = "200", description = "Upvote count obtained successfully")
+	@ApiResponse(responseCode = "404", description = "Response id does not correspond to response", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "500", description = "Database error occured", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	public ResponseEntity<Integer> getUpvoteCount(@PathVariable int responseId) throws ServiceException {
 		log.debug("Requested upvote count (responseId=%s)".formatted(responseId));
 		int count = upvoteService.getUpvoteCountByResponseId(responseId);
@@ -188,10 +220,17 @@ public class ResponseController {
 	 * @param responseId The id of the response to check
 	 * @return The response with whether the user is upvoting the response
 	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws EntityNotFoundException        If the given response id does not
+	 *                                        correspond to a response
 	 * @throws InternalErrorException         If a database error occurs while
 	 *                                        checking the upvote
 	 */
 	@GetMapping("/id/{responseId}/upvote/check")
+	@Operation(summary = "Check upvote")
+	@ApiResponse(responseCode = "200", description = "Upvote checked successfully")
+	@ApiResponse(responseCode = "401", description = "User is not logged in", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "404", description = "Response id does not correspond to response", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "500", description = "Database error occured", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	public ResponseEntity<Boolean> checkUpvote(@PathVariable int responseId) throws ServiceException {
 		log.debug("Requested upvote check (responseId=%s)".formatted(responseId));
 		boolean check = upvoteActionService.checkUpvote(responseId);
@@ -211,6 +250,12 @@ public class ResponseController {
 	 *                                        creating the upvote
 	 */
 	@PostMapping("/id/{responseId}/upvote/create")
+	@Operation(summary = "Create upvote")
+	@ApiResponse(responseCode = "204", description = "Upvote created successfully")
+	@ApiResponse(responseCode = "401", description = "User is not logged in", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "404", description = "Response id does not correspond to response", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "400", description = "Upvote already exists", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "500", description = "Database error occured", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	public ResponseEntity<Void> createUpvote(@PathVariable int responseId) throws ServiceException {
 		log.debug("Requested upvote creation (responseId=%s)".formatted(responseId));
 		upvoteActionService.createUpvote(responseId);
@@ -229,6 +274,11 @@ public class ResponseController {
 	 *                                        deleting the upvote
 	 */
 	@PostMapping("/id/{responseId}/upvote/delete")
+	@Operation(summary = "Delete upvote")
+	@ApiResponse(responseCode = "204", description = "Upvote deleted successfully")
+	@ApiResponse(responseCode = "401", description = "User is not logged in", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "404", description = "Upvote does not exist", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "500", description = "Database error occured", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	public ResponseEntity<Void> deleteUpvote(@PathVariable int responseId) throws ServiceException {
 		log.debug("Requested upvote deletion (responseId=%s)".formatted(responseId));
 		upvoteActionService.deleteUpvote(responseId);

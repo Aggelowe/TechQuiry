@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.aggelowe.techquiry.controller.error.ErrorResponse;
 import com.aggelowe.techquiry.dto.InquiryDto;
 import com.aggelowe.techquiry.dto.ResponseDto;
 import com.aggelowe.techquiry.dto.UserDataDto;
@@ -44,6 +45,11 @@ import com.aggelowe.techquiry.service.exception.InvalidRequestException;
 import com.aggelowe.techquiry.service.exception.ServiceException;
 import com.aggelowe.techquiry.service.exception.UnauthorizedOperationException;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -58,6 +64,7 @@ import lombok.extern.log4j.Log4j2;
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
 @Log4j2
+@Tag(name = "user-controller", description = "Controller for handling user operations")
 public class UserController {
 
 	/**
@@ -135,6 +142,9 @@ public class UserController {
 	 *                                the count
 	 */
 	@GetMapping("/count")
+	@Operation(summary = "Get user login count")
+	@ApiResponse(responseCode = "200", description = "User login count obtained successfully")
+	@ApiResponse(responseCode = "500", description = "Database error occured", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	public ResponseEntity<Integer> getCount() throws ServiceException {
 		log.debug("Requested user login count");
 		int count = userLoginService.getLoginCount();
@@ -153,6 +163,10 @@ public class UserController {
 	 *                                 the user
 	 */
 	@GetMapping("/range/{count}/{page}")
+	@Operation(summary = "Get user login range")
+	@ApiResponse(responseCode = "200", description = "User login range obtained successfully")
+	@ApiResponse(responseCode = "400", description = "Count/page smaller than 0", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "500", description = "Database error occured", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	public ResponseEntity<List<UserLoginDto>> getRange(@PathVariable int count, @PathVariable int page) throws ServiceException {
 		log.debug("Requested user login range (count=%s, page=%s)".formatted(count, page));
 		List<UserLogin> entities = userLoginService.getLoginRange(count, page);
@@ -176,6 +190,11 @@ public class UserController {
 	 *                                     the user
 	 */
 	@PostMapping("/create")
+	@Operation(summary = "Create user login")
+	@ApiResponse(responseCode = "200", description = "User login created successfully")
+	@ApiResponse(responseCode = "403", description = "User is logged in", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "400", description = "Username requirements not met, username unavailable, username/password missing", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "500", description = "Database error occured", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	public ResponseEntity<Integer> createUserLogin(@RequestBody UserLoginDto userLoginDto) throws ServiceException, MapperException {
 		log.debug("Requested user login creation (userLoginDto=%s)".formatted(userLoginDto));
 		UserLogin login = userLoginMapper.toEntity(userLoginDto);
@@ -192,6 +211,10 @@ public class UserController {
 	 *                                        the user
 	 */
 	@GetMapping("/current")
+	@Operation(summary = "Get current user login")
+	@ApiResponse(responseCode = "200", description = "Current user login obtained successfully")
+	@ApiResponse(responseCode = "401", description = "User is not logged in", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "500", description = "Database error occured", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	public ResponseEntity<UserLoginDto> getCurrentLogin() throws ServiceException {
 		log.debug("Requested current user login");
 		UserLogin entity = userLoginActionService.getCurrentLogin();
@@ -200,15 +223,23 @@ public class UserController {
 	}
 
 	/**
-	 * This method login the user with the given user credentials to the server.
+	 * This method logs in the user with the given user credentials to the server.
 	 * 
 	 * @param userLoginDto The DTO containing the user credentials
-	 * @throws ForbiddenOperationException If there is an active session
-	 * @throws InvalidRequestException     If the username or password is incorrect
-	 * @throws InternalErrorException      If a database error occurs while
-	 *                                     authenticating
+	 * @throws ForbiddenOperationException    If there is an active session
+	 * @throws InvalidRequestException        If the username or password is missing
+	 * @throws UnauthorizedOperationException If the username or password is
+	 *                                        incorrect
+	 * @throws InternalErrorException         If a database error occurs while
+	 *                                        authenticating
 	 */
 	@PostMapping("/login")
+	@Operation(summary = "Login to the server")
+	@ApiResponse(responseCode = "200", description = "Logged in successfully")
+	@ApiResponse(responseCode = "403", description = "User is already logged in", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "401", description = "Username/password incorrect", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "400", description = "Username/password missing", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "500", description = "Database error occured", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	public ResponseEntity<UserLoginDto> login(@RequestBody UserLoginDto userLoginDto) throws ServiceException {
 		log.debug("Session login requested (userLoginDto=%s)".formatted(userLoginDto));
 		String username = userLoginDto.getUsername();
@@ -224,6 +255,9 @@ public class UserController {
 	 * @throws UnauthorizedOperationException If there is no active user session
 	 */
 	@PostMapping("/logout")
+	@Operation(summary = "Logout from the server")
+	@ApiResponse(responseCode = "204", description = "Logged out successfully")
+	@ApiResponse(responseCode = "401", description = "User is not logged in", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	public ResponseEntity<Void> logout() throws ServiceException {
 		log.debug("Session logout requested");
 		userLoginActionService.logoutUser();
@@ -244,6 +278,11 @@ public class UserController {
 	 *                                        creating the user data
 	 */
 	@PostMapping("/data/create")
+	@Operation(summary = "Create user data")
+	@ApiResponse(responseCode = "204", description = "User data created successfully")
+	@ApiResponse(responseCode = "401", description = "User is not logged in", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "400", description = "First/last name blank, user id unavailable, first/last name missing", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "500", description = "Database error occured", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	public ResponseEntity<Void> createUserData(@RequestBody UserDataDto userDataDto) throws ServiceException, MapperException {
 		log.debug("Requested user data creation (userDataDto=%s)".formatted(userDataDto));
 		UserData data = userDataMapper.toEntity(userDataDto);
@@ -263,6 +302,10 @@ public class UserController {
 	 *                                 the user
 	 */
 	@GetMapping("/u/{username}")
+	@Operation(summary = "Get user login")
+	@ApiResponse(responseCode = "200", description = "User login obtained successfully")
+	@ApiResponse(responseCode = "404", description = "Username does not correspond to user login", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "500", description = "Database error occured", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	public ResponseEntity<UserLoginDto> getUserLogin(@PathVariable String username) throws ServiceException {
 		log.debug("Requested user login (username=%s)".formatted(username));
 		UserLogin entity = userLoginService.getLoginByUsername(username);
@@ -282,6 +325,10 @@ public class UserController {
 	 *                                 the user
 	 */
 	@GetMapping("/id/{userId}")
+	@Operation(summary = "Get user login")
+	@ApiResponse(responseCode = "200", description = "User login obtained successfully")
+	@ApiResponse(responseCode = "404", description = "User id does not correspond to user login", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "500", description = "Database error occured", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	public ResponseEntity<UserLoginDto> getUserLogin(@PathVariable int userId) throws ServiceException {
 		log.debug("Requested user login (userId=%s)".formatted(userId));
 		UserLogin entity = userLoginService.getLoginByUserId(userId);
@@ -302,6 +349,12 @@ public class UserController {
 	 *                                        deleting the user
 	 */
 	@PostMapping("/id/{userId}/delete")
+	@Operation(summary = "Delete user login")
+	@ApiResponse(responseCode = "204", description = "User login deleted successfully")
+	@ApiResponse(responseCode = "401", description = "User is not logged in", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "403", description = "Current user does not have given user id", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "404", description = "User id does not correspond to user login", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "500", description = "Database error occured", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	public ResponseEntity<Void> deleteUserLogin(@PathVariable int userId) throws ServiceException {
 		log.debug("Requested user login deletion (userId=%s)".formatted(userId));
 		userLoginActionService.deleteLogin(userId);
@@ -325,6 +378,13 @@ public class UserController {
 	 *                                        updating the user
 	 */
 	@PostMapping("/id/{userId}/update")
+	@Operation(summary = "Update user login")
+	@ApiResponse(responseCode = "204", description = "User login updated successfully")
+	@ApiResponse(responseCode = "401", description = "User is not logged in", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "403", description = "Current user does not have given user id", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "404", description = "User id does not correspond to user login", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "400", description = "Username requirements not met", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "500", description = "Database error occured", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	public ResponseEntity<Void> updateUserLogin(@PathVariable int userId, @RequestBody UserLoginDto userLoginDto) throws ServiceException {
 		log.debug("Requested user login update (userId=%s, userLoginDto=%s)".formatted(userId, userLoginDto));
 		UserLogin original = userLoginService.getLoginByUserId(userId);
@@ -345,6 +405,10 @@ public class UserController {
 	 *                                 the inquiry
 	 */
 	@GetMapping("/id/{userId}/inquiries")
+	@Operation(summary = "Get user inquiries")
+	@ApiResponse(responseCode = "200", description = "User inquiries obtained successfully")
+	@ApiResponse(responseCode = "404", description = "User id does not correspond to user login", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "500", description = "Database error occured", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	public ResponseEntity<List<InquiryDto>> getInquiries(@PathVariable int userId) throws ServiceException {
 		log.debug("Requested posted inquiries (userId=%s)".formatted(userId));
 		List<Inquiry> entities = inquiryActionService.getInquiryListByUserId(userId);
@@ -364,6 +428,10 @@ public class UserController {
 	 *                                 the observed inquiries
 	 */
 	@GetMapping("/id/{userId}/observed")
+	@Operation(summary = "Get observed inquiries")
+	@ApiResponse(responseCode = "200", description = "Observed inquiries obtained successfully")
+	@ApiResponse(responseCode = "404", description = "User id does not correspond to user login", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "500", description = "Database error occured", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	public ResponseEntity<List<InquiryDto>> getObservedInquiries(@PathVariable int userId) throws ServiceException {
 		log.debug("Requested observed inquiries (userId=%s)".formatted(userId));
 		List<Inquiry> entities = observerService.getObservedInquiryListByUserId(userId);
@@ -383,6 +451,10 @@ public class UserController {
 	 *                                 the upvoted responses
 	 */
 	@GetMapping("/id/{userId}/upvotes")
+	@Operation(summary = "Get upvoted responses")
+	@ApiResponse(responseCode = "200", description = "Upvoted responses obtained successfully")
+	@ApiResponse(responseCode = "404", description = "User id does not correspond to user login", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "500", description = "Database error occured", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	public ResponseEntity<List<ResponseDto>> getUpvotedResponses(@PathVariable int userId) throws ServiceException {
 		log.debug("Requested upvoted responses (userId=%s)".formatted(userId));
 		List<Response> entities = upvoteService.getUpvotedResponseListByUserId(userId);
@@ -402,6 +474,10 @@ public class UserController {
 	 *                                 the user data
 	 */
 	@GetMapping("/id/{userId}/data")
+	@Operation(summary = "Get user data")
+	@ApiResponse(responseCode = "200", description = "User data obtained successfully")
+	@ApiResponse(responseCode = "404", description = "User id does not correspond to user data", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "500", description = "Database error occured", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	public ResponseEntity<UserDataDto> getUserData(@PathVariable int userId) throws ServiceException {
 		log.debug("Requested user data (userId=%s)".formatted(userId));
 		UserData entity = userDataService.getDataByUserId(userId);
@@ -420,12 +496,18 @@ public class UserController {
 	 * @throws EntityNotFoundException        If the given id does not correspond to
 	 *                                        user data
 	 * @throws InvalidRequestException        If the given first or last name are
-	 *                                        blank or if the given id is not
-	 *                                        available
+	 *                                        blank
 	 * @throws InternalErrorException         If a database error occurred while
 	 *                                        updating the user data
 	 */
 	@PostMapping("/id/{userId}/data/update")
+	@Operation(summary = "Update user data")
+	@ApiResponse(responseCode = "204", description = "User data updated successfully")
+	@ApiResponse(responseCode = "401", description = "User is not logged in", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "403", description = "Current user does not have given user id", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "404", description = "User id does not correspond to user data", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "400", description = "First/last name blank", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "500", description = "Database error occured", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	public ResponseEntity<Void> updateUserData(@PathVariable int userId, @RequestBody UserDataDto userDataDto) throws ServiceException {
 		log.debug("Requested user data update (userId=%s, userDataDto=%s)".formatted(userId, userDataDto));
 		UserData original = userDataService.getDataByUserId(userId);
@@ -447,6 +529,12 @@ public class UserController {
 	 *                                        deleting the user data
 	 */
 	@PostMapping("/id/{userId}/data/delete")
+	@Operation(summary = "Delete user data")
+	@ApiResponse(responseCode = "204", description = "User data deleted successfully")
+	@ApiResponse(responseCode = "401", description = "User is not logged in", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "403", description = "Current user does not have given user id", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "404", description = "User id does not correspond to user data", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "500", description = "Database error occured", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	public ResponseEntity<Void> deleteUserData(@PathVariable int userId) throws ServiceException {
 		log.debug("Requested user data deletion (userId=%s)".formatted(userId));
 		userDataActionService.deleteData(userId);
@@ -465,6 +553,11 @@ public class UserController {
 	 *                                 the user data
 	 */
 	@GetMapping("/id/{userId}/data/icon")
+	@Operation(summary = "Get user icon")
+	@ApiResponse(responseCode = "200", description = "User icon obtained successfully", content = @Content(mediaType = MediaType.IMAGE_PNG_VALUE))
+	@ApiResponse(responseCode = "302", description = "Missing user icon", content = @Content)
+	@ApiResponse(responseCode = "404", description = "User id does not correspond to user data", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "500", description = "Database error occured", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	public ResponseEntity<byte[]> getUserIcon(@PathVariable int userId) throws ServiceException {
 		log.debug("Requested user icon (userId=%s)".formatted(userId));
 		UserData entity = userDataService.getDataByUserId(userId);
@@ -489,12 +582,16 @@ public class UserController {
 	 *                                        given user id
 	 * @throws EntityNotFoundException        If the given id does not correspond to
 	 *                                        user data
-	 * @throws InvalidRequestException        If the given first or last name are
-	 *                                        blank
 	 * @throws InternalErrorException         If a database error occurred while
-	 *                                        updating the user data
+	 *                                        updating the user icon
 	 */
-	@PostMapping("/id/{userId}/data/icon/update")
+	@PostMapping(value = "/id/{userId}/data/icon/update", consumes = MediaType.IMAGE_PNG_VALUE)
+	@Operation(summary = "Update user icon")
+	@ApiResponse(responseCode = "204", description = "User icon updated successfully")
+	@ApiResponse(responseCode = "401", description = "User is not logged in", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "403", description = "Current user does not have given user id", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "404", description = "User id does not correspond to user data", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "500", description = "Database error occured", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	public ResponseEntity<Void> updateUserIcon(@PathVariable int userId, @RequestBody byte[] icon) throws ServiceException {
 		log.debug("Requested user icon update (userId=%s)".formatted(userId));
 		UserData original = userDataService.getDataByUserId(userId);
@@ -512,12 +609,16 @@ public class UserController {
 	 *                                        given user id
 	 * @throws EntityNotFoundException        If the given id does not correspond to
 	 *                                        user data
-	 * @throws InvalidRequestException        If the given first or last name are
-	 *                                        blank
 	 * @throws InternalErrorException         If a database error occurred while
 	 *                                        updating the user data
 	 */
 	@PostMapping("/id/{userId}/data/icon/delete")
+	@Operation(summary = "Delete user icon")
+	@ApiResponse(responseCode = "204", description = "User icon deleted successfully")
+	@ApiResponse(responseCode = "401", description = "User is not logged in", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "403", description = "Current user does not have given user id", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "404", description = "User id does not correspond to user data", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	@ApiResponse(responseCode = "500", description = "Database error occured", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	public ResponseEntity<Void> deleteUserIcon(@PathVariable int userId) throws ServiceException {
 		log.debug("Requested user icon deletion (userId=%s)".formatted(userId));
 		UserData original = userDataService.getDataByUserId(userId);

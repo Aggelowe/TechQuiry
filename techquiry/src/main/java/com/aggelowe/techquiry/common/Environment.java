@@ -60,6 +60,11 @@ public final class Environment {
 	public static final int DATABASE_POOL_SIZE = getVariable("TQ_DATABASE_POOL_SIZE", 10, Integer::valueOf, v -> v > 0);
 
 	/**
+	 * Whether to enable the Swagger API documentation tool.
+	 */
+	public static final boolean DOCS_SWAGGER = getVariable("TQ_DOCS_SWAGGER", false, Boolean::parseBoolean);
+
+	/**
 	 * The {@link IConverter} functional interface is used to define how a string
 	 * can be converted to the target type.
 	 * 

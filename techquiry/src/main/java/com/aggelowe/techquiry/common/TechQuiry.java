@@ -53,6 +53,8 @@ public class TechQuiry {
 		log.debug("Setting up Spring application properties");
 		Map<String, Object> applicationProperties = new HashMap<>();
 		applicationProperties.put("server.port", Environment.SERVER_PORT);
+		applicationProperties.put("springdoc.api-docs.enabled", Environment.DOCS_SWAGGER);
+		applicationProperties.put("springdoc.swagger-ui.enabled", Environment.DOCS_SWAGGER);
 		application.setDefaultProperties(applicationProperties);
 	}
 

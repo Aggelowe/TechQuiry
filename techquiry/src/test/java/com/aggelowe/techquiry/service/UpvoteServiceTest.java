@@ -185,6 +185,8 @@ class UpvoteServiceTest {
 	void testCheckUpvoteException() {
 		sessionHelper.setAuthentication(null);
 		assertThrowsExactly(UnauthorizedOperationException.class, () -> upvoteActionService.checkUpvote(1));
+		sessionHelper.setAuthentication(new Authentication(1));
+		assertThrowsExactly(EntityNotFoundException.class, () -> upvoteActionService.checkUpvote(3));
 	}
 
 	@Test

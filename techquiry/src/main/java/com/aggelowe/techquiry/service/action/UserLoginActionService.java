@@ -199,10 +199,12 @@ public class UserLoginActionService {
 	 * @param username The username of the user
 	 * @param password The password of the user
 	 * @return The current {@link UserLogin}
-	 * @throws ForbiddenOperationException If there is an active session
-	 * @throws InvalidRequestException     If the username or password is incorrect
-	 * @throws InternalErrorException      If a database error occurs while
-	 *                                     authenticating
+	 * @throws ForbiddenOperationException    If there is an active session
+	 * @throws InvalidRequestException        If the username or password is NULL
+	 * @throws UnauthorizedOperationException If the username or password is
+	 *                                        incorrect
+	 * @throws InternalErrorException         If a database error occurs while
+	 *                                        authenticating
 	 */
 	public UserLogin authenticateUser(String username, String password) throws ServiceException {
 		log.debug("Authenticating user (username=%s)".formatted(username));

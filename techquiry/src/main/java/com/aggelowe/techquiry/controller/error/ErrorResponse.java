@@ -2,6 +2,7 @@ package com.aggelowe.techquiry.controller.error;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -20,18 +21,21 @@ import lombok.ToString;
 @Builder(toBuilder = true)
 @EqualsAndHashCode
 @ToString
+@Schema(description = "Contains server error data")
 public class ErrorResponse {
 
 	/**
 	 * The error status code.
 	 */
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	@Schema(description = "HTTP error code", example = "500")
 	private Integer status;
 
 	/**
 	 * The error message.
 	 */
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	@Schema(description = "Error message", example = "Example error occured!")
 	private String message;
 
 }

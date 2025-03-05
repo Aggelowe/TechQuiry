@@ -167,6 +167,8 @@ class ObserverServiceTest {
 	void testCheckObserverException() {
 		sessionHelper.setAuthentication(null);
 		assertThrowsExactly(UnauthorizedOperationException.class, () -> observerActionService.checkObserver(0));
+		sessionHelper.setAuthentication(new Authentication(1));
+		assertThrowsExactly(EntityNotFoundException.class, () -> observerActionService.checkObserver(3));
 	}
 
 	@Test

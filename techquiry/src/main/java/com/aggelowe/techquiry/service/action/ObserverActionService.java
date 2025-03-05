@@ -57,6 +57,8 @@ public class ObserverActionService {
 	 * @param inquiryId The inquiry id of the inquiry to check
 	 * @return Whether the logged in user is observing the given inquiry
 	 * @throws UnauthorizedOperationException If the current user is not logged in
+	 * @throws EntityNotFoundException        If the given inquiry id does not
+	 *                                        correspond to an inquiry
 	 * @throws InternalErrorException         If a database error occurs while
 	 *                                        checking the observer
 	 */
@@ -68,6 +70,10 @@ public class ObserverActionService {
 		}
 		Observer observer = new Observer(inquiryId, current.getUserId());
 		try {
+			Inquiry inquiry = inquiryDao.select(inquiryId);
+			if (inquiry == null) {
+				throw new EntityNotFoundException("The given inquiry id does not have a corresponding inquiry!");
+			}
 			return observerDao.check(observer);
 		} catch (DatabaseException exception) {
 			throw new InternalErrorException("A database error occured while checking the observer!", exception);

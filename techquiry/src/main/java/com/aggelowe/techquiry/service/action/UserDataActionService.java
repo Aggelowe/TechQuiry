@@ -122,8 +122,7 @@ public class UserDataActionService {
 	 * @throws EntityNotFoundException        If the given id does not correspond to
 	 *                                        user data
 	 * @throws InvalidRequestException        If the given first or last name are
-	 *                                        blank or if the given id is not
-	 *                                        available
+	 *                                        blank
 	 * @throws InternalErrorException         If a database error occurred while
 	 *                                        updating the user data
 	 * 

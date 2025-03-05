@@ -12,6 +12,9 @@ import org.sqlite.SQLiteConfig;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+
 /**
  * The {@link AppConfiguration} class is a Spring configuration class that is
  * responsible for defining key application configuration beans.
@@ -45,6 +48,21 @@ public class AppConfiguration {
 		sqliteConfig.enforceForeignKeys(true);
 		hikariConfig.setDataSourceProperties(sqliteConfig.toProperties());
 		return new HikariDataSource(hikariConfig);
+	}
+
+	/**
+	 * This method configures and returns a new {@link OpenAPI} object for viewing
+	 * the TechQuiry API Documentation.
+	 * 
+	 * @return The {@link OpenAPI} instance
+	 */
+	@Bean
+	public OpenAPI openAPI() {
+		Info info = new Info();
+		info.title("%s API".formatted(Constants.APPLICATION_NAME));
+		info.version("v%s".formatted(Constants.APPLICATION_VERSION));
+		info.description("API documentation of the %s (v%s) web application".formatted(Constants.APPLICATION_NAME, Constants.APPLICATION_VERSION));
+		return new OpenAPI().info(info);
 	}
 
 }
