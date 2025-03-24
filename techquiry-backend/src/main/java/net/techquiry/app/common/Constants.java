@@ -40,7 +40,7 @@ public final class Constants {
 	/**
 	 * The regular expression defining the valid format for usernames.
 	 */
-	public static final String SECURITY_USERNAME_REGEX = "^[A-Za-z][A-Za-z0-9_]{2,14}$";
+	public static final String SECURITY_USERNAME_REGEX = "^[A-Za-z][A-Za-z0-9_]{2,%d}$";
 
 	/**
 	 * The hashing algorithm for generating the password hashes.

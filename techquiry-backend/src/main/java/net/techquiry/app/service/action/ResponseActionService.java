@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+
 import net.techquiry.app.database.dao.InquiryDao;
 import net.techquiry.app.database.dao.ResponseDao;
 import net.techquiry.app.database.exception.DatabaseException;

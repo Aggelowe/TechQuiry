@@ -5,4 +5,4 @@ spring:
       static-path-pattern: /static/**
 springdoc:
    api-docs:
-      path: /api/docs
+      path: /docs

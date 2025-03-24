@@ -12,6 +12,7 @@ import org.springframework.context.event.EventListener;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+
 import net.techquiry.app.database.DatabaseManager;
 
 /**
@@ -24,7 +25,7 @@ import net.techquiry.app.database.DatabaseManager;
  */
 @Log4j2
 @SpringBootApplication
-@Import({ AppConfiguration.class })
+@Import(AppConfiguration.class)
 @RequiredArgsConstructor
 public class TechQuiry {
 
@@ -35,7 +36,7 @@ public class TechQuiry {
 
 	public static void main(String[] args) {
 		log.info("Starting %s v%s".formatted(Constants.APPLICATION_NAME, Constants.APPLICATION_VERSION));
-		log.debug("Application work directory: %s".formatted(Environment.SERVER_WORK_DIRECTORY));
+		log.debug("Application work directory: %s".formatted(Environment.SRV_WORKING_DIRECTORY));
 		SpringApplication application = new SpringApplication(TechQuiry.class);
 		properties(application);
 		log.info("Invoking Spring application startup");
@@ -51,9 +52,9 @@ public class TechQuiry {
 	private static void properties(SpringApplication application) {
 		log.debug("Setting up Spring application properties");
 		Map<String, Object> applicationProperties = new HashMap<>();
-		applicationProperties.put("server.port", Environment.SERVER_PORT);
-		applicationProperties.put("springdoc.api-docs.enabled", Environment.DOCS_SWAGGER);
-		applicationProperties.put("springdoc.swagger-ui.enabled", Environment.DOCS_SWAGGER);
+		applicationProperties.put("server.port", Environment.SRV_PORT);
+		applicationProperties.put("springdoc.api-docs.enabled", Environment.DOC_API);
+		applicationProperties.put("springdoc.swagger-ui.enabled", Environment.DOC_API);
 		application.setDefaultProperties(applicationProperties);
 	}
 

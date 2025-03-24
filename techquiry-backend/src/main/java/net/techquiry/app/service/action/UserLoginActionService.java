@@ -6,7 +6,9 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+
 import net.techquiry.app.common.Constants;
+import net.techquiry.app.common.Environment;
 import net.techquiry.app.common.SecurityUtils;
 import net.techquiry.app.database.dao.UserLoginDao;
 import net.techquiry.app.database.exception.DatabaseException;
@@ -66,7 +68,7 @@ public class UserLoginActionService {
 			throw new ForbiddenOperationException("Creating users while logged-in is forbidden!");
 		}
 		String username = login.getUsername();
-		Pattern pattern = Pattern.compile(Constants.SECURITY_USERNAME_REGEX);
+		Pattern pattern = Pattern.compile(Constants.SECURITY_USERNAME_REGEX.formatted(Environment.SEC_USERNAME_MAX_SIZE - 1));
 		if (!pattern.matcher(username).matches()) {
 			throw new InvalidRequestException("The given username does not abide by the requirements!");
 		}
@@ -145,7 +147,7 @@ public class UserLoginActionService {
 			throw new ForbiddenOperationException("The requested user login update is forbidden!");
 		}
 		String username = login.getUsername();
-		Pattern pattern = Pattern.compile(Constants.SECURITY_USERNAME_REGEX);
+		Pattern pattern = Pattern.compile(Constants.SECURITY_USERNAME_REGEX.formatted(Environment.SEC_USERNAME_MAX_SIZE - 1));
 		if (!pattern.matcher(username).matches()) {
 			throw new InvalidRequestException("The given username does not abide by the requirements!");
 		}

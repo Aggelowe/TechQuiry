@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,8 +20,10 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+
 import net.techquiry.app.controller.error.ErrorResponse;
 import net.techquiry.app.dto.InquiryDto;
 import net.techquiry.app.dto.ResponseDto;
@@ -60,7 +63,8 @@ import net.techquiry.app.service.exception.UnauthorizedOperationException;
  * @since 0.0.1
  */
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/user")
+@CrossOrigin
 @RequiredArgsConstructor
 @Log4j2
 @Tag(name = "user-controller", description = "Controller for handling user operations")

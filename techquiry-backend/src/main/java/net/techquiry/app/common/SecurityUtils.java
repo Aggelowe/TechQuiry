@@ -9,6 +9,7 @@ import java.util.Base64.Decoder;
 import java.util.Base64.Encoder;
 
 import lombok.extern.log4j.Log4j2;
+
 import net.techquiry.app.common.exception.IllegalConstructionException;
 
 /**
@@ -65,7 +66,7 @@ public final class SecurityUtils {
 	 */
 	public static byte[] generateSalt() {
 		SecureRandom random = new SecureRandom();
-		int length = Environment.SECURITY_SALT_LENGTH;
+		int length = Environment.SEC_SALT_SIZE;
 		byte[] salt = new byte[length];
 		random.nextBytes(salt);
 		return salt;

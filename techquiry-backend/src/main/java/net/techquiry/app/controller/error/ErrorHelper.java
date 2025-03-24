@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpServerErrorException.InternalServerError;
 
 import lombok.extern.log4j.Log4j2;
+
 import net.techquiry.app.mapper.exception.MapperException;
 import net.techquiry.app.mapper.exception.MissingValueException;
 import net.techquiry.app.service.exception.EntityNotFoundException;

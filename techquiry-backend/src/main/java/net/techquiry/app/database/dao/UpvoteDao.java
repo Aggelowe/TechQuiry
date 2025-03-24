@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+
 import net.techquiry.app.common.SecurityUtils;
 import net.techquiry.app.database.LocalResult;
 import net.techquiry.app.database.SQLRunner;

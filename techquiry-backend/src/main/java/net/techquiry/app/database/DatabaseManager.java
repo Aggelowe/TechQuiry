@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+
 import net.techquiry.app.common.Environment;
 import net.techquiry.app.database.exception.DatabaseException;
 
@@ -46,7 +47,7 @@ public final class DatabaseManager {
 	 * file and performs the necessary initialization operations.
 	 */
 	public void initialize() {
-		if (Environment.DATABASE_SETUP) {
+		if (Environment.DB_CREATE_SCHEMA) {
 			try {
 				createSchema();
 			} catch (DatabaseException exception) {
