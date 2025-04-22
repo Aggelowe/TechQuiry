@@ -42,7 +42,7 @@ public final class Environment {
 	/**
 	 * The maximum size of the users' usernames.
 	 */
-	public static final int SEC_USERNAME_MAX_SIZE = env(Integer.class, "TQ_BE_SEC_USERNAME_MAX_SIZE", 15, Integer::parseInt, num -> num >= 2);
+	public static final int SEC_USERNAME_MAX_SIZE = env(Integer.class, "TQ_BE_SEC_USERNAME_MAX_SIZE", 15, Integer::parseInt, num -> num >= 3);
 
 	/**
 	 * Whether to setup the database's schema on the application's start.
