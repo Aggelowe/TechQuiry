@@ -55,7 +55,7 @@ import net.techquiry.app.service.exception.UnauthorizedOperationException;
  */
 @RestController
 @RequestMapping("/inquiry")
-@CrossOrigin
+@CrossOrigin(originPatterns = "*", allowCredentials = "true")
 @RequiredArgsConstructor
 @Log4j2
 @Tag(name = "inquiry-controller", description = "Controller for handling inquiry operations")

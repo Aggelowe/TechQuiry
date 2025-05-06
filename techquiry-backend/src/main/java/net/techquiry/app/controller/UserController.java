@@ -64,7 +64,7 @@ import net.techquiry.app.service.exception.UnauthorizedOperationException;
  */
 @RestController
 @RequestMapping("/user")
-@CrossOrigin
+@CrossOrigin(originPatterns = "*", allowCredentials = "true")
 @RequiredArgsConstructor
 @Log4j2
 @Tag(name = "user-controller", description = "Controller for handling user operations")
