@@ -1,10 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { Observable } from 'rxjs';
+import { UserLogin } from '../object/user-login';
 import { Inquiry } from '../object/inquiry';
 import { Response } from '../object/response';
-import { UserLogin } from '../object/user-login';
 
 const baseUrl: string = `${environment.apiUrl}/inquiry`
 
