@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { UserService } from '../../service/user.service';
 
 @Component({
 	selector: 'nav-bar',
@@ -12,6 +11,6 @@ import { UserService } from '../../service/user.service';
 })
 export class NavBarComponent {
 
-	constructor() {	}
+	constructor() { }
 
 }

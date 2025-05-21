@@ -1,0 +1,5 @@
+@if (message) {
+<ngb-alert #alert class="container shadow" type="danger" (closed)="message = undefined">
+	<strong>{{title}}</strong>{{message}}
+</ngb-alert>
+}
