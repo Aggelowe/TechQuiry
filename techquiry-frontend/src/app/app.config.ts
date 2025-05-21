@@ -1,9 +1,10 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, ErrorHandler, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { errorInterceptor } from './error/error.interceptor';
+import { ErrorService } from './service/error.service';
 
 export const appConfig: ApplicationConfig = {
 	providers: [
@@ -13,6 +14,7 @@ export const appConfig: ApplicationConfig = {
 		provideRouter(routes),
 		provideHttpClient(withInterceptors([
 			errorInterceptor
-		]))
+		])),
+		{ provide: ErrorHandler, useExisting: ErrorService }
 	]
 };

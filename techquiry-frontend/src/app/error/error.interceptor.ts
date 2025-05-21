@@ -9,7 +9,7 @@ export const errorInterceptor: HttpInterceptorFn = (request, next) => {
 			if (err.error instanceof ErrorEvent) {
 				return throwError(() => ({
 					type: ErrorType.Connection,
-					message: 'Connection error occured!'
+					message: (err.error as ErrorEvent).message ?? 'Connection error occured!'
 				} as ErrorResponse));
 			}
 			return throwError(() => ({
