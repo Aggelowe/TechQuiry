@@ -1,11 +1,11 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgbAlert, NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
 import { debounceTime, tap } from 'rxjs';
-import { ErrorService } from '../../service/error.service';
-import { ErrorType } from '../../error/error-type';
-import { environment } from '../../../environments/environment';
-import { ErrorResponse } from '../../error/error-response';
+import { ErrorService } from '@app/service/error.service';
+import { ErrorType } from '@app/error/error-type';
+import { ErrorResponse } from '@app/error/error-response';
+import { environment } from '@environment';
 
 @Component({
 	selector: 'error-alert',

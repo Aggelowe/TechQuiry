@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { ErrorResponse } from '../error/error-response';
 import { Subject } from 'rxjs';
+import { ErrorResponse } from '@app/error/error-response';
 
 @Injectable({
 	providedIn: 'root'

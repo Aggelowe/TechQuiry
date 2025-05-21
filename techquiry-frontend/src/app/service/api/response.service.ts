@@ -1,9 +1,9 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from '../../../environments/environment';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { UserLogin } from '../../object/user-login';
-import { Response } from '../../object/response';
+import { UserLogin } from '@app/object/user-login';
+import { Response } from '@app/object/response';
+import { environment } from '@environment';
 
 const baseUrl: string = `${environment.apiUrl}/response`
 
