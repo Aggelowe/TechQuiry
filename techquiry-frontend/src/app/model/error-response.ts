@@ -1,4 +1,4 @@
-import { ErrorType } from "./error-type";
+import { ErrorType } from "@app/model/error-type";
 
 /**
 * Standardizes the structure of error responses.

@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { UserLogin } from '@app/object/user-login';
-import { UserData } from '@app/object/user-data';
-import { Inquiry } from '@app/object/inquiry';
+import { UserLogin } from '@app/model/dto/user-login';
+import { UserData } from '@app/model/dto/user-data';
+import { Inquiry } from '@app/model/dto/inquiry';
 import { environment } from '@environment';
 
 const baseUrl: string = `${environment.apiUrl}/user`

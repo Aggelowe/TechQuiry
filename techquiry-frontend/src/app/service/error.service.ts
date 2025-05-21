@@ -1,14 +1,16 @@
 import { ErrorHandler, Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
-import { ErrorResponse } from '@app/error/error-response';
-import { ErrorType } from '@app/error/error-type';
+import { Observable, Subject } from 'rxjs';
+import { ErrorResponse } from '@app/model/error-response';
+import { ErrorType } from '@app/model/error-type';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class ErrorService extends ErrorHandler {
 
-	readonly errorSubject: Subject<ErrorResponse> = new Subject();
+	private errorSubject: Subject<ErrorResponse> = new Subject();
+
+	readonly errorObservable: Observable<ErrorResponse> = this.errorSubject.asObservable();
 
 	override handleError(error: any): void {
 		super.handleError(error);

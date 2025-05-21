@@ -3,8 +3,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { debounceTime, tap } from 'rxjs';
 import { NgbAlert, NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
 import { ErrorService } from '@app/service/error.service';
-import { ErrorType } from '@app/error/error-type';
-import { ErrorResponse } from '@app/error/error-response';
+import { ErrorType } from '@app/model/error-type';
+import { ErrorResponse } from '@app/model/error-response';
 import { environment } from '@environment';
 
 @Component({
@@ -24,7 +24,7 @@ export class ErrorAlertComponent {
 	constructor(private errorService: ErrorService,
 		private changeDetectorRef: ChangeDetectorRef
 	) {
-		this.errorService.errorSubject.pipe(
+		this.errorService.errorObservable.pipe(
 			takeUntilDestroyed(),
 			tap((error: ErrorResponse) => {
 				this.title = error.type === ErrorType.Server ? `Error ${error.status}! ` : undefined;
