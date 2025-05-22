@@ -29,20 +29,16 @@ export class SessionService {
 							},
 							error: (error: ErrorResponse) => {
 								this.sessionSubject.next({ userLogin, userData });
-								if (error.type == ErrorType.Server && error.status == 404) {
-									return of(undefined);
-								} else {
-									return throwError(() => error);
+								if (error.type != ErrorType.Server || error.status != 404) {
+									throw error;
 								}
 							},
 						});
 					},
 					error: (error: ErrorResponse) => {
 						this.sessionSubject.next({ userLogin });
-						if (error.type == ErrorType.Server && error.status == 404) {
-							return of(undefined);
-						} else {
-							return throwError(() => error);
+						if (error.type != ErrorType.Server || error.status != 404) {
+							throw error;
 						}
 					}
 				});
@@ -50,9 +46,8 @@ export class SessionService {
 			error: (error: ErrorResponse) => {
 				if (error.type == ErrorType.Server && error.status == 401) {
 					this.sessionSubject.next(undefined);
-					return of(undefined);
 				} else {
-					return throwError(() => error);
+					throw error;
 				}
 			}
 		});

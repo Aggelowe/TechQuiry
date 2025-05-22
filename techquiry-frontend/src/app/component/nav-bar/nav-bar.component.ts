@@ -1,5 +1,10 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { finalize } from 'rxjs';
+import { UserLogin } from '@app/model/dto/user-login';
+import { UserSession } from '@app/model/user-session';
+import { UserService } from '@app/service/api/user.service';
+import { SessionService } from '@app/service/session.service';
 
 @Component({
 	selector: 'nav-bar',
@@ -11,6 +16,31 @@ import { RouterModule } from '@angular/router';
 })
 export class NavBarComponent {
 
-	constructor() { }
+	userLogin?: UserLogin;
+
+	userIconUrl?: string;
+
+	constructor(
+		private sessionService: SessionService,
+		private userService: UserService
+	) {
+		this.sessionService.sessionObservable.subscribe((userSession: UserSession | undefined) => {
+			if (userSession) {
+				this.userLogin = userSession.userLogin;
+				this.userIconUrl = userSession.userIcon ? URL.createObjectURL(userSession.userIcon) : undefined;
+			} else {
+				this.userLogin = undefined;
+				this.userIconUrl = undefined;
+			}
+		});
+	}
+
+	logout() {
+		this.userService.logout().pipe(
+			finalize(() => {
+				this.sessionService.refreshUserSession();
+			})
+		).subscribe();
+	}
 
 }

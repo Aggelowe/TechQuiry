@@ -4,6 +4,21 @@
 	background: -webkit-linear-gradient(to top, #F7F9F900, #F7F9F9C0);
 }
 
-.nav-brand {
+.nav-image {
 	height: 40px;
+}
+
+.nav-icon {
+	@extend .nav-image;
+	aspect-ratio: 1;
+	cursor: pointer;
+
+	div {
+		position: relative;
+		width: 100%;
+		padding-bottom: 50%;
+		background-position: center center;
+		background-repeat: no-repeat;
+		background-size: cover;
+	}
 }

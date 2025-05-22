@@ -21,7 +21,8 @@ export class ErrorAlertComponent {
 	title?: string;
 	message?: string;
 
-	constructor(private errorService: ErrorService,
+	constructor(
+		private errorService: ErrorService,
 		private changeDetectorRef: ChangeDetectorRef
 	) {
 		this.errorService.errorObservable.pipe(
