@@ -34,7 +34,7 @@ export class ErrorAlertComponent {
 			}),
 			debounceTime(environment.alertTime)
 		).subscribe((error: ErrorResponse) => {
-			this.alert.close()
+			this.alert.close();
 		});
 	}
 

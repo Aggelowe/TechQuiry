@@ -24,7 +24,7 @@ export class NavBarComponent {
 		private sessionService: SessionService,
 		private userService: UserService
 	) {
-		this.sessionService.sessionObservable.subscribe((userSession: UserSession | undefined) => {
+		this.sessionService.getSessionObservable().subscribe((userSession: UserSession | undefined) => {
 			if (userSession) {
 				this.userLogin = userSession.userLogin;
 				this.userIconUrl = userSession.userIcon ? URL.createObjectURL(userSession.userIcon) : undefined;
@@ -38,7 +38,7 @@ export class NavBarComponent {
 	logout() {
 		this.userService.logout().pipe(
 			finalize(() => {
-				this.sessionService.refreshUserSession();
+				this.sessionService.updateUserSession().subscribe();
 			})
 		).subscribe();
 	}

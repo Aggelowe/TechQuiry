@@ -19,7 +19,7 @@ export class AppComponent implements OnInit {
 	constructor(private sessionService: SessionService) { }
 
 	ngOnInit() {
-		this.sessionService.refreshUserSession();
+		this.sessionService.updateUserSession().subscribe();
 	}
 
 }
