@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { finalize } from 'rxjs';
 import { UserLogin } from '@app/model/dto/user-login';
 import { UserSession } from '@app/model/user-session';
@@ -22,7 +22,8 @@ export class NavBarComponent {
 
 	constructor(
 		private sessionService: SessionService,
-		private userService: UserService
+		private userService: UserService,
+		private router: Router
 	) {
 		this.sessionService.getSessionObservable().subscribe((userSession: UserSession | undefined) => {
 			if (userSession) {
@@ -38,7 +39,9 @@ export class NavBarComponent {
 	logout() {
 		this.userService.logout().pipe(
 			finalize(() => {
-				this.sessionService.updateUserSession().subscribe();
+				this.sessionService.updateUserSession().subscribe(() => {
+					this.router.navigate(['/login']);
+				});
 			})
 		).subscribe();
 	}

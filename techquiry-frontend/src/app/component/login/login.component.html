@@ -1,0 +1,55 @@
+<form class="top-50 start-50 translate-middle card shadow rounded login" [formGroup]="loginForm" (ngSubmit)="login()">
+	<p class="login-title">Log in to your account</p>
+	<div class="login-input">
+		<input class="rounded login-input-invalid" placeholder="Enter username" type="text" formControlName="username"
+			[class.login-input-invalid]="isInvalid('username')">
+		<span>
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+				<path d="M 256 32 Q 193 33 143 63 L 143 63 L 143 63 Q 92 92
+					63 143 L 63 143 L 63 143 Q 33 193 32 256 Q 33 319 63 369 Q
+					92 420 143 449 Q 193 479 256 480 Q 271 481 272 496 Q 271 511
+					256 512 Q 184 511 127 477 Q 69 443 35 385 Q 1 328 0 256 Q 1
+					184 35 127 Q 69 69 127 35 Q 184 1 256 0 Q 328 1 385 35 Q 443
+					69 477 127 Q 511 184 512 256 L 512 280 L 512 280 Q 511 317
+					486 342 Q 461 367 424 368 Q 399 368 378 355 Q 358 343 347
+					322 Q 314 366 256 368 Q 208 367 177 335 Q 145 304 144 256 Q
+					145 208 177 177 Q 208 145 256 144 Q 304 145 336 178 L 336
+					176 L 336 176 Q 337 161 352 160 Q 367 161 368 176 L 368 256
+					L 368 256 L 368 280 L 368 280 Q 369 304 384 320 Q 400 335
+					424 336 Q 448 335 464 320 Q 479 304 480 280 L 480 256 L 480
+					256 Q 479 193 449 143 Q 420 92 369 63 Q 319 33 256 32 L 256
+					32 Z M 336 256 Q 335 211 296 187 Q 256 165 216 187 Q 177 211
+					176 256 Q 177 301 216 325 Q 256 347 296 325 Q 335 301 336
+					256 L 336 256 Z" />
+			</svg>
+		</span>
+	</div>
+	<div class="login-input">
+		<input class="rounded" placeholder="Enter password" type="password" formControlName="password"
+			[class.login-input-invalid]="isInvalid('password')">
+		<span>
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+				<path d="M 128 128 L 128 192 L 128 128 L 128 192 L 320 192 L
+					320 192 L 320 128 L 320 128 Q 319 87 292 60 Q 265 33 224 32
+					Q 183 33 156 60 Q 129 87 128 128 L 128 128 Z M 96 192 L 96
+					128 L 96 192 L 96 128 Q 97 74 133 37 Q 170 1 224 0 Q 278 1
+					315 37 Q 351 74 352 128 L 352 192 L 352 192 L 368 192 L 368
+					192 Q 402 193 425 215 Q 447 238 448 272 L 448 432 L 448 432
+					Q 447 466 425 489 Q 402 511 368 512 L 80 512 L 80 512 Q 46
+					511 23 489 Q 1 466 0 432 L 0 272 L 0 272 Q 1 238 23 215 Q 46
+					193 80 192 L 96 192 L 96 192 Z M 32 272 L 32 432 L 32 272 L
+					32 432 Q 33 452 46 466 Q 60 479 80 480 L 368 480 L 368 480 Q
+					388 479 402 466 Q 415 452 416 432 L 416 272 L 416 272 Q 415
+					252 402 238 Q 388 225 368 224 L 80 224 L 80 224 Q 60 225 46
+					238 Q 33 252 32 272 L 32 272 Z" />
+			</svg>
+		</span>
+	</div>
+	<button class="rounded login-submit" type="submit">
+		LOG IN
+	</button>
+	<p class="login-signup">
+		No account?
+		<a href="">Sign up</a>
+	</p>
+</form>

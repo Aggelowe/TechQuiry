@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subscriber } from 'rxjs';
+import { BehaviorSubject, first, Observable, Subscriber } from 'rxjs';
 import { UserService } from '@app/service/api/user.service';
 import { UserLogin } from '@app/model/dto/user-login';
 import { UserData } from '@app/model/dto/user-data';
@@ -12,6 +12,8 @@ import { ErrorType } from '@app/model/error-type';
 })
 export class SessionService {
 
+	private initial: boolean = true;
+
 	private sessionSubject: BehaviorSubject<UserSession | undefined> = new BehaviorSubject<UserSession | undefined>(undefined);
 
 	constructor(private userService: UserService) { }
@@ -21,6 +23,7 @@ export class SessionService {
 			let emit: ((session: UserSession | undefined) => void) = (session: UserSession | undefined) => {
 				subscriber.next(session);
 				subscriber.complete();
+				this.initial = false;
 				this.sessionSubject.next(session);
 			};
 			this.userService.getCurrentUserLogin().subscribe({
@@ -59,11 +62,18 @@ export class SessionService {
 	}
 
 	getSessionObservable(): Observable<UserSession | undefined> {
-		return this.sessionSubject.asObservable()
+		return this.sessionSubject.asObservable();
 	}
 
-	getCurrentSession(): UserSession | undefined {
-		return this.sessionSubject.value;
+	getCurrentSession(): Observable<UserSession | undefined> {
+		return new Observable<UserSession | undefined>((subscriber: Subscriber<UserSession | undefined>) => {
+			this.sessionSubject.pipe(
+				first((userSession: UserSession | undefined) => !this.initial)
+			).subscribe((userSession: UserSession | undefined) => {
+				subscriber.next(userSession);
+				subscriber.complete();
+			})
+		})
 	}
 
 }
